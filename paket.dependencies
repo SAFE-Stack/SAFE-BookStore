@@ -1,0 +1,17 @@
+source https://nuget.org/api/v2
+
+nuget FSharp.Core prerelease redirects: force
+nuget Suave
+nuget Suave.AspNetCore
+nuget Microsoft.AspNetCore.Diagnostics
+nuget Microsoft.AspNetCore.Server.Kestrel
+nuget Microsoft.Extensions.Logging.Console
+nuget System.Net.NetworkInformation
+
+group Build
+  source https://nuget.org/api/v2
+  
+  nuget FAKE
+  nuget FSharp.Formatting
+
+  github fsharp/FAKE modules/Octokit/Octokit.fsx
