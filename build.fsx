@@ -160,7 +160,7 @@ let vsProjProps =
 Target "Clean" (fun _ ->
     killProcess "msu.SmartMeterHome"
     
-    CleanDirs ["bin"; "temp"; "docs/output"; Path.Combine(clientPath,"public")]
+    CleanDirs ["bin"; "temp"; "docs/output"; Path.Combine(clientPath,"public/bundle")]
 )
 
 // --------------------------------------------------------------------------------------
