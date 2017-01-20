@@ -186,7 +186,6 @@ Target "Build" (fun _ ->
 
 Target "BuildClient" (fun _ ->
     run npmTool "install" ""
-    run npmTool "run build" clientPath
 )
 
 
@@ -418,6 +417,7 @@ Target "All" DoNothing
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "BuildClient"
+  ==> "Run"
   ==> "CopyBinaries"
   ==> "GenerateReferenceDocs"
   ==> "GenerateDocs"
