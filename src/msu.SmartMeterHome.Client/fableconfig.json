@@ -2,7 +2,7 @@
     "projFile": "./app.fsx",
     "babelPlugins": ["transform-runtime"],
     "rollup": {
-        "dest": "./public/bundle.js",
+        "dest": "./public/bundle/bundle.js",
         "external": ["react", "react-dom"],
         "globals": {
             "react": "React",
