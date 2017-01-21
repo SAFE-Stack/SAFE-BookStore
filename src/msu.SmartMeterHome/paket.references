@@ -1,7 +1,4 @@
 FSharp.Core
 Suave
-Suave.AspNetCore
-Microsoft.AspNetCore.Diagnostics
-Microsoft.AspNetCore.Server.Kestrel
 Microsoft.Extensions.Logging.Console
 System.Net.NetworkInformation
