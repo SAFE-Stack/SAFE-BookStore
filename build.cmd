@@ -1,11 +1,6 @@
 @echo off
 cls
 
-.paket\paket.bootstrapper.exe 4.0.0-alpha045
-if errorlevel 1 (
-  exit /b %errorlevel%
-)
-
 .paket\paket.exe restore
 if errorlevel 1 (
   exit /b %errorlevel%
