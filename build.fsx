@@ -11,50 +11,18 @@ open Fake.UserInputHelper
 open System
 open System.IO
 
-// --------------------------------------------------------------------------------------
-// START TODO: Provide project-specific details below
-// --------------------------------------------------------------------------------------
 
-// Information about the project are used
-//  - for version and project name in generated AssemblyInfo file
-//  - to run tests and to publish documentation on GitHub gh-pages
-//  - for documentation, you also need to edit info in "docs/tools/generate.fsx"
+let project = "Suave/Fable sample"
 
-// The name of the project
-let project = "msu.SmartMeterHome"
+let summary = "Suave and Fable sample"
 
-// Short summary of the project
-// (used as description in AssemblyInfo and as a short summary for NuGet package)
-let summary = "Ein Portal zur Abfrage der SmartMeter-Daten."
+let description = summary
 
-// Longer description of the project
-let description = "Ein Portal zur Abfrage der SmartMeter-Daten."
-
-let authors = [ "msu" ]
-
-// Tags for your project (for NuGet package)
-let tags = "SmartMeter"
-
-// Default target configuration
 let configuration = "Release"
 
-// Pattern specifying assemblies to be tested using NUnit
-let testAssemblies = "tests/**/bin" </> configuration </> "*Tests*.dll"
+let clientPath = "./src/Client" |> FullName
 
-// Git configuration (used for publishing documentation in gh-pages branch)
-// The profile where the project is posted
-let gitOwner = "forki"
-let gitHome = sprintf "%s/%s" "https://github.com" gitOwner
-
-// The name of the project on GitHub
-let gitName = "msu.SmartMeterHome"
-
-// The url for the raw files hosted
-let gitRaw = environVarOrDefault "gitRaw" "https://raw.githubusercontent.com/forki"
-
-let clientPath = "./src/msu.SmartMeterHome.Client" |> FullName
-
-let serverPath = "./src/msu.SmartMeterHome/" |> FullName
+let serverPath = "./src/Server/" |> FullName
 
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
@@ -141,8 +109,6 @@ Target "AssemblyInfo" (fun _ ->
 // Clean build results
 
 Target "Clean" (fun _ ->
-    killProcess "msu.SmartMeterHome"
-    
     CleanDirs ["bin"; "temp"; "docs/output"; Path.Combine(clientPath,"public/bundle")]
 )
 
