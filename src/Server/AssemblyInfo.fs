@@ -2,18 +2,18 @@
 namespace System
 open System.Reflection
 
-[<assembly: AssemblyTitleAttribute("msu.SmartMeterHome")>]
-[<assembly: AssemblyProductAttribute("msu.SmartMeterHome")>]
-[<assembly: AssemblyDescriptionAttribute("Ein Portal zur Abfrage der SmartMeter-Daten.")>]
+[<assembly: AssemblyTitleAttribute("Server")>]
+[<assembly: AssemblyProductAttribute("Suave/Fable sample")>]
+[<assembly: AssemblyDescriptionAttribute("Suave and Fable sample")>]
 [<assembly: AssemblyVersionAttribute("1.0")>]
 [<assembly: AssemblyFileVersionAttribute("1.0")>]
 [<assembly: AssemblyConfigurationAttribute("Release")>]
 do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] AssemblyTitle = "msu.SmartMeterHome"
-    let [<Literal>] AssemblyProduct = "msu.SmartMeterHome"
-    let [<Literal>] AssemblyDescription = "Ein Portal zur Abfrage der SmartMeter-Daten."
+    let [<Literal>] AssemblyTitle = "Server"
+    let [<Literal>] AssemblyProduct = "Suave/Fable sample"
+    let [<Literal>] AssemblyDescription = "Suave and Fable sample"
     let [<Literal>] AssemblyVersion = "1.0"
     let [<Literal>] AssemblyFileVersion = "1.0"
     let [<Literal>] AssemblyConfiguration = "Release"
