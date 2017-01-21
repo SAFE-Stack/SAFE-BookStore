@@ -12,158 +12,15 @@ NUGET
       System.Threading.Tasks.Parallel (>= 4.0.1) - framework: >= net463, >= netstandard16
       System.Threading.Thread (>= 4.0) - framework: >= net463, >= netstandard16
       System.Threading.ThreadPool (>= 4.0.10) - framework: >= net463, >= netstandard16
-    Libuv (1.9.1) - framework: >= net451, >= netstandard13
-      Microsoft.NETCore.Platforms (>= 1.0.1) - framework: >= netstandard10
-    Microsoft.AspNetCore.Diagnostics (1.1)
-      Microsoft.AspNetCore.Diagnostics.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.Hosting.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.Http.Extensions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.WebUtilities (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.FileProviders.Physical (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Logging.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Options (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-      System.Diagnostics.DiagnosticSource (>= 4.3) - framework: >= net451, >= netstandard13
-      System.Diagnostics.StackTrace (>= 4.3) - framework: >= netstandard13
-      System.Reflection.Metadata (>= 1.4.1) - framework: >= net451, >= netstandard13
-    Microsoft.AspNetCore.Diagnostics.Abstractions (1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= netstandard10
-    Microsoft.AspNetCore.Hosting (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.Hosting.Abstractions (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.AspNetCore.Hosting.Server.Abstractions (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.AspNetCore.Http (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.AspNetCore.Http.Extensions (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.Configuration (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.Configuration.EnvironmentVariables (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.DependencyInjection (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.FileProviders.Physical (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.Logging (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.Options (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.PlatformAbstractions (>= 1.1) - framework: >= net451, netstandard13, >= netstandard15
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, netstandard13, >= netstandard15
-      System.Diagnostics.DiagnosticSource (>= 4.3) - framework: >= net451, netstandard13, >= netstandard15
-      System.Diagnostics.StackTrace (>= 4.3) - framework: netstandard13, >= netstandard15
-      System.Reflection.Metadata (>= 1.4.1) - framework: >= net451, netstandard13, >= netstandard15
-      System.Runtime.Loader (>= 4.3) - framework: >= netstandard15
-    Microsoft.AspNetCore.Hosting.Abstractions (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.Hosting.Server.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.Http.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Configuration.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.DependencyInjection.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.FileProviders.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Logging.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-    Microsoft.AspNetCore.Hosting.Server.Abstractions (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.Http.Features (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Configuration.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-    Microsoft.AspNetCore.Http (1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.AspNetCore.Http.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.WebUtilities (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.ObjectPool (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Options (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Net.Http.Headers (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-      System.Buffers (>= 4.3) - framework: >= net451, >= netstandard13
-    Microsoft.AspNetCore.Http.Abstractions (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.Http.Features (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Primitives (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-      System.Globalization.Extensions (>= 4.3) - framework: >= netstandard13
-      System.Reflection.TypeExtensions (>= 4.3) - framework: >= netstandard13
-      System.Text.Encodings.Web (>= 4.3) - framework: >= net451, >= netstandard13
-    Microsoft.AspNetCore.Http.Extensions (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.Http.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.FileProviders.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Net.Http.Headers (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-      System.Buffers (>= 4.3) - framework: >= net451, >= netstandard13
-    Microsoft.AspNetCore.Http.Features (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Primitives (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-      System.ComponentModel (>= 4.3) - framework: >= netstandard13
-      System.Net.WebSockets (>= 4.3) - framework: >= netstandard13
-      System.Security.Claims (>= 4.3) - framework: >= netstandard13
-      System.Security.Principal (>= 4.3) - framework: >= netstandard13
-    Microsoft.AspNetCore.Server.Kestrel (1.1)
-      Libuv (>= 1.9.1) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.Hosting (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Logging.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-      System.Buffers (>= 4.3) - framework: >= net451, >= netstandard13
-      System.Numerics.Vectors (>= 4.3) - framework: >= net451, >= netstandard13
-      System.Threading.Tasks.Extensions (>= 4.3) - framework: >= net451, >= netstandard13
-      System.Threading.Thread (>= 4.3) - framework: >= netstandard13
-      System.Threading.ThreadPool (>= 4.3) - framework: >= netstandard13
-    Microsoft.AspNetCore.WebSockets.Protocol (0.1) - framework: >= net46, >= netstandard16
-      System.Diagnostics.Contracts (>= 4.0.1) - framework: >= netstandard13
-      System.Globalization (>= 4.0.11) - framework: >= netstandard13
-      System.IO (>= 4.1) - framework: >= netstandard13
-      System.Linq (>= 4.1) - framework: >= netstandard13
-      System.Net.WebSockets (>= 4.0) - framework: >= netstandard13
-      System.Resources.ResourceManager (>= 4.0.1) - framework: >= netstandard13
-      System.Runtime.Extensions (>= 4.1) - framework: >= netstandard13
-      System.Runtime.InteropServices (>= 4.1) - framework: >= netstandard13
-      System.Security.Cryptography.Algorithms (>= 4.2) - framework: >= netstandard13
-      System.Text.Encoding.Extensions (>= 4.0.11) - framework: >= netstandard13
-      System.Threading (>= 4.0.11) - framework: >= netstandard13
-      System.Threading.Tasks (>= 4.0.11) - framework: >= netstandard13
-      System.Threading.Timer (>= 4.0.1) - framework: >= netstandard13
-    Microsoft.AspNetCore.WebSockets.Server (0.1) - framework: >= net46, >= netstandard16
-      Microsoft.AspNetCore.Http.Extensions (>= 1.0) - framework: >= net451, >= netstandard13
-      Microsoft.AspNetCore.WebSockets.Protocol (>= 0.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Options (>= 1.0) - framework: >= net451, >= netstandard13
-    Microsoft.AspNetCore.WebUtilities (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Primitives (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Net.Http.Headers (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-      System.Buffers (>= 4.3) - framework: >= net451, >= netstandard13
-      System.Text.Encodings.Web (>= 4.3) - framework: >= net451, >= netstandard13
-    Microsoft.Extensions.Configuration (1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.Configuration.Abstractions (>= 1.1) - framework: >= net45, >= netstandard11
-      NETStandard.Library (>= 1.6.1) - framework: >= net45, >= netstandard11
     Microsoft.Extensions.Configuration.Abstractions (1.1) - framework: >= net451, >= netstandard13
       Microsoft.Extensions.Primitives (>= 1.1) - framework: >= netstandard10
       NETStandard.Library (>= 1.6.1) - framework: >= netstandard10
-    Microsoft.Extensions.Configuration.EnvironmentVariables (1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.Configuration (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-    Microsoft.Extensions.DependencyInjection (1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.DependencyInjection.Abstractions (>= 1.1) - framework: >= net45, >= netstandard11
-      NETStandard.Library (>= 1.6.1) - framework: >= net45, >= netstandard11
-    Microsoft.Extensions.DependencyInjection.Abstractions (1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= netstandard10
-      System.ComponentModel (>= 4.3) - framework: >= netstandard10
-    Microsoft.Extensions.FileProviders.Abstractions (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Primitives (>= 1.1) - framework: >= netstandard10
-      NETStandard.Library (>= 1.6.1) - framework: >= netstandard10
-    Microsoft.Extensions.FileProviders.Physical (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.FileProviders.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.FileSystemGlobbing (>= 1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-      System.IO.FileSystem.Watcher (>= 4.3) - framework: >= netstandard13
-    Microsoft.Extensions.FileSystemGlobbing (1.1) - framework: >= net451, >= netstandard13
-      NETStandard.Library (>= 1.6.1) - framework: >= net45, >= netstandard13
-    Microsoft.Extensions.Logging (1.1) - framework: >= net451, netstandard13, >= netstandard15
-      Microsoft.Extensions.DependencyInjection.Abstractions (>= 1.1) - framework: >= net45, >= netstandard11
-      Microsoft.Extensions.Logging.Abstractions (>= 1.1) - framework: >= net45, >= netstandard11
-      NETStandard.Library (>= 1.6.1) - framework: >= net45, >= netstandard11
     Microsoft.Extensions.Logging.Abstractions (1.1) - framework: >= net451, >= netstandard13
       NETStandard.Library (>= 1.6.1) - framework: >= net45, >= netstandard11
     Microsoft.Extensions.Logging.Console (1.1)
       Microsoft.Extensions.Configuration.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
       Microsoft.Extensions.Logging.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
       NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-    Microsoft.Extensions.ObjectPool (1.1) - framework: >= net451, netstandard13, >= netstandard15
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-    Microsoft.Extensions.Options (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.DependencyInjection.Abstractions (>= 1.1) - framework: >= netstandard10
-      Microsoft.Extensions.Primitives (>= 1.1) - framework: >= netstandard10
-      NETStandard.Library (>= 1.6.1) - framework: >= netstandard10
-      System.ComponentModel (>= 4.3) - framework: >= netstandard10
-    Microsoft.Extensions.PlatformAbstractions (1.1) - framework: >= net451, netstandard13, >= netstandard15
-      NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
-      System.Reflection.TypeExtensions (>= 4.3) - framework: >= netstandard13
     Microsoft.Extensions.Primitives (1.1) - framework: >= net451, >= netstandard13
       NETStandard.Library (>= 1.6.1) - framework: >= netstandard10
       System.Runtime.CompilerServices.Unsafe (>= 4.3) - framework: >= netstandard10
@@ -191,11 +48,6 @@ NUGET
       System.Threading.Thread (>= 4.0)
       System.Threading.ThreadPool (>= 4.0.10)
       System.Threading.Timer (>= 4.0.1)
-    Microsoft.Net.Http.Headers (1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Primitives (>= 1.1) - framework: >= net45, >= netstandard11
-      NETStandard.Library (>= 1.6.1) - framework: >= net45, >= netstandard11
-      System.Buffers (>= 4.3) - framework: >= net45, >= netstandard11
-      System.Diagnostics.Contracts (>= 4.3) - framework: >= net45, >= netstandard11
     Microsoft.NETCore.Platforms (1.1) - framework: >= net451, dnxcore50, netstandard10, >= netstandard13, netstandard14
     Microsoft.NETCore.Targets (1.1) - framework: >= net451, dnxcore50, netstandard10, >= netstandard13, netstandard14
     Microsoft.Win32.Primitives (4.3) - framework: >= net451, dnxcore50, >= netstandard13
@@ -292,7 +144,7 @@ NUGET
     runtime.ubuntu.14.04-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3) - framework: >= net451, >= netstandard13, netstandard14
     runtime.ubuntu.16.04-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3) - framework: >= net451, >= netstandard13, netstandard14
     runtime.ubuntu.16.10-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3) - framework: >= net451, >= netstandard13, netstandard14
-    Suave (2.0.1)
+    Suave (2.0.2)
       FSharp.Core (>= 4.0.0.1) - framework: >= net10, netstandard10, netstandard11, netstandard12, netstandard13, netstandard14, netstandard15
       Microsoft.FSharp.Core.netcore (>= 1.0.0-alpha-161205) - framework: >= netstandard16
       NETStandard.Library (>= 1.6) - framework: >= netstandard16
@@ -303,11 +155,6 @@ NUGET
       System.Runtime.Serialization.Json (>= 4.0.2) - framework: >= netstandard16
       System.Security.Claims (>= 4.0.1) - framework: >= netstandard16
       System.Security.Cryptography.Primitives (>= 4.0) - framework: >= netstandard16
-    Suave.AspNetCore (0.1)
-      Microsoft.AspNetCore.Http (>= 1.1) - framework: >= net46, >= netstandard16
-      Microsoft.AspNetCore.WebSockets.Server (>= 0.1) - framework: >= net46, >= netstandard16
-      NETStandard.Library (>= 1.6.1) - framework: >= net46, >= netstandard16
-      Suave (>= 2.0.0-rc3) - framework: >= net46, >= netstandard16
     System.AppContext (4.3) - framework: >= net46, >= netstandard13
       System.Runtime (>= 4.3) - framework: dnxcore50, netstandard13, >= netstandard16
     System.Buffers (4.3) - framework: >= net451, >= netstandard13
@@ -331,17 +178,6 @@ NUGET
       System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
       System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard13
       System.Threading.Tasks (>= 4.3) - framework: dnxcore50, netstandard11, >= netstandard13
-    System.Collections.Immutable (1.3.1) - framework: >= net451, >= netstandard13
-      System.Collections (>= 4.3) - framework: >= netstandard10
-      System.Diagnostics.Debug (>= 4.3) - framework: >= netstandard10
-      System.Globalization (>= 4.3) - framework: >= netstandard10
-      System.Linq (>= 4.3) - framework: >= netstandard10
-      System.Resources.ResourceManager (>= 4.3) - framework: >= netstandard10
-      System.Runtime (>= 4.3) - framework: >= netstandard10
-      System.Runtime.Extensions (>= 4.3) - framework: >= netstandard10
-      System.Threading (>= 4.3) - framework: >= netstandard10
-    System.ComponentModel (4.3) - framework: >= net451, >= netstandard13
-      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
     System.Console (4.3) - framework: >= net46, >= netstandard13
       Microsoft.NETCore.Platforms (>= 1.1) - framework: >= netstandard13
       Microsoft.NETCore.Targets (>= 1.1) - framework: >= netstandard13
@@ -357,13 +193,11 @@ NUGET
       System.Runtime.Extensions (>= 4.3) - framework: >= netstandard12
       System.Text.RegularExpressions (>= 4.3) - framework: >= netstandard12
       System.Threading.Tasks (>= 4.3) - framework: >= netstandard12
-    System.Diagnostics.Contracts (4.3) - framework: >= net451, >= netstandard13
-      System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
     System.Diagnostics.Debug (4.3) - framework: >= net451, >= netstandard13, netstandard14
       Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
       Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
       System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
-    System.Diagnostics.DiagnosticSource (4.3) - framework: >= net451, >= netstandard13
+    System.Diagnostics.DiagnosticSource (4.3) - framework: >= net46, netstandard13, >= netstandard16
       System.Collections (>= 4.3) - framework: netstandard11, >= netstandard13
       System.Diagnostics.Tracing (>= 4.3) - framework: netstandard11, >= netstandard13
       System.Reflection (>= 4.3) - framework: netstandard11, >= netstandard13
@@ -391,11 +225,6 @@ NUGET
       System.Threading.Tasks (>= 4.3) - framework: >= netstandard14
       System.Threading.Thread (>= 4.3) - framework: >= netstandard14
       System.Threading.ThreadPool (>= 4.3) - framework: >= netstandard14
-    System.Diagnostics.StackTrace (4.3) - framework: >= net451, >= netstandard13
-      System.IO.FileSystem (>= 4.3) - framework: >= netstandard13
-      System.Reflection (>= 4.3) - framework: >= netstandard13
-      System.Reflection.Metadata (>= 1.4.1) - framework: >= netstandard13
-      System.Runtime (>= 4.3) - framework: >= netstandard13
     System.Diagnostics.Tools (4.3) - framework: >= net451, >= netstandard13
       Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, >= netstandard10
       Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, >= netstandard10
@@ -413,7 +242,7 @@ NUGET
       Microsoft.NETCore.Targets (>= 1.1) - framework: >= netstandard13
       System.Globalization (>= 4.3) - framework: >= netstandard13
       System.Runtime (>= 4.3) - framework: >= netstandard13
-    System.Globalization.Extensions (4.3) - framework: >= net451, >= netstandard13
+    System.Globalization.Extensions (4.3) - framework: >= net451, >= netstandard16
       Microsoft.NETCore.Platforms (>= 1.1) - framework: >= netstandard13
       System.Globalization (>= 4.3) - framework: >= netstandard13
       System.Resources.ResourceManager (>= 4.3) - framework: >= netstandard13
@@ -463,23 +292,6 @@ NUGET
       System.Threading.Tasks (>= 4.3) - framework: >= netstandard13
     System.IO.FileSystem.Primitives (4.3) - framework: >= net451, >= netstandard13
       System.Runtime (>= 4.3) - framework: >= netstandard13
-    System.IO.FileSystem.Watcher (4.3) - framework: >= net451, >= netstandard13
-      Microsoft.NETCore.Platforms (>= 1.1) - framework: >= netstandard13
-      Microsoft.Win32.Primitives (>= 4.3) - framework: >= netstandard13
-      runtime.native.System (>= 4.3) - framework: >= netstandard13
-      System.Collections (>= 4.3) - framework: >= netstandard13
-      System.IO.FileSystem (>= 4.3) - framework: >= netstandard13
-      System.IO.FileSystem.Primitives (>= 4.3) - framework: >= netstandard13
-      System.Resources.ResourceManager (>= 4.3) - framework: >= netstandard13
-      System.Runtime (>= 4.3) - framework: >= netstandard13
-      System.Runtime.Extensions (>= 4.3) - framework: >= netstandard13
-      System.Runtime.Handles (>= 4.3) - framework: >= netstandard13
-      System.Runtime.InteropServices (>= 4.3) - framework: >= netstandard13
-      System.Text.Encoding (>= 4.3) - framework: >= netstandard13
-      System.Threading (>= 4.3) - framework: >= netstandard13
-      System.Threading.Overlapped (>= 4.3) - framework: >= netstandard13
-      System.Threading.Tasks (>= 4.3) - framework: >= netstandard13
-      System.Threading.Thread (>= 4.3) - framework: >= netstandard13
     System.Linq (4.3) - framework: >= net451, >= netstandard13, netstandard14
       System.Collections (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard16
       System.Diagnostics.Debug (>= 4.3) - framework: dnxcore50, >= netstandard16
@@ -627,16 +439,6 @@ NUGET
       System.Resources.ResourceManager (>= 4.3) - framework: >= netstandard13
       System.Runtime (>= 4.3) - framework: >= netstandard13
       System.Runtime.Extensions (>= 4.3) - framework: >= netstandard13
-    System.Net.WebSockets (4.3) - framework: >= net451, >= netstandard13
-      Microsoft.Win32.Primitives (>= 4.3) - framework: >= netstandard13
-      System.Resources.ResourceManager (>= 4.3) - framework: >= netstandard13
-      System.Runtime (>= 4.3) - framework: >= netstandard13
-      System.Threading.Tasks (>= 4.3) - framework: >= netstandard13
-    System.Numerics.Vectors (4.3) - framework: >= net451, >= netstandard13
-      System.Globalization (>= 4.3) - framework: >= netstandard10
-      System.Resources.ResourceManager (>= 4.3) - framework: >= netstandard10
-      System.Runtime (>= 4.3) - framework: >= netstandard10
-      System.Runtime.Extensions (>= 4.3) - framework: >= netstandard10
     System.ObjectModel (4.3) - framework: >= net451, >= netstandard13
       System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard13
       System.Diagnostics.Debug (>= 4.3) - framework: dnxcore50, >= netstandard13
@@ -695,28 +497,11 @@ NUGET
       Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, >= netstandard10
       System.Reflection (>= 4.3) - framework: dnxcore50, >= netstandard10
       System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
-    System.Reflection.Metadata (1.4.2) - framework: >= net451, >= netstandard13
-      System.Collections (>= 4.3) - framework: >= netstandard11
-      System.Collections.Immutable (>= 1.3.1) - framework: >= net45, >= netstandard11, monoandroid, monotouch, xamarinios, xamarinmac, winv4.5, wpav8.1
-      System.Diagnostics.Debug (>= 4.3) - framework: >= netstandard11
-      System.IO (>= 4.3) - framework: >= netstandard11
-      System.IO.Compression (>= 4.3) - framework: >= netstandard11
-      System.Linq (>= 4.3) - framework: >= netstandard11
-      System.Reflection (>= 4.3) - framework: >= netstandard11
-      System.Reflection.Extensions (>= 4.3) - framework: >= netstandard11
-      System.Reflection.Primitives (>= 4.3) - framework: >= netstandard11
-      System.Resources.ResourceManager (>= 4.3) - framework: >= netstandard11
-      System.Runtime (>= 4.3) - framework: >= netstandard11
-      System.Runtime.Extensions (>= 4.3) - framework: >= netstandard11
-      System.Runtime.InteropServices (>= 4.3) - framework: >= netstandard11
-      System.Text.Encoding (>= 4.3) - framework: >= netstandard11
-      System.Text.Encoding.Extensions (>= 4.3) - framework: >= netstandard11
-      System.Threading (>= 4.3) - framework: >= netstandard11
     System.Reflection.Primitives (4.3) - framework: >= net451, dnxcore50, >= netstandard13
       Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, >= netstandard10
       Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, >= netstandard10
       System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
-    System.Reflection.TypeExtensions (4.3) - redirects: force, framework: >= net451, >= netstandard13
+    System.Reflection.TypeExtensions (4.3) - redirects: force, framework: >= net451, >= netstandard16
       System.Reflection (>= 4.3) - framework: >= net462, dnxcore50, netstandard13, >= netstandard15
       System.Runtime (>= 4.3) - framework: dnxcore50, netstandard13, >= netstandard15
     System.Resources.ResourceManager (4.3) - framework: >= net451, dnxcore50, >= netstandard13, netstandard14
@@ -755,7 +540,7 @@ NUGET
       System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard11
     System.Runtime.InteropServices.WindowsRuntime (4.3) - framework: dnxcore50
       System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
-    System.Runtime.Loader (4.3) - redirects: force, framework: >= net451, >= netstandard15
+    System.Runtime.Loader (4.3) - redirects: force, framework: >= net463, >= netstandard16
       System.IO (>= 4.3) - framework: >= netstandard15
       System.Reflection (>= 4.3) - framework: >= netstandard15
       System.Runtime (>= 4.3) - framework: >= netstandard15
@@ -771,7 +556,7 @@ NUGET
     System.Runtime.Serialization.Primitives (4.3) - framework: >= netstandard16
       System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard13
       System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
-    System.Security.Claims (4.3) - framework: >= net451, >= netstandard13
+    System.Security.Claims (4.3) - framework: >= netstandard13
       System.Collections (>= 4.3) - framework: >= netstandard13
       System.Globalization (>= 4.3) - framework: >= netstandard13
       System.IO (>= 4.3) - framework: >= netstandard13
@@ -881,7 +666,7 @@ NUGET
       System.Security.Cryptography.Primitives (>= 4.3) - framework: dnxcore50, >= netstandard16
       System.Text.Encoding (>= 4.3) - framework: dnxcore50, >= netstandard16
       System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard16
-    System.Security.Principal (4.3) - framework: >= net451, >= netstandard13
+    System.Security.Principal (4.3) - framework: >= netstandard13
       System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
     System.Security.Principal.Windows (4.3) - framework: >= netstandard13
       Microsoft.NETCore.Platforms (>= 1.1) - framework: >= netstandard13
@@ -907,14 +692,6 @@ NUGET
       Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
       System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
       System.Text.Encoding (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
-    System.Text.Encodings.Web (4.3) - framework: >= net451, >= netstandard13
-      System.Diagnostics.Debug (>= 4.3) - framework: >= netstandard10
-      System.IO (>= 4.3) - framework: >= netstandard10
-      System.Reflection (>= 4.3) - framework: >= netstandard10
-      System.Resources.ResourceManager (>= 4.3) - framework: >= netstandard10
-      System.Runtime (>= 4.3) - framework: >= netstandard10
-      System.Runtime.Extensions (>= 4.3) - framework: >= netstandard10
-      System.Threading (>= 4.3) - framework: >= netstandard10
     System.Text.RegularExpressions (4.3) - framework: >= net451, >= netstandard13
       System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard16
       System.Globalization (>= 4.3) - framework: dnxcore50, >= netstandard16
@@ -925,7 +702,7 @@ NUGET
     System.Threading (4.3) - framework: >= net451, dnxcore50, >= netstandard13, netstandard14
       System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
       System.Threading.Tasks (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
-    System.Threading.Overlapped (4.3) - framework: >= net451, >= netstandard13
+    System.Threading.Overlapped (4.3) - framework: >= netstandard13
       Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, >= netstandard13
       System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard13
       System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard13
@@ -947,7 +724,7 @@ NUGET
       System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
       System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard13
       System.Threading.Tasks (>= 4.3) - framework: dnxcore50, netstandard11, >= netstandard13
-    System.Threading.Thread (4.3) - framework: >= net451, >= netstandard13
+    System.Threading.Thread (4.3) - framework: >= net463, >= netstandard13
       System.Runtime (>= 4.3) - framework: >= netstandard13
     System.Threading.ThreadPool (4.3) - framework: >= net463, >= netstandard13
       System.Runtime (>= 4.3) - framework: >= netstandard13
@@ -1019,12 +796,6 @@ GROUP Build
 NUGET
   remote: https://www.nuget.org/api/v2
     FAKE (4.50)
-    FSharp.Compiler.Service (2.0.0.6)
-    FSharp.Formatting (2.14.4)
-      FSharp.Compiler.Service (2.0.0.6)
-      FSharpVSPowerTools.Core (>= 2.3 < 2.4)
-    FSharpVSPowerTools.Core (2.3)
-      FSharp.Compiler.Service (>= 2.0.0.3)
     Microsoft.Bcl (1.1.10) - framework: net10, net11, net20, net30, net35, net40, net40-full
       Microsoft.Bcl.Build (>= 1.0.14)
     Microsoft.Bcl.Build (1.0.21) - import_targets: false, framework: net10, net11, net20, net30, net35, net40, net40-full
@@ -1035,5 +806,5 @@ NUGET
       Microsoft.Net.Http  - framework: net10, net11, net20, net30, net35, net40, net40-full
 GITHUB
   remote: fsharp/FAKE
-    modules/Octokit/Octokit.fsx (510fd966e70e3752ad65b2e1ae467191568a008f)
+    modules/Octokit/Octokit.fsx (805ca9420e0234fe2ac8fe2033f28faeec2ebb40)
       Octokit (>= 0.20)
