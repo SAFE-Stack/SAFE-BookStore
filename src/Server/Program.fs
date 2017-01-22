@@ -8,7 +8,7 @@ let main args =
         let clientPath = 
             match args |> Array.toList with
             | clientPath:: _ -> clientPath
-            | _ -> @"..\Client\public"
+            | _ -> @"../Client/public"
 
         Server.startServer (Path.GetFullPath clientPath)
         0
