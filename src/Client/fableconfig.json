@@ -1,5 +1,5 @@
 {
-    "projFile": "./app.fsx",
+    "projFile": "./Client.fsproj",
     "babelPlugins": ["transform-runtime"],
     "rollup": {
         "dest": "./public/bundle/bundle.js",

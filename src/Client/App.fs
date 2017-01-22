@@ -1,8 +1,4 @@
-#r "../../node_modules/fable-core/Fable.Core.dll"
-#r "../../node_modules/fable-react/Fable.React.dll"
-#r "../../node_modules/fable-elmish/Fable.Elmish.dll"
-#r "../../node_modules/fable-elmish-react/Fable.Elmish.React.dll"
-#r "../../node_modules/fable-powerpack/Fable.PowerPack.dll"
+module App
 
 open Fable.Core
 open Fable.Import
