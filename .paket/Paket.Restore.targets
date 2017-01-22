@@ -7,7 +7,13 @@
   <UsingTask TaskName="Paket.Build.Tasks.PaketRestoreTask" AssemblyFile="PaketRestoreTask.dll" />
 
   <Target Name="PaketRestore" BeforeTargets="_GenerateRestoreGraphWalkPerFramework" >
-    <Exec Command="$(MSBuildThisFileDirectory)\paket.exe restore --project $(MSBuildProjectFullPath)" />
+    <Exec 
+      Command="mono $(MSBuildThisFileDirectory)\paket.exe restore --project $(MSBuildProjectFullPath)" 
+      Condition=" '$(OS)' != 'Windows_NT'"/>
+
+    <Exec 
+      Command="mono $(MSBuildThisFileDirectory)\paket.exe restore --project $(MSBuildProjectFullPath)" 
+      Condition=" '$(OS)' == 'Windows_NT'"/>
 
      <!-- Write out package references for NETCore -->
     <PaketRestoreTask
