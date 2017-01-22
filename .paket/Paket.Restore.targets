@@ -12,7 +12,7 @@
       Condition=" '$(OS)' != 'Windows_NT'"/>
 
     <Exec 
-      Command="mono $(MSBuildThisFileDirectory)\paket.exe restore --project $(MSBuildProjectFullPath)" 
+      Command="$(MSBuildThisFileDirectory)\paket.exe restore --project $(MSBuildProjectFullPath)" 
       Condition=" '$(OS)' == 'Windows_NT'"/>
 
      <!-- Write out package references for NETCore -->
