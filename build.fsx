@@ -3,6 +3,8 @@
 // --------------------------------------------------------------------------------------
 
 #r @"packages/build/FAKE/tools/FakeLib.dll"
+#r "System.IO.Compression.FileSystem"
+
 open Fake
 open Fake.Git
 open Fake.AssemblyInfoFile
@@ -23,6 +25,15 @@ let configuration = "Release"
 let clientPath = "./src/Client" |> FullName
 
 let serverPath = "./src/Server/" |> FullName
+
+
+let dotnetcliVersion = "1.0.0-preview4-004233"
+
+let dotnetSDKPath = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) </> "dotnetcore" |> FullName
+
+let dotnetExePath =
+    dotnetSDKPath </> (if isWindows then "dotnet.exe" else "dotnet")
+    |> FullName
 
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
@@ -112,22 +123,76 @@ Target "Clean" (fun _ ->
     CleanDirs ["bin"; "temp"; "docs/output"; Path.Combine(clientPath,"public/bundle")]
 )
 
+
+Target "InstallDotNetCore" (fun _ ->
+    let correctVersionInstalled = 
+        try
+            if FileInfo(dotnetExePath |> Path.GetFullPath).Exists then
+                let processResult = 
+                    ExecProcessAndReturnMessages (fun info ->  
+                    info.FileName <- dotnetExePath
+                    info.WorkingDirectory <- Environment.CurrentDirectory
+                    info.Arguments <- "--version") (TimeSpan.FromMinutes 30.)
+
+                processResult.Messages |> separated "" = dotnetcliVersion
+                
+            else
+                false
+        with 
+        | _ -> false
+
+    if correctVersionInstalled then
+        tracefn "dotnetcli %s already installed" dotnetcliVersion
+    else
+        CleanDir dotnetSDKPath
+        let archiveFileName = 
+            if isLinux then
+                sprintf "dotnet-dev-ubuntu-x64.%s.tar.gz" dotnetcliVersion
+            else
+                sprintf "dotnet-dev-win-x64.%s.zip" dotnetcliVersion
+        let downloadPath = 
+                sprintf "https://dotnetcli.azureedge.net/dotnet/Sdk/%s/%s" dotnetcliVersion archiveFileName
+        let localPath = Path.Combine(dotnetSDKPath, archiveFileName)
+
+        tracefn "Installing '%s' to '%s'" downloadPath localPath
+        
+        use webclient = new Net.WebClient()
+        webclient.DownloadFile(downloadPath, localPath)
+
+        if isLinux then
+            let assertExitCodeZero x =
+                if x = 0 then () else
+                failwithf "Command failed with exit code %i" x
+
+            Shell.Exec("tar", sprintf """-xvf "%s" -C "%s" """ localPath dotnetSDKPath)
+            |> assertExitCodeZero
+        else  
+            System.IO.Compression.ZipFile.ExtractToDirectory(localPath, dotnetSDKPath)
+        
+        tracefn "dotnet cli path - %s" dotnetSDKPath
+        System.IO.Directory.EnumerateFiles dotnetSDKPath
+        |> Seq.iter (fun path -> tracefn " - %s" path)
+        System.IO.Directory.EnumerateDirectories dotnetSDKPath
+        |> Seq.iter (fun path -> tracefn " - %s%c" path System.IO.Path.DirectorySeparatorChar)
+
+    let oldPath = System.Environment.GetEnvironmentVariable("PATH")
+    System.Environment.SetEnvironmentVariable("PATH", sprintf "%s%s%s" dotnetSDKPath (System.IO.Path.PathSeparator.ToString()) oldPath)
+)
+
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
 Target "Build" (fun _ ->
-    let command = "dotnet"
-
     let result =
         ExecProcess (fun info ->
-            info.FileName <- command
+            info.FileName <- dotnetExePath
             info.WorkingDirectory <- serverPath
             info.Arguments <- "restore") TimeSpan.MaxValue
     if result <> 0 then failwith "Restore failed"
 
     let result =
         ExecProcess (fun info ->
-            info.FileName <- command
+            info.FileName <- dotnetExePath
             info.WorkingDirectory <- serverPath
             info.Arguments <- "build") TimeSpan.MaxValue
     if result <> 0 then failwith "Build failed"
@@ -148,12 +213,9 @@ let port = 8085
 
 Target "Run" (fun _ ->
     let dotnetwatch = async {
-
-        let command = "dotnet"
-
         let result =
             ExecProcess (fun info ->
-                info.FileName <- command
+                info.FileName <- dotnetExePath
                 info.WorkingDirectory <- serverPath
                 info.Arguments <- "watch run") TimeSpan.MaxValue
         if result <> 0 then failwith "Website shut down." }
@@ -190,6 +252,7 @@ Target "All" DoNothing
 
 
 "Clean"
+  ==> "InstallDotNetCore"
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "BuildClient"
