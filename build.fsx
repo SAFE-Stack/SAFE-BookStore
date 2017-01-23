@@ -130,7 +130,7 @@ Target "Build" (fun _ ->
             info.FileName <- command
             info.WorkingDirectory <- serverPath
             info.Arguments <- "build") TimeSpan.MaxValue
-    if result <> 0 then failwith "Build failed"    
+    if result <> 0 then failwith "Build failed"
 )
 
 Target "BuildClient" (fun _ ->
@@ -148,9 +148,9 @@ let port = 8085
 
 Target "Run" (fun _ ->
     let dotnetwatch = async {
-        
+
         let command = "dotnet"
-    
+
         let result =
             ExecProcess (fun info ->
                 info.FileName <- command
@@ -168,7 +168,7 @@ Target "Run" (fun _ ->
     }
 
     let openBrowser = async {
-        System.Threading.Thread.Sleep(3000)
+        System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
 
     Async.Parallel [| dotnetwatch; fableWatch; openBrowser |]

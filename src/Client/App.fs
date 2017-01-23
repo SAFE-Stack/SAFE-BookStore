@@ -1,14 +1,15 @@
 module App
 
 open Fable.Core
+open Fable.Core.JsInterop
+
+open Fable.Core
 open Fable.Import
 open Elmish
 open Fable.Import.Browser
 open Fable.PowerPack
 open Elmish.Browser.Navigation
 open Elmish.UrlParser
-
-JsInterop.importAll "whatwg-fetch"
 
 // Types
 type Page = Home | Blog of int | Search of string
@@ -18,7 +19,7 @@ type Model =
     query : string
     cache : Map<string,string list> }
 
-let toHash = 
+let toHash =
     function
     | Home -> "#home"
     | Blog id -> "#blog/" + (string id)
@@ -34,7 +35,7 @@ let pageParser : Parser<Page->_,_> =
 let hashParser (location:Location) =
   UrlParser.parse id pageParser (location.hash.Substring 1)
 
-type Msg = 
+type Msg =
   | Query of string
   | Enter
   | FetchFailure of string*exn
@@ -50,19 +51,19 @@ let get query =
         return r |> fun r -> r.places |> List.map (fun p -> p.``place name`` + ", " + p.state)
     }
 
-(* If the URL is valid, we just update our model or issue a command. 
+(* If the URL is valid, we just update our model or issue a command.
 If it is not a valid URL, we modify the URL to whatever makes sense.
 *)
 let urlUpdate (result:Result<Page,string>) model =
   match result with
   | Error e ->
-      Browser.console.error("Error parsing url:", e)  
+      Browser.console.error("Error parsing url:", e)
       ( model, Navigation.modifyUrl (toHash model.page) )
 
   | Ok (Search query as page) ->
       { model with page = page; query = query },
-         if Map.containsKey query model.cache then [] 
-         else Cmd.ofPromise get query (fun r -> FetchSuccess (query,r)) (fun ex -> FetchFailure (query,ex)) 
+         if Map.containsKey query model.cache then []
+         else Cmd.ofPromise get query (fun r -> FetchSuccess (query,r)) (fun ex -> FetchFailure (query,ex))
 
   | Ok page ->
       { model with page = page; query = "" }, []
@@ -88,7 +89,7 @@ let update msg model =
   | FetchFailure (query,_) ->
       { model with cache = Map.add query [] model.cache }, []
 
-  | FetchSuccess (query,locations) -> 
+  | FetchSuccess (query,locations) ->
       { model with cache = Map.add query locations model.cache }, []
 
 
@@ -102,7 +103,7 @@ open Fable.Helpers.React.Props
 
 let viewLink page description =
   a [ Style [ Padding "0 20px" ]
-      Href (toHash page) ] 
+      Href (toHash page) ]
     [ unbox description]
 
 let internal centerStyle direction =
@@ -117,9 +118,9 @@ let words size message =
   span [ Style [ unbox("fontSize", size |> sprintf "%dpx") ] ] [ unbox message ]
 
 let internal onEnter msg dispatch =
-    function 
+    function
     | (ev:React.KeyboardEvent) when ev.keyCode = 13. ->
-        ev.preventDefault() 
+        ev.preventDefault()
         dispatch msg
     | _ -> ()
     |> OnKeyDown
@@ -172,4 +173,4 @@ Program.mkProgram init update view
 |> Program.toNavigable hashParser urlUpdate
 |> Program.withConsoleTrace
 |> Program.withReact "elmish-app"
-|> Program.run 
+|> Program.run

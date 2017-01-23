@@ -59,7 +59,6 @@ var _aFunction = function(it){
   return it;
 };
 
-// optional / simple context binding
 var aFunction = _aFunction;
 var _ctx = function(fn, that, length){
   aFunction(fn);
@@ -98,7 +97,6 @@ var _fails = function(exec){
   }
 };
 
-// Thank's IE8 for his funny defineProperty
 var _descriptors = !_fails(function(){
   return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 });
@@ -114,7 +112,6 @@ var _ie8DomDefine = !_descriptors && !_fails(function(){
   return Object.defineProperty(_domCreate('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
 
-// 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject$2 = _isObject;
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
 // and the second argument - flag - preferred type is a string
@@ -243,20 +240,17 @@ var _cof = function(it){
   return toString.call(it).slice(8, -1);
 };
 
-// fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = _cof;
 var _iobject = Object('z').propertyIsEnumerable(0) ? Object : function(it){
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
 
-// to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = _iobject;
 var defined$1 = _defined;
 var _toIobject = function(it){
   return IObject(defined$1(it));
 };
 
-// 7.1.15 ToLength
 var toInteger$1 = _toInteger;
 var min       = Math.min;
 var _toLength = function(it){
@@ -271,8 +265,6 @@ var _toIndex = function(index, length){
   return index < 0 ? max(index + length, 0) : min$1(index, length);
 };
 
-// false -> Array#indexOf
-// true  -> Array#includes
 var toIObject$1 = _toIobject;
 var toLength  = _toLength;
 var toIndex   = _toIndex;
@@ -335,7 +327,6 @@ var _enumBugKeys = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
 
-// 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys       = _objectKeysInternal;
 var enumBugKeys$1 = _enumBugKeys;
 
@@ -359,7 +350,6 @@ var _objectDps = _descriptors ? Object.defineProperties : function definePropert
 
 var _html = _global.document && document.documentElement;
 
-// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject$1    = _anObject;
 var dPs         = _objectDps;
 var enumBugKeys = _enumBugKeys;
@@ -436,13 +426,11 @@ var _iterCreate = function(Constructor, NAME, next){
   setToStringTag$1(Constructor, NAME + ' Iterator');
 };
 
-// 7.1.13 ToObject(argument)
 var defined$2 = _defined;
 var _toObject = function(it){
   return Object(defined$2(it));
 };
 
-// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has$3         = _has;
 var toObject    = _toObject;
 var IE_PROTO$2    = _sharedKey('IE_PROTO');
@@ -543,7 +531,6 @@ _iterDefine(String, 'String', function(iterated){
   return {value: point, done: false};
 });
 
-// call something on iterator step with safe closing on error
 var anObject$3 = _anObject;
 var _iterCall = function(iterator, fn, value, entries){
   try {
@@ -556,7 +543,6 @@ var _iterCall = function(iterator, fn, value, entries){
   }
 };
 
-// check on default Array iterator
 var Iterators$1  = _iterators;
 var ITERATOR$1   = _wks('iterator');
 var ArrayProto = Array.prototype;
@@ -573,7 +559,6 @@ var _createProperty = function(object, index, value){
   else object[index] = value;
 };
 
-// getting tag from 19.1.3.6 Object.prototype.toString()
 var cof$1 = _cof;
 var TAG$1 = _wks('toStringTag');
 var ARG = cof$1(function(){ return arguments; }()) == 'Arguments';
@@ -850,7 +835,6 @@ var _objectPie = {
 	f: f$3
 };
 
-// all enumerable object keys, includes symbols
 var getKeys$2 = _objectKeys;
 var gOPS    = _objectGops;
 var pIE     = _objectPie;
@@ -866,13 +850,11 @@ var _enumKeys = function(it){
   } return result;
 };
 
-// 7.2.2 IsArray(argument)
 var cof$2 = _cof;
 var _isArray = Array.isArray || function isArray(arg){
   return cof$2(arg) == 'Array';
 };
 
-// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
 var $keys$2      = _objectKeysInternal;
 var hiddenKeys = _enumBugKeys.concat('length', 'prototype');
 
@@ -884,7 +866,6 @@ var _objectGopn = {
 	f: f$5
 };
 
-// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 var toIObject$5 = _toIobject;
 var gOPN$1      = _objectGopn.f;
 var toString$1  = {}.toString;
@@ -929,7 +910,6 @@ var _objectGopd = {
 	f: f$6
 };
 
-// ECMAScript 6 symbols shim
 var global$4         = _global;
 var has$4            = _has;
 var DESCRIPTORS    = _descriptors;
@@ -1234,7 +1214,6 @@ exports.BREAK  = BREAK;
 exports.RETURN = RETURN;
 });
 
-// 7.3.20 SpeciesConstructor(O, defaultConstructor)
 var anObject$5  = _anObject;
 var aFunction$2 = _aFunction;
 var SPECIES   = _wks('species');
@@ -1825,465 +1804,6 @@ exports.default = function () {
 });
 
 var _createClass = unwrapExports(createClass);
-
-(function(self) {
-  'use strict';
-
-  if (self.fetch) {
-    return
-  }
-
-  var support = {
-    searchParams: 'URLSearchParams' in self,
-    iterable: 'Symbol' in self && 'iterator' in Symbol,
-    blob: 'FileReader' in self && 'Blob' in self && (function() {
-      try {
-        new Blob();
-        return true
-      } catch(e) {
-        return false
-      }
-    })(),
-    formData: 'FormData' in self,
-    arrayBuffer: 'ArrayBuffer' in self
-  };
-
-  if (support.arrayBuffer) {
-    var viewClasses = [
-      '[object Int8Array]',
-      '[object Uint8Array]',
-      '[object Uint8ClampedArray]',
-      '[object Int16Array]',
-      '[object Uint16Array]',
-      '[object Int32Array]',
-      '[object Uint32Array]',
-      '[object Float32Array]',
-      '[object Float64Array]'
-    ];
-
-    var isDataView = function(obj) {
-      return obj && DataView.prototype.isPrototypeOf(obj)
-    };
-
-    var isArrayBufferView = ArrayBuffer.isView || function(obj) {
-      return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
-    };
-  }
-
-  function normalizeName(name) {
-    if (typeof name !== 'string') {
-      name = String(name);
-    }
-    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
-      throw new TypeError('Invalid character in header field name')
-    }
-    return name.toLowerCase()
-  }
-
-  function normalizeValue(value) {
-    if (typeof value !== 'string') {
-      value = String(value);
-    }
-    return value
-  }
-
-  // Build a destructive iterator for the value list
-  function iteratorFor(items) {
-    var iterator = {
-      next: function() {
-        var value = items.shift();
-        return {done: value === undefined, value: value}
-      }
-    };
-
-    if (support.iterable) {
-      iterator[Symbol.iterator] = function() {
-        return iterator
-      };
-    }
-
-    return iterator
-  }
-
-  function Headers(headers) {
-    this.map = {};
-
-    if (headers instanceof Headers) {
-      headers.forEach(function(value, name) {
-        this.append(name, value);
-      }, this);
-
-    } else if (headers) {
-      Object.getOwnPropertyNames(headers).forEach(function(name) {
-        this.append(name, headers[name]);
-      }, this);
-    }
-  }
-
-  Headers.prototype.append = function(name, value) {
-    name = normalizeName(name);
-    value = normalizeValue(value);
-    var oldValue = this.map[name];
-    this.map[name] = oldValue ? oldValue+','+value : value;
-  };
-
-  Headers.prototype['delete'] = function(name) {
-    delete this.map[normalizeName(name)];
-  };
-
-  Headers.prototype.get = function(name) {
-    name = normalizeName(name);
-    return this.has(name) ? this.map[name] : null
-  };
-
-  Headers.prototype.has = function(name) {
-    return this.map.hasOwnProperty(normalizeName(name))
-  };
-
-  Headers.prototype.set = function(name, value) {
-    this.map[normalizeName(name)] = normalizeValue(value);
-  };
-
-  Headers.prototype.forEach = function(callback, thisArg) {
-    for (var name in this.map) {
-      if (this.map.hasOwnProperty(name)) {
-        callback.call(thisArg, this.map[name], name, this);
-      }
-    }
-  };
-
-  Headers.prototype.keys = function() {
-    var items = [];
-    this.forEach(function(value, name) { items.push(name); });
-    return iteratorFor(items)
-  };
-
-  Headers.prototype.values = function() {
-    var items = [];
-    this.forEach(function(value) { items.push(value); });
-    return iteratorFor(items)
-  };
-
-  Headers.prototype.entries = function() {
-    var items = [];
-    this.forEach(function(value, name) { items.push([name, value]); });
-    return iteratorFor(items)
-  };
-
-  if (support.iterable) {
-    Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
-  }
-
-  function consumed(body) {
-    if (body.bodyUsed) {
-      return Promise.reject(new TypeError('Already read'))
-    }
-    body.bodyUsed = true;
-  }
-
-  function fileReaderReady(reader) {
-    return new Promise(function(resolve, reject) {
-      reader.onload = function() {
-        resolve(reader.result);
-      };
-      reader.onerror = function() {
-        reject(reader.error);
-      };
-    })
-  }
-
-  function readBlobAsArrayBuffer(blob) {
-    var reader = new FileReader();
-    var promise = fileReaderReady(reader);
-    reader.readAsArrayBuffer(blob);
-    return promise
-  }
-
-  function readBlobAsText(blob) {
-    var reader = new FileReader();
-    var promise = fileReaderReady(reader);
-    reader.readAsText(blob);
-    return promise
-  }
-
-  function readArrayBufferAsText(buf) {
-    var view = new Uint8Array(buf);
-    var chars = new Array(view.length);
-
-    for (var i = 0; i < view.length; i++) {
-      chars[i] = String.fromCharCode(view[i]);
-    }
-    return chars.join('')
-  }
-
-  function bufferClone(buf) {
-    if (buf.slice) {
-      return buf.slice(0)
-    } else {
-      var view = new Uint8Array(buf.byteLength);
-      view.set(new Uint8Array(buf));
-      return view.buffer
-    }
-  }
-
-  function Body() {
-    this.bodyUsed = false;
-
-    this._initBody = function(body) {
-      this._bodyInit = body;
-      if (!body) {
-        this._bodyText = '';
-      } else if (typeof body === 'string') {
-        this._bodyText = body;
-      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-        this._bodyBlob = body;
-      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-        this._bodyFormData = body;
-      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-        this._bodyText = body.toString();
-      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
-        this._bodyArrayBuffer = bufferClone(body.buffer);
-        // IE 10-11 can't handle a DataView body.
-        this._bodyInit = new Blob([this._bodyArrayBuffer]);
-      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
-        this._bodyArrayBuffer = bufferClone(body);
-      } else {
-        throw new Error('unsupported BodyInit type')
-      }
-
-      if (!this.headers.get('content-type')) {
-        if (typeof body === 'string') {
-          this.headers.set('content-type', 'text/plain;charset=UTF-8');
-        } else if (this._bodyBlob && this._bodyBlob.type) {
-          this.headers.set('content-type', this._bodyBlob.type);
-        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-        }
-      }
-    };
-
-    if (support.blob) {
-      this.blob = function() {
-        var rejected = consumed(this);
-        if (rejected) {
-          return rejected
-        }
-
-        if (this._bodyBlob) {
-          return Promise.resolve(this._bodyBlob)
-        } else if (this._bodyArrayBuffer) {
-          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
-        } else if (this._bodyFormData) {
-          throw new Error('could not read FormData body as blob')
-        } else {
-          return Promise.resolve(new Blob([this._bodyText]))
-        }
-      };
-
-      this.arrayBuffer = function() {
-        if (this._bodyArrayBuffer) {
-          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
-        } else {
-          return this.blob().then(readBlobAsArrayBuffer)
-        }
-      };
-    }
-
-    this.text = function() {
-      var rejected = consumed(this);
-      if (rejected) {
-        return rejected
-      }
-
-      if (this._bodyBlob) {
-        return readBlobAsText(this._bodyBlob)
-      } else if (this._bodyArrayBuffer) {
-        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
-      } else if (this._bodyFormData) {
-        throw new Error('could not read FormData body as text')
-      } else {
-        return Promise.resolve(this._bodyText)
-      }
-    };
-
-    if (support.formData) {
-      this.formData = function() {
-        return this.text().then(decode)
-      };
-    }
-
-    this.json = function() {
-      return this.text().then(JSON.parse)
-    };
-
-    return this
-  }
-
-  // HTTP methods whose capitalization should be normalized
-  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT'];
-
-  function normalizeMethod(method) {
-    var upcased = method.toUpperCase();
-    return (methods.indexOf(upcased) > -1) ? upcased : method
-  }
-
-  function Request(input, options) {
-    options = options || {};
-    var body = options.body;
-
-    if (input instanceof Request) {
-      if (input.bodyUsed) {
-        throw new TypeError('Already read')
-      }
-      this.url = input.url;
-      this.credentials = input.credentials;
-      if (!options.headers) {
-        this.headers = new Headers(input.headers);
-      }
-      this.method = input.method;
-      this.mode = input.mode;
-      if (!body && input._bodyInit != null) {
-        body = input._bodyInit;
-        input.bodyUsed = true;
-      }
-    } else {
-      this.url = String(input);
-    }
-
-    this.credentials = options.credentials || this.credentials || 'omit';
-    if (options.headers || !this.headers) {
-      this.headers = new Headers(options.headers);
-    }
-    this.method = normalizeMethod(options.method || this.method || 'GET');
-    this.mode = options.mode || this.mode || null;
-    this.referrer = null;
-
-    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
-      throw new TypeError('Body not allowed for GET or HEAD requests')
-    }
-    this._initBody(body);
-  }
-
-  Request.prototype.clone = function() {
-    return new Request(this, { body: this._bodyInit })
-  };
-
-  function decode(body) {
-    var form = new FormData();
-    body.trim().split('&').forEach(function(bytes) {
-      if (bytes) {
-        var split = bytes.split('=');
-        var name = split.shift().replace(/\+/g, ' ');
-        var value = split.join('=').replace(/\+/g, ' ');
-        form.append(decodeURIComponent(name), decodeURIComponent(value));
-      }
-    });
-    return form
-  }
-
-  function parseHeaders(rawHeaders) {
-    var headers = new Headers();
-    rawHeaders.split(/\r?\n/).forEach(function(line) {
-      var parts = line.split(':');
-      var key = parts.shift().trim();
-      if (key) {
-        var value = parts.join(':').trim();
-        headers.append(key, value);
-      }
-    });
-    return headers
-  }
-
-  Body.call(Request.prototype);
-
-  function Response(bodyInit, options) {
-    if (!options) {
-      options = {};
-    }
-
-    this.type = 'default';
-    this.status = 'status' in options ? options.status : 200;
-    this.ok = this.status >= 200 && this.status < 300;
-    this.statusText = 'statusText' in options ? options.statusText : 'OK';
-    this.headers = new Headers(options.headers);
-    this.url = options.url || '';
-    this._initBody(bodyInit);
-  }
-
-  Body.call(Response.prototype);
-
-  Response.prototype.clone = function() {
-    return new Response(this._bodyInit, {
-      status: this.status,
-      statusText: this.statusText,
-      headers: new Headers(this.headers),
-      url: this.url
-    })
-  };
-
-  Response.error = function() {
-    var response = new Response(null, {status: 0, statusText: ''});
-    response.type = 'error';
-    return response
-  };
-
-  var redirectStatuses = [301, 302, 303, 307, 308];
-
-  Response.redirect = function(url, status) {
-    if (redirectStatuses.indexOf(status) === -1) {
-      throw new RangeError('Invalid status code')
-    }
-
-    return new Response(null, {status: status, headers: {location: url}})
-  };
-
-  self.Headers = Headers;
-  self.Request = Request;
-  self.Response = Response;
-
-  self.fetch = function(input, init) {
-    return new Promise(function(resolve, reject) {
-      var request = new Request(input, init);
-      var xhr = new XMLHttpRequest();
-
-      xhr.onload = function() {
-        var options = {
-          status: xhr.status,
-          statusText: xhr.statusText,
-          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
-        };
-        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL');
-        var body = 'response' in xhr ? xhr.response : xhr.responseText;
-        resolve(new Response(body, options));
-      };
-
-      xhr.onerror = function() {
-        reject(new TypeError('Network request failed'));
-      };
-
-      xhr.ontimeout = function() {
-        reject(new TypeError('Network request failed'));
-      };
-
-      xhr.open(request.method, request.url, true);
-
-      if (request.credentials === 'include') {
-        xhr.withCredentials = true;
-      }
-
-      if ('responseType' in xhr && support.blob) {
-        xhr.responseType = 'blob';
-      }
-
-      request.headers.forEach(function(value, name) {
-        xhr.setRequestHeader(name, value);
-      });
-
-      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit);
-    })
-  };
-  self.fetch.polyfill = true;
-})(typeof self !== 'undefined' ? self : undefined);
 
 var fableGlobal = function () {
     var globalObj = typeof window !== "undefined" ? window
@@ -3165,6 +2685,7 @@ var ResultModule = function (__exports) {
 
     return __exports;
 }({});
+//# sourceMappingURL=result.js.map
 
 function escape(str) {
     return str.replace(/[\-\[\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -4005,6 +3526,7 @@ function format$$1(input, parse_1, chunks, fmt) {
         return new Result("Error", [matchValue.Fields[0]]);
     }
 }
+//# sourceMappingURL=parser.js.map
 
 var _createClass$2 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -4104,6 +3626,7 @@ var ResultBuilder = function () {
 }();
 setType("Fable.PowerPack.Result.ResultBuilder", ResultBuilder);
 var result = new ResultBuilder();
+//# sourceMappingURL=Result.js.map
 
 var _createClass$1 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -4253,6 +3776,7 @@ var PromiseImpl = function (__exports) {
     var promise = __exports.promise = new _Promise$1.PromiseBuilder();
     return __exports;
 }({});
+//# sourceMappingURL=Promise.js.map
 
 var SetTree = (function () {
     function SetTree(caseName, fields) {
@@ -4921,6 +4445,11 @@ function fetchAs(url, init, _genArgs) {
     });
 }
 
+
+
+
+//# sourceMappingURL=Fetch.js.map
+
 var Trampoline = (function () {
     function Trampoline() {
         this.callCount = 0;
@@ -5473,6 +5002,7 @@ var ProgramModule = function (__exports) {
 
     return __exports;
 }({});
+//# sourceMappingURL=elmish.js.map
 
 var Navigable = function () {
     function Navigable(caseName, fields) {
@@ -5586,8 +5116,8 @@ var Program$1 = function (__exports) {
 
     return __exports;
 }({});
+//# sourceMappingURL=browser-nav.js.map
 
-// most Object methods by ES6 should accept primitives
 var $export$6 = _export;
 var core$3    = _core;
 var fails   = _fails;
@@ -5598,7 +5128,6 @@ var _objectSap = function(KEY, exec){
   $export$6($export$6.S + $export$6.F * fails(function(){ fn(1); }), 'Object', exp);
 };
 
-// 19.1.2.9 Object.getPrototypeOf(O)
 var toObject$2        = _toObject;
 var $getPrototypeOf = _objectGpo;
 
@@ -5638,8 +5167,6 @@ exports.default = function (self, call) {
 
 var _possibleConstructorReturn = unwrapExports(possibleConstructorReturn);
 
-// Works with __proto__ only. Old v8 can't work with null proto objects.
-/* eslint-disable no-proto */
 var isObject$4 = _isObject;
 var anObject$6 = _anObject;
 var check = function(O, proto){
@@ -5664,7 +5191,6 @@ var _setProto = {
   check: check
 };
 
-// 19.1.3.19 Object.setPrototypeOf(O, proto)
 var $export$7 = _export;
 $export$7($export$7.S, 'Object', {setPrototypeOf: _setProto.set});
 
@@ -5853,6 +5379,7 @@ var Common = function (__exports) {
 
     return __exports;
 }({});
+//# sourceMappingURL=common.js.map
 
 function withReact(placeholderId, program) {
     var setState = function setState(model) {
@@ -5867,6 +5394,7 @@ function withReact(placeholderId, program) {
 
     return new Program(program.init, program.update, program.subscribe, program.view, setState, program.onError);
 }
+//# sourceMappingURL=react.js.map
 
 var Page = function () {
     function Page(caseName, fields) {

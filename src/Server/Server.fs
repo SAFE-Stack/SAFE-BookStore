@@ -1,4 +1,4 @@
-module msu.SmartMeterHome.Server
+module Server
 
 open System.IO
 open Suave
@@ -27,18 +27,8 @@ module private Util =
             do! webSocket.send Text (ASCII.bytes "refreshed" |> Sockets.ByteSegment) true
         }
 
-let startServer clientPath = 
+let startServer clientPath =
     printfn "Serving files from %s" clientPath
-    
-    // if not (Directory.Exists clientPath) then
-    //     failwithf "Client-HomePath '%s' doesn't exist." clientPath
-
-    // let outPath = Path.Combine(clientPath,"public")
-    // if not (Directory.Exists outPath) then
-    //     failwithf "Out-HomePath '%s' doesn't exist." outPath
-
-    // if Directory.EnumerateFiles outPath |> Seq.isEmpty then
-    //     failwithf "Out-HomePath '%s' is empty." outPath
 
     let serverConfig =
         { defaultConfig with

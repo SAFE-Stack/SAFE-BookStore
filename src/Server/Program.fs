@@ -1,11 +1,11 @@
-﻿module msu.SmartMeterHome.Program
+﻿module Program
 
 open System.IO
 
 [<EntryPoint>]
 let main args =
     try
-        let clientPath = 
+        let clientPath =
             match args |> Array.toList with
             | clientPath:: _ -> clientPath
             | _ -> @"../Client/public"
