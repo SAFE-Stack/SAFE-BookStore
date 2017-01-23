@@ -5,9 +5,6 @@
     <PaketToolsPath>$(MSBuildThisFileDirectory)</PaketToolsPath>
     <MonoPath Condition="'$(MonoPath)' == '' And Exists('/Library/Frameworks/Mono.framework/Commands/mono')">/Library/Frameworks/Mono.framework/Commands/mono</MonoPath>
     <MonoPath Condition="'$(MonoPath)' == ''">mono</MonoPath> 
-  </PropertyGroup>
-
-  <PropertyGroup>  
     <!-- Paket command -->
     <PaketExePath Condition=" '$(PaketExePath)' == '' AND Exists('$(PaketRootPath)paket.exe')">$(PaketRootPath)paket.exe</PaketExePath>
     <PaketExePath Condition=" '$(PaketExePath)' == '' ">$(PaketToolsPath)paket.exe</PaketExePath>
