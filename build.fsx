@@ -204,15 +204,6 @@ Target "BuildClient" (fun _ ->
     run npmTool "install" ""
 )
 
-Target "Publish" (fun _ ->
-    let result =
-        ExecProcess (fun info ->
-            info.FileName <- dotnetExePath
-            info.WorkingDirectory <- serverPath
-            info.Arguments <- "publish -o \"" + FullName deployDir + "\"") TimeSpan.MaxValue
-    if result <> 0 then failwith "Publish failed"
-)
-
 // --------------------------------------------------------------------------------------
 // Run the Website
 
@@ -252,7 +243,19 @@ Target "Run" (fun _ ->
 // Release Scripts
 
 Target "Release" (fun _ ->
-  ()
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- dotnetExePath
+            info.WorkingDirectory <- serverPath
+            info.Arguments <- "publish -o \"" + FullName deployDir + "\"") TimeSpan.MaxValue
+    if result <> 0 then failwith "Publish failed"
+  
+    // TODO: 
+    let clientDir = deployDir </> "client"
+    let publicDir = clientDir </> "public"
+
+    !! "src/msu.SmartMeterHome.Client/public/**/*.*" |> CopyFiles publicDir
+    "src/msu.SmartMeterHome.Client/index.html" |> CopyFile clientDir
 )
 
 // --------------------------------------------------------------------------------------
@@ -268,6 +271,6 @@ Target "All" DoNothing
   ==> "BuildClient"
   ==> "Run"
   ==> "All"
-  ==> "Publish"
+  ==> "Release"
 
 RunTargetOrDefault "All"
