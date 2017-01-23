@@ -35,6 +35,8 @@ let dotnetExePath =
     dotnetSDKPath </> (if isWindows then "dotnet.exe" else "dotnet")
     |> FullName
 
+let deployDir = "./deploy"
+
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
 // --------------------------------------------------------------------------------------
@@ -120,7 +122,7 @@ Target "AssemblyInfo" (fun _ ->
 // Clean build results
 
 Target "Clean" (fun _ ->
-    CleanDirs ["bin"; "temp"; "docs/output"; Path.Combine(clientPath,"public/bundle")]
+    CleanDirs ["bin"; "temp"; "docs/output"; deployDir; Path.Combine(clientPath,"public/bundle")]
 )
 
 
@@ -202,6 +204,14 @@ Target "BuildClient" (fun _ ->
     run npmTool "install" ""
 )
 
+Target "Publish" (fun _ ->
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- dotnetExePath
+            info.WorkingDirectory <- serverPath
+            info.Arguments <- "publish -o \"" + FullName deployDir + "\"") TimeSpan.MaxValue
+    if result <> 0 then failwith "Publish failed"
+)
 
 // --------------------------------------------------------------------------------------
 // Run the Website
@@ -258,5 +268,6 @@ Target "All" DoNothing
   ==> "BuildClient"
   ==> "Run"
   ==> "All"
+  ==> "Publish"
 
 RunTargetOrDefault "All"
