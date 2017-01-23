@@ -5,8 +5,6 @@
     <MonoPath Condition="'$(MonoPath)' == '' And Exists('/Library/Frameworks/Mono.framework/Commands/mono')">/Library/Frameworks/Mono.framework/Commands/mono</MonoPath>
     <MonoPath Condition="'$(MonoPath)' == ''">mono</MonoPath> 
   </PropertyGroup>
-  
-
 
   <PropertyGroup>  
     <!-- Paket command -->
