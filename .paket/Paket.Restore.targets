@@ -14,7 +14,7 @@
     <PaketExePath Condition=" '$(PaketExePath)' == '' ">$(PaketToolsPath)paket.exe</PaketExePath>
     <PaketCommand Condition=" '$(OS)' == 'Windows_NT'">"$(PaketExePath)"</PaketCommand>
     <PaketCommand Condition=" '$(OS)' != 'Windows_NT' ">$(MonoPath) --runtime=v4.0.30319 "$(PaketExePath)"</PaketCommand>
-  <PropertyGroup>    
+  </PropertyGroup>    
 
   <UsingTask TaskName="Paket.Build.Tasks.PaketRestoreTask" AssemblyFile="PaketRestoreTask.dll" />
 
