@@ -201,8 +201,12 @@ Target "Build" (fun _ ->
     if result <> 0 then failwith "Build failed"
 )
 
-Target "BuildClient" (fun _ ->
+Target "InstallClient" (fun _ ->
     run npmTool "install" ""
+)
+
+Target "BuildClient" (fun _ ->
+    run nodePath ("node_modules/fable-compiler "+clientPath) "." 
 )
 
 // --------------------------------------------------------------------------------------
@@ -263,15 +267,20 @@ Target "Release" (fun _ ->
 // Run all targets by default. Invoke 'build <Target>' to override
 
 Target "All" DoNothing
+Target "BuildAll" DoNothing
 
 
 "Clean"
   ==> "InstallDotNetCore"
+  ==> "InstallClient"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "BuildClient"
   ==> "Run"
   ==> "All"
   ==> "Release"
+
+"Build"
+  ==> "BuildClient"
+  ==> "BuildAll"
 
 RunTargetOrDefault "All"

@@ -1,9 +1,17 @@
 language: csharp
-
 sudo: false  # use the new container-based Travis infrastructure 
+dist: trusty
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - libstdc++-4.9-dev
+      - libunwind8-dev
 
 before_install:
   - chmod +x build.sh
  
 script: 
-  - ./build.sh All
+  - ./build.sh BuildAll
