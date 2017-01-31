@@ -147,10 +147,12 @@ Target "InstallDotNetCore" (fun _ ->
     else
         CleanDir dotnetSDKPath
         let archiveFileName = 
-            if isLinux then
+            if isWindows then
+                sprintf "dotnet-dev-win-x64.%s.zip" dotnetcliVersion
+            elif isLinux then
                 sprintf "dotnet-dev-ubuntu-x64.%s.tar.gz" dotnetcliVersion
             else
-                sprintf "dotnet-dev-win-x64.%s.zip" dotnetcliVersion
+                sprintf "dotnet-dev-osx-x64.%s.tar.gz" dotnetcliVersion
         let downloadPath = 
                 sprintf "https://dotnetcli.azureedge.net/dotnet/Sdk/%s/%s" dotnetcliVersion archiveFileName
         let localPath = Path.Combine(dotnetSDKPath, archiveFileName)
@@ -160,7 +162,7 @@ Target "InstallDotNetCore" (fun _ ->
         use webclient = new Net.WebClient()
         webclient.DownloadFile(downloadPath, localPath)
 
-        if isLinux then
+        if not isWindows then
             let assertExitCodeZero x =
                 if x = 0 then () else
                 failwithf "Command failed with exit code %i" x
