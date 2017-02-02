@@ -64,12 +64,14 @@ let runWithLog log cmd args dir =
         | 0 -> ()
         | _ -> failwithf "Error while running '%s' with args: %s" cmd args
 
-let platformTool tool path =
-    isUnix |> function | true -> tool | _ -> path
+let platformTool tool winTool =
+    if isUnix then tool else winTool
+    |> ProcessHelper.tryFindFileOnPath
+    |> function Some t -> t | _ -> failwithf "%s not found" tool 
 
-let nodePath = platformTool "node" (@"C:\Program Files\nodejs\node.exe" |> FullName)
+let nodePath = platformTool "node" "node.exe"
 
-let npmTool = platformTool "npm" (@"C:\Program Files\nodejs\npm.cmd" |> FullName)
+let npmTool = platformTool "npm" "npm.cmd"
 
 let runFableWithLog log projDir args =
     runWithLog log nodePath ("node_modules/fable-compiler " + projDir + " " + args) "."
@@ -201,8 +203,12 @@ Target "Build" (fun _ ->
     if result <> 0 then failwith "Build failed"
 )
 
-Target "BuildClient" (fun _ ->
+Target "InstallClient" (fun _ ->
     run npmTool "install" ""
+)
+
+Target "BuildClient" (fun _ ->
+    run nodePath ("node_modules/fable-compiler "+clientPath) "." 
 )
 
 // --------------------------------------------------------------------------------------
@@ -263,15 +269,20 @@ Target "Release" (fun _ ->
 // Run all targets by default. Invoke 'build <Target>' to override
 
 Target "All" DoNothing
+Target "BuildAll" DoNothing
 
 
 "Clean"
   ==> "InstallDotNetCore"
+  ==> "InstallClient"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "BuildClient"
   ==> "Run"
   ==> "All"
   ==> "Release"
+
+"Build"
+  ==> "BuildClient"
+  ==> "BuildAll"
 
 RunTargetOrDefault "All"

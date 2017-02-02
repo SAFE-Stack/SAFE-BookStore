@@ -2,44 +2,35 @@
 
 This is a work in progress so it may not work yet as is on your machine.
 
-[![Issue Stats](http://issuestats.com/github/fsprojects/ProjectScaffold/badge/issue)](http://issuestats.com/github/fsprojects/ProjectScaffold)
-[![Issue Stats](http://issuestats.com/github/fsprojects/ProjectScaffold/badge/pr)](http://issuestats.com/github/fsprojects/ProjectScaffold)
+[![Issue Stats](http://issuestats.com/github/fable/fable-suave-scaffold/badge/issue)](http://issuestats.com/github/fable/fable-suave-scaffold)
+[![Issue Stats](http://issuestats.com/github/fable/fable-suave-scaffold/badge/pr)](http://issuestats.com/github/fable/fable-suave-scaffold)
 
-# ProjectScaffold
+# fable-suave-scaffold
 
-This project can be used to scaffold a prototypical .NET solution including file system layout and tooling. This includes a build process that: 
+This project can be used to scaffold a Suave-based webserver with F# SPA frontend. This includes a build process that: 
 
-* updates all AssemblyInfo files
-* compiles the application and runs all test projects
-* generates [SourceLinks](https://github.com/ctaggart/SourceLink)
-* generates API docs based on XML document tags
-* generates [documentation based on Markdown files](http://fsprojects.github.io/ProjectScaffold/writing-docs.html)
-* generates [NuGet](http://www.nuget.org) packages
-* and allows a simple [one step release process](http://fsprojects.github.io/ProjectScaffold/release-process.html).
+* compiles both server and client and runs both
+* and sets up watch to recompile and reload both
 
-In order to start the scaffolding process run 
+In order to kickoff the process run 
 
     > build.cmd // on windows    
     $ ./build.sh  // on unix
     
-Read the [Getting started tutorial](http://fsprojects.github.io/ProjectScaffold/index.html#Getting-started) to learn more.
-
-Documentation: http://fsprojects.github.io/ProjectScaffold
 
 ## Requirements
 
-ProjectScaffold requires a local git installation. You can download git from [Git Downloads](https://git-scm.com/downloads).
+* .NET/Mono
+* node/npm
 
 ## Build Status
 
 Mono | .NET
 ---- | ----
-[![Mono CI Build Status](https://img.shields.io/travis/fsprojects/ProjectScaffold/master.svg)](https://travis-ci.org/fsprojects/ProjectScaffold) | [![.NET Build Status](https://img.shields.io/appveyor/ci/fsgit/ProjectScaffold/master.svg)](https://ci.appveyor.com/project/fsgit/projectscaffold)
+[![Mono CI Build Status](https://img.shields.io/travis/fable/fable-suave-scaffold/master.svg)](https://travis-ci.org/fable/fable-suave-scaffold) | [![.NET Build Status](https://img.shields.io/appveyor/ci/fsgit/fable-suave-scaffold/master.svg)](https://ci.appveyor.com/project/fsgit/fable-suave-scaffold)
 
 ## Maintainer(s)
 
 - [@forki](https://github.com/forki)
-- [@pblasucci](https://github.com/pblasucci)
-- [@sergey-tihon](https://github.com/sergey-tihon)
+- [@alfonsogarciacaro](https://github.com/alfonsogarciacaro)
 
-The default maintainer account for projects under "fsprojects" is [@fsprojectsgit](https://github.com/fsprojectsgit) - F# Community Project Incubation Space (repo management)
