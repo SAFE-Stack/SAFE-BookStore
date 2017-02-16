@@ -17,7 +17,7 @@
     <EmbeddedResource Include="**\*.resx" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.0-beta-*">
+    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.0-beta-060000">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
