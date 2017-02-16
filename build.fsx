@@ -26,7 +26,7 @@ let clientPath = "./src/Client" |> FullName
 
 let serverPath = "./src/Server/" |> FullName
 
-let dotnetcliVersion = "1.0.0-rc3-004530"
+let dotnetcliVersion = "1.0.0-rc4-004598"
 
 let dotnetSDKPath = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) </> "dotnetcore" |> FullName
 
@@ -51,19 +51,6 @@ let run' timeout cmd args dir =
 
 let run = run' System.TimeSpan.MaxValue
 
-let runWithLog log cmd args dir =
-    let timeout = System.TimeSpan.MaxValue
-    (true, traceError, log)
-    |||> ExecProcessWithLambdas (fun info ->
-        info.FileName <- cmd
-        if not (String.IsNullOrWhiteSpace dir) then
-            info.WorkingDirectory <- dir
-        info.Arguments <- args
-    ) timeout
-    |> function
-        | 0 -> ()
-        | _ -> failwithf "Error while running '%s' with args: %s" cmd args
-
 let platformTool tool winTool =
     if isUnix then tool else winTool
     |> ProcessHelper.tryFindFileOnPath
@@ -72,11 +59,6 @@ let platformTool tool winTool =
 let nodePath = platformTool "node" "node.exe"
 
 let npmTool = platformTool "npm" "npm.cmd"
-
-let runFableWithLog log projDir args =
-    runWithLog log nodePath ("node_modules/fable-compiler " + projDir + " " + args) "."
-
-let runFable = runFableWithLog trace
 
 // Read additional information from the release notes document
 let release = LoadReleaseNotes "RELEASE_NOTES.md"
@@ -208,7 +190,7 @@ Target "InstallClient" (fun _ ->
 )
 
 Target "BuildClient" (fun _ ->
-    run nodePath ("node_modules/fable-compiler " + clientPath) "." 
+    run npmTool "run build" clientPath
 )
 
 // --------------------------------------------------------------------------------------
@@ -216,7 +198,7 @@ Target "BuildClient" (fun _ ->
 
 
 let ipAddress = "localhost"
-let port = 8085
+let port = 8080
 
 
 Target "Run" (fun _ ->
@@ -228,20 +210,12 @@ Target "Run" (fun _ ->
                 info.Arguments <- "watch run") TimeSpan.MaxValue
         if result <> 0 then failwith "Website shut down." }
 
-    let fableWatch = async {
-        (clientPath, "-d")
-        ||> runFableWithLog (fun msg ->
-            if msg.StartsWith "Bundled" then
-                sprintf "http://%s:%d/api/refresh" ipAddress port
-                |> REST.ExecuteGetCommand "" ""
-                |> printfn "%s")
-    }
-
+    let fablewatch = async { run npmTool "run watch" clientPath }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
 
-    Async.Parallel [| dotnetwatch; fableWatch; openBrowser |]
+    Async.Parallel [| dotnetwatch; fablewatch; openBrowser |]
     |> Async.RunSynchronously
     |> ignore
 )
@@ -249,21 +223,7 @@ Target "Run" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
-Target "Release" (fun _ ->
-    let result =
-        ExecProcess (fun info ->
-            info.FileName <- dotnetExePath
-            info.WorkingDirectory <- serverPath
-            info.Arguments <- "publish -o \"" + FullName deployDir + "\"") TimeSpan.MaxValue
-    if result <> 0 then failwith "Publish failed"
-  
-    // TODO: 
-    let clientDir = deployDir </> "client"
-    let publicDir = clientDir </> "public"
-
-    !! "src/Client/public/**/*.*" |> CopyFiles publicDir
-    "src/Client/index.html" |> CopyFile clientDir
-)
+Target "Release" DoNothing
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override

@@ -1,18 +1,22 @@
 {
+    "sourceMaps": true,
     "projFile": "./Client.fsproj",
-    "babelPlugins": ["transform-runtime"],
-    "rollup": {
-        "dest": "./public/bundle/bundle.js",
-        "external": ["react", "react-dom"],
-        "globals": {
-            "react": "React",
-            "react-dom": "ReactDOM"
-        }
-    },    
+    "outDir": "out",
     "targets": {
         "debug": {
-            "sourceMaps": true,
-            "watch": true
+            "watch": [".", "../Server/Shared"],
+            "symbols": [
+                "DEV_SERVER"
+            ],
+            "scripts": {
+                "postbuild-once": "node ../../node_modules/webpack-dev-server/bin/webpack-dev-server.js --watch --progress --inline --hot"
+            }
+        },
+        "production": {
+            "sourceMaps": false,
+            "scripts": {
+                "postbuild": "node ../../node_modules/webpack/bin/webpack --config webpack.release.config.js"
+            }
         }
     }
 }

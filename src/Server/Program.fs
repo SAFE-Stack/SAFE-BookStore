@@ -8,7 +8,10 @@ let main args =
         let clientPath =
             match args |> Array.toList with
             | clientPath:: _ -> clientPath
-            | _ -> @"../Client/public"
+            | _ -> 
+                let devPath = Path.Combine("..","Client")
+                if Directory.Exists devPath then devPath else
+                @"./client"
 
         Server.startServer (Path.GetFullPath clientPath)
         0

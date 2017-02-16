@@ -41,6 +41,9 @@
     <Reference Include="../../node_modules/fable-powerpack/Fable.PowerPack.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="../Server/Shared/Domain.fs">
+      <Link>Domain.fs</Link>
+    </Compile>
     <Compile Include="App.fs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
