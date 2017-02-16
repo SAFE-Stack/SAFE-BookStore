@@ -1,4 +1,4 @@
-﻿module Program
+﻿module ServerCode.Program
 
 open System.IO
 

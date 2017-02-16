@@ -1,5 +1,9 @@
-namespace Domain
+namespace ServerCode.Domain
 
 open System
 
-type ID = string
+type JWT = string
+
+type Login = { 
+    UserName : string
+    Password : string }

@@ -1,4 +1,4 @@
-module Server
+module ServerCode.Server
 
 open System.IO
 open Suave
@@ -29,12 +29,18 @@ let startServer clientPath =
 
     let app =
         choose [
-            Filters.GET >=>
+            GET >=>
                 choose [
                     path "/" >=> Files.browseFileHome "index.html"
                     pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
                 ]
-                NOT_FOUND "Page not found."
-        ]
+
+            POST >=> choose [
+                 path "/api/users/login" >=> Auth.login
+            ]                
+            
+            NOT_FOUND "Page not found."
+
+        ] >=> logWithLevelStructured Logging.Info logger logFormatStructured
 
     startWebServer serverConfig app
