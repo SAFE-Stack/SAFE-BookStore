@@ -208,7 +208,7 @@ Target "InstallClient" (fun _ ->
 )
 
 Target "BuildClient" (fun _ ->
-    run nodePath ("node_modules/fable-compiler "+clientPath) "." 
+    run nodePath ("node_modules/fable-compiler " + clientPath) "." 
 )
 
 // --------------------------------------------------------------------------------------

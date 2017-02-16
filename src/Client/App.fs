@@ -12,7 +12,10 @@ open Elmish.Browser.Navigation
 open Elmish.UrlParser
 
 // Types
-type Page = Home | Blog of int | Search of string
+type Page = 
+| Home 
+| Blog of int 
+| Search of string
 
 type Model =
   { page : Page
@@ -128,7 +131,7 @@ let internal onEnter msg dispatch =
 let viewPage model dispatch =
   match model.page with
   | Home ->
-      [ words 60 "Welcome!?"
+      [ words 60 "Welcome!"
         unbox "Play with the links and search bar above. (Press ENTER to trigger the zip code search.)" ]
 
   | Blog id ->
