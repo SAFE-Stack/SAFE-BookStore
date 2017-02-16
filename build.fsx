@@ -26,7 +26,7 @@ let clientPath = "./src/Client" |> FullName
 
 let serverPath = "./src/Server/" |> FullName
 
-let dotnetcliVersion = "1.0.0-rc4-004598"
+let dotnetcliVersion = "1.0.0-rc4-004771"
 
 let dotnetSDKPath = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) </> "dotnetcore" |> FullName
 
