@@ -261,8 +261,8 @@ Target "Release" (fun _ ->
     let clientDir = deployDir </> "client"
     let publicDir = clientDir </> "public"
 
-    !! "src/msu.SmartMeterHome.Client/public/**/*.*" |> CopyFiles publicDir
-    "src/msu.SmartMeterHome.Client/index.html" |> CopyFile clientDir
+    !! "src/Client/public/**/*.*" |> CopyFiles publicDir
+    "src/Client/index.html" |> CopyFile clientDir
 )
 
 // --------------------------------------------------------------------------------------
