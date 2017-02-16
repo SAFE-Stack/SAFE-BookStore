@@ -1,18 +1,18 @@
 {
   "private": true,
   "dependencies": {
-    "babel-runtime": "^6.18.0",
-    "babel-plugin-transform-runtime": "^6.15.0",
-    "react": "^15.3.1",
+    "babel-runtime": "^6.23.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "react": "^15.4.2",
     "react-bootstrap": "^0.30.7",
-    "react-dom": "^15.3.1",
-    "remotedev": "^0.2.4",
-    "fable-compiler": "^0.7.36",
-    "fable-core": "^0.7.25",
-    "fable-elmish": "^0.8.0",
-    "fable-elmish-debugger": "^0.1.1",
+    "react-dom": "^15.4.2",
+    "remotedev": "^0.2.7",
+    "fable-compiler": "^0.7.42",
+    "fable-core": "^0.7.26",
+    "fable-elmish": "^0.8.1",
+    "fable-elmish-debugger": "^0.1.2",
     "fable-elmish-react": "^0.8.2",
     "fable-powerpack": "^0.0.19",
-    "fable-react": "^0.8.0"
+    "fable-react": "^0.8.5"
   }
 }
