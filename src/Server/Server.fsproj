@@ -1,22 +1,24 @@
-﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+
+    <Compile Include="Server.fs" />
+    <Compile Include="Program.fs" />
+  
     <Content Include="any\netstandard1.6\FSharp.Core.optdata">
       <Paket>True</Paket>
     </Content>
     <Content Include="any\netstandard1.6\FSharp.Core.sigdata">
       <Paket>True</Paket>
     </Content>
-    <Compile Include="Server.fs" />
-    <Compile Include="Program.fs" />
-  </ItemGroup>
-  <ItemGroup>
+
     <PackageReference Include="FSharp.NET.Sdk" Version="1.0.0-beta-060000" PrivateAssets="All" />
     <DotNetCliToolReference Include="dotnet-compile-fsc" Version="1.0.0-preview2-020000" />
     <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0-msbuild2-final" />
+
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
