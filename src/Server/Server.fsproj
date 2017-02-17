@@ -5,9 +5,14 @@
   </PropertyGroup>
   <ItemGroup>
 
+    <Compile Include="Shared/Domain.fs" />
+    <Compile Include="ServerTypes.fs" />
+    <Compile Include="TokenUtils.fs" />
+    <Compile Include="Auth.fs" />
+    <Compile Include="WishList.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Program.fs" />
-  
+
     <Content Include="any\netstandard1.6\FSharp.Core.optdata">
       <Paket>True</Paket>
     </Content>
@@ -17,8 +22,9 @@
 
     <PackageReference Include="FSharp.NET.Sdk" Version="1.0.0-beta-060000" PrivateAssets="All" />
     <DotNetCliToolReference Include="dotnet-compile-fsc" Version="1.0.0-preview2-020000" />
-    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0-msbuild2-final" />
 
+    <EmbeddedResource Include="**\*.resx" />
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0-msbuild2-final" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

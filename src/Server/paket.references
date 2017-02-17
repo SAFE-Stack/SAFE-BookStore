@@ -2,3 +2,5 @@ FSharp.Core
 Suave
 Microsoft.Extensions.Logging.Console
 System.Net.NetworkInformation
+Newtonsoft.Json
+jose-jwt
