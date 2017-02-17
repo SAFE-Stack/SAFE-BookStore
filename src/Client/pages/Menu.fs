@@ -30,12 +30,4 @@ let view (model:Model) dispatch =
               yield viewLink (Login) "Login" 
           else 
               yield buttonLink "" (fun _ -> dispatch Logout) [ text "Logout" ]
-          yield input
-                    [ Placeholder "Enter a zip code (e.g. 90210)"
-                      Value (U2.Case1 model.query)
-                      onEnter Enter dispatch
-                      OnInput (fun ev -> Query (unbox ev.target?value) |> dispatch)
-                      Style [ CSSProp.Width "200px"; Margin "0 20px" ]
-                    ]
-                    []
         ]

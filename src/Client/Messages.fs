@@ -8,10 +8,6 @@ type AppMsg =
 | OpenLogIn
 | LoginMsg of LoginMsg
 | WishListMsg of WishListMsg
-| Query of string
-| Enter
-| FetchFailure of string * exn
-| FetchSuccess of string * (string list)
 | Logout
 
 and LoginMsg =
@@ -34,10 +30,9 @@ type Page =
 | Home 
 | Login
 | WishList
-| Search of string
+
 let toHash =
     function
     | Home -> "#home"
     | Login -> "#login"
     | WishList -> "#wishlist"
-    | Search query -> "#search/" + query

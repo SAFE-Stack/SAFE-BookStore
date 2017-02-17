@@ -22,7 +22,6 @@ type SubModel =
 type Model =
   { Page : Page
     Menu : Menu.Model
-    cache : Map<string,string list>
     SubModel : SubModel }
 
 
@@ -31,21 +30,10 @@ let pageParser : Parser<Page->_,_> =
     oneOf 
         [ format Home (s "home")
           format Page.Login (s "login")
-          format WishList (s "wishlist")
-          format Search (s "search" </> str) ]
+          format WishList (s "wishlist") ]
 
 let hashParser (location:Location) =
     UrlParser.parse id pageParser (location.hash.Substring 1)
-
-
-type Place = { ``place name``: string; state: string; }
-type ZipResponse = { places : Place list }
-
-let get query =
-    promise {
-        let! r = Fable.PowerPack.Fetch.fetchAs<ZipResponse> ("http://api.zippopotam.us/us/" + query) []
-        return r |> fun r -> r.places |> List.map (fun p -> p.``place name`` + ", " + p.state)
-    }
 
 (* If the URL is valid, we just update our model or issue a command.
 If it is not a valid URL, we modify the URL to whatever makes sense.
@@ -68,11 +56,6 @@ let urlUpdate (result:Result<Page,string>) model =
         | None ->
             model, Cmd.ofMsg Logout
 
-    | Ok (Search query as page) ->
-        { model with Page = page; Menu = { model.Menu with query = query } },
-           if Map.containsKey query model.cache then []
-           else Cmd.ofPromise get query (fun r -> FetchSuccess (query,r)) (fun ex -> FetchFailure (query,ex))
-
     | Ok (Home as page) ->
         { model with Page = page; Menu = { model.Menu with query = "" } }, []
 
@@ -81,7 +64,6 @@ let init result =
     let m = 
         { Page = Home
           Menu = menu
-          cache = Map.empty
           SubModel = NoSubModel }
 
     let m,cmd = urlUpdate result m
@@ -141,19 +123,6 @@ let update msg model =
         | None ->
             m, Cmd.ofMsg Logout
 
-    | AppMsg.Query query ->
-        { model with Menu = { model.Menu with query = query } }, []
-
-    | AppMsg.Enter ->
-        let newPage = Search model.Menu.query
-        { model with Page = newPage }, Navigation.newUrl (toHash newPage)
-
-    | AppMsg.FetchFailure (query,_) ->
-        { model with cache = Map.add query [] model.cache }, []
-
-    | AppMsg.FetchSuccess (query,locations) ->
-        { model with cache = Map.add query locations model.cache }, []
-
     | AppMsg.Logout ->
         Utils.delete "user"
         { model with
@@ -166,12 +135,10 @@ let update msg model =
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Client.Style
-
 let viewPage model dispatch =
     match model.Page with
     | Page.Home ->
-        [ words 60 "Welcome!"
-          text "Play with the links and search bar above. (Press ENTER to trigger the zip code search.)" ]
+        [ words 60 "Welcome!" ]
 
     | Page.Login -> 
         match model.SubModel with
@@ -184,17 +151,6 @@ let viewPage model dispatch =
         | WishListModel m ->
             [ div [ ] [ WishList.view m dispatch ]]
         | _ -> [ ]
-
-    | Page.Search query ->
-        match Map.tryFind query model.cache with
-        | Some [] ->
-            [ text ("No results found for " + query + ". Need a valid zip code like 90210.") ]
-        | Some (location :: _) ->
-            [ words 20 ("Zip code " + query + " is in " + location + "!") ]
-        | _ ->
-            [ text "..." ]
-
-open Fable.Core.JsInterop
 
 let view model dispatch =
   div []
