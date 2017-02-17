@@ -236,13 +236,10 @@ Target "BuildAll" DoNothing
   ==> "InstallDotNetCore"
   ==> "InstallClient"
   ==> "AssemblyInfo"
+  ==> "BuildClient"
   ==> "Build"
   ==> "Run"
   ==> "All"
   ==> "Release"
-
-"Build"
-  ==> "BuildClient"
-  ==> "BuildAll"
 
 RunTargetOrDefault "All"

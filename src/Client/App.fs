@@ -34,6 +34,7 @@ let pageParser : Parser<Page->_,_> =
 
 let hashParser (location:Location) =
     UrlParser.parse id pageParser (location.hash.Substring 1)
+    
 let urlUpdate (result:Result<Page,string>) model =
     match result with
     | Error e ->
