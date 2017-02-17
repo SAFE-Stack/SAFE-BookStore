@@ -35,7 +35,7 @@ let decode<'a> (jwt:string) : 'a =
     decodeString jwt
     |> JsonConvert.DeserializeObject<'a>
 
-let isValid (jwt:string) : ServerTypes.User option =
+let isValid (jwt:string) : ServerTypes.UserRights option =
     try
         let token = decode jwt
         Some token

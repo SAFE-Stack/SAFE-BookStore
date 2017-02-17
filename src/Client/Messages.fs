@@ -1,11 +1,13 @@
 module Client.Messages
 
 open System
+open ServerCode.Domain
 
 type AppMsg = 
 | LoggedIn
 | OpenLogIn
 | LoginMsg of LoginMsg
+| WishListMsg of WishListMsg
 | Query of string
 | Enter
 | FetchFailure of string * exn
@@ -19,6 +21,11 @@ and LoginMsg =
 | AuthError of exn
 | ClickLogIn
 
+and WishListMsg =
+| LoadForUser of string
+| FetchedWishList of WishList
+| FetchError of exn
+
 type UserData = {
     UserName : string 
     Token : string }
@@ -26,12 +33,11 @@ type UserData = {
 type Page = 
 | Home 
 | Login
-| Blog of int 
+| WishList
 | Search of string
-
 let toHash =
     function
     | Home -> "#home"
     | Login -> "#login"
-    | Blog id -> "#blog/" + (string id)
+    | WishList -> "#wishlist"
     | Search query -> "#search/" + query

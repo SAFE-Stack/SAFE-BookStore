@@ -9,6 +9,7 @@
     <Compile Include="ServerTypes.fs" />
     <Compile Include="TokenUtils.fs" />
     <Compile Include="Auth.fs" />
+    <Compile Include="WishList.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Program.fs" />
 

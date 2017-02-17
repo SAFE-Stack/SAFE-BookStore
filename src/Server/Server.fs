@@ -29,14 +29,14 @@ let startServer clientPath =
 
     let app =
         choose [
-            GET >=>
-                choose [
-                    path "/" >=> Files.browseFileHome "index.html"
-                    pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
-                ]
+            GET >=> choose [
+                path "/" >=> Files.browseFileHome "index.html"
+                pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
+
+                path "/api/wishlist/" >=> WishList.getWishList ]
 
             POST >=> choose [
-                 path "/api/users/login" >=> Auth.login
+                path "/api/users/login" >=> Auth.login
             ]                
             
             NOT_FOUND "Page not found."

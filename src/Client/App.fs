@@ -12,10 +12,12 @@ open Elmish.Browser.Navigation
 open Client.Messages
 open Elmish.UrlParser
 
-// Types
+// Model
+
 type SubModel =
 | NoSubModel
 | LoginModel of Login.Model
+| WishListModel of WishList.Model
 
 type Model =
   { Page : Page
@@ -29,12 +31,11 @@ let pageParser : Parser<Page->_,_> =
     oneOf 
         [ format Home (s "home")
           format Page.Login (s "login")
-          format Blog (s "blog" </> i32)
+          format WishList (s "wishlist")
           format Search (s "search" </> str) ]
 
 let hashParser (location:Location) =
     UrlParser.parse id pageParser (location.hash.Substring 1)
-
 
 
 type Place = { ``place name``: string; state: string; }
@@ -59,12 +60,20 @@ let urlUpdate (result:Result<Page,string>) model =
         let m,cmd = Login.init model.Menu.User
         { model with Page = page; SubModel = LoginModel m }, Cmd.map LoginMsg cmd
 
+    | Ok (Page.WishList as page) ->
+        match model.Menu.User with
+        | Some user ->
+            let m,cmd = WishList.init user
+            { model with Page = page; SubModel = WishListModel m }, Cmd.map WishListMsg cmd
+        | None ->
+            model, Cmd.ofMsg Logout
+
     | Ok (Search query as page) ->
         { model with Page = page; Menu = { model.Menu with query = query } },
            if Map.containsKey query model.cache then []
            else Cmd.ofPromise get query (fun r -> FetchSuccess (query,r)) (fun ex -> FetchFailure (query,ex))
 
-    | Ok page ->
+    | Ok (Home as page) ->
         { model with Page = page; Menu = { model.Menu with query = "" } }, []
 
 let init result =
@@ -74,6 +83,7 @@ let init result =
           Menu = menu
           cache = Map.empty
           SubModel = NoSubModel }
+
     let m,cmd = urlUpdate result m
     m,Cmd.batch[cmd; menuCmd]
 
@@ -113,11 +123,21 @@ let update msg model =
                     Menu = { model.Menu with User = None } }, cmd
         | _ -> model, Cmd.none
 
+    | WishListMsg msg ->
+        match model.SubModel with
+        | WishListModel m -> 
+            let m,cmd = WishList.update msg m
+            let cmd = Cmd.map WishListMsg cmd 
+            { model with 
+                SubModel = WishListModel m }, cmd
+        | _ -> model, Cmd.none
+
     | AppMsg.LoggedIn ->
-        let m,cmd = urlUpdate (Ok Page.Home) model
+        let nextPage = Page.WishList
+        let m,cmd = urlUpdate (Ok nextPage) model
         match model.Menu.User with
         | Some user ->
-            m, Cmd.batch [cmd; Navigation.modifyUrl (toHash Page.Home) ]
+            m, Cmd.batch [cmd; Navigation.modifyUrl (toHash nextPage) ]
         | None ->
             m, Cmd.ofMsg Logout
 
@@ -159,9 +179,11 @@ let viewPage model dispatch =
             [ div [ ] [ Login.view m dispatch ]]
         | _ -> [ ]
 
-    | Page.Blog id ->
-        [ words 20 "This is blog post number"
-          words 100 (string id) ]
+    | Page.WishList ->
+        match model.SubModel with
+        | WishListModel m ->
+            [ div [ ] [ WishList.view m dispatch ]]
+        | _ -> [ ]
 
     | Page.Search query ->
         match Map.tryFind query model.cache with

@@ -2,5 +2,5 @@ module ServerCode.ServerTypes
 
 open System
 
-type User = { 
+type UserRights = { 
     UserName : string }

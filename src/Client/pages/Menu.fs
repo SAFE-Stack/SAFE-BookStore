@@ -23,16 +23,19 @@ let init() = { User = Utils.load "user"; query = "" },Cmd.none
 
 let view (model:Model) dispatch =
     div [ centerStyle "row" ] [ 
-          viewLink Home "Home"
-          viewLink (Blog 42) "Cat Facts"
-          viewLink (Blog 13) "Alligator Jokes"
-          (if model.User = None then viewLink (Login) "Login" else buttonLink "" (fun _ -> dispatch Logout) [ text "Logout" ])
-          input
-            [ Placeholder "Enter a zip code (e.g. 90210)"
-              Value (U2.Case1 model.query)
-              onEnter Enter dispatch
-              OnInput (fun ev -> Query (unbox ev.target?value) |> dispatch)
-              Style [ CSSProp.Width "200px"; Margin "0 20px" ]
-            ]
-            []
+          yield viewLink Home "Home"
+          if model.User <> None then 
+              yield viewLink Page.WishList "Wishlist"
+          if model.User = None then 
+              yield viewLink (Login) "Login" 
+          else 
+              yield buttonLink "" (fun _ -> dispatch Logout) [ text "Logout" ]
+          yield input
+                    [ Placeholder "Enter a zip code (e.g. 90210)"
+                      Value (U2.Case1 model.query)
+                      onEnter Enter dispatch
+                      OnInput (fun ev -> Query (unbox ev.target?value) |> dispatch)
+                      Style [ CSSProp.Width "200px"; Margin "0 20px" ]
+                    ]
+                    []
         ]

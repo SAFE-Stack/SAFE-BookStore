@@ -17,7 +17,7 @@ let login (ctx: HttpContext) = async {
     try
         if login.UserName <> "test" || login.Password <> "test" then
             return! failwithf "Could not authenticate %s" login.UserName
-        let user : ServerTypes.User = { UserName = login.UserName }
+        let user : ServerTypes.UserRights = { UserName = login.UserName }
         let token = TokenUtils.encode user
 
         return! Successful.OK token ctx
@@ -25,36 +25,12 @@ let login (ctx: HttpContext) = async {
     | _ -> return! UNAUTHORIZED (sprintf "User '%s' can't be logged in." login.UserName) ctx
 }
 
-let useToken f =
-    context (fun ctx ->
-        match ctx.request.header "Authorization" with
-        | Choice1Of2 accesstoken when accesstoken.StartsWith "Bearer " -> 
-            let jwt = accesstoken.Replace("Bearer ","")
-            match TokenUtils.isValid jwt with
-            | Some token -> f token
-            | _ ->
-                FORBIDDEN "Accessing this API is not allowed"
-        | _ -> BAD_REQUEST "Request doesn't contain a JSON Web Token")
-
-let checkToken ctx f webpart = async {
+let useToken ctx f = async {
     match ctx.request.header "Authorization" with
     | Choice1Of2 accesstoken when accesstoken.StartsWith "Bearer " -> 
         let jwt = accesstoken.Replace("Bearer ","")
         match TokenUtils.isValid jwt with
-        | Some token when f token ->
-            return! webpart
-        | _ ->
-            return! FORBIDDEN "Accessing this API is not allowed" ctx
-    | _ -> return! BAD_REQUEST "Request doesn't contain a JSON Web Token" ctx
-}
-
-let checkQueryStringToken ctx f webpart = async {
-    match ctx.request.queryParam "token" with
-    | Choice1Of2 accesstoken -> 
-        let ok = try f accesstoken with | _ -> false
-        if ok then
-            return! webpart
-        else
-            return! FORBIDDEN "Accessing this API is not allowed" ctx
+        | None -> return! FORBIDDEN "Accessing this API is not allowed" ctx
+        | Some token -> return! f token
     | _ -> return! BAD_REQUEST "Request doesn't contain a JSON Web Token" ctx
 }
