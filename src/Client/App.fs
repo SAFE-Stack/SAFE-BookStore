@@ -34,10 +34,6 @@ let pageParser : Parser<Page->_,_> =
 
 let hashParser (location:Location) =
     UrlParser.parse id pageParser (location.hash.Substring 1)
-
-(* If the URL is valid, we just update our model or issue a command.
-If it is not a valid URL, we modify the URL to whatever makes sense.
-*)
 let urlUpdate (result:Result<Page,string>) model =
     match result with
     | Error e ->
@@ -69,12 +65,6 @@ let init result =
     let m,cmd = urlUpdate result m
     m,Cmd.batch[cmd; menuCmd]
 
-
-(* A relatively normal update function. The only notable thing here is that we
-are commanding a new URL to be added to the browser history. This changes the
-address bar and lets us use the browser&rsquo;s back button to go back to
-previous pages.
-*)
 let update msg model =
     match msg with
     | AppMsg.OpenLogIn ->
