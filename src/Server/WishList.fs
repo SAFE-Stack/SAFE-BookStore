@@ -16,10 +16,10 @@ let defaultWishList userName : Domain.WishList =
         UserName = userName
         Books = 
             [{ Title = "Mastering F#"
-               Authors = ["Alfonso Garcia-Caro Nunez"]
+               Authors = "Alfonso Garcia-Caro Nunez"
                Link = "https://www.amazon.com/Mastering-F-Alfonso-Garcia-Caro-Nunez-ebook/dp/B01M112LR9" }
              { Title = "Learn F#"
-               Authors = ["Isaac Abraham"]
+               Authors = "Isaac Abraham"
                Link = "https://www.manning.com/books/learn-fsharp" }]
     }
 
