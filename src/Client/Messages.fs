@@ -21,7 +21,10 @@ and WishListMsg =
 | LoadForUser of string
 | FetchedWishList of WishList
 | RemoveBook of Book
-| UpdateWishListOnServer
+| AddBook
+| TitleChanged of string
+| AuthorsChanged of string
+| LinkChanged of string
 | FetchError of exn
 
 type UserData = {

@@ -10,8 +10,13 @@ type Login = {
 
 type Book = {
     Title: string
-    Authors: string list
+    Authors: string
     Link: string }
+    with
+        static member empty = { 
+            Title = ""
+            Authors = ""
+            Link = ""}
 
 type WishList = {
     UserName : string
