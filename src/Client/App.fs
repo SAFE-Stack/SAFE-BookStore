@@ -126,6 +126,7 @@ let update msg model =
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Client.Style
+
 let viewPage model dispatch =
     match model.Page with
     | Page.Home ->

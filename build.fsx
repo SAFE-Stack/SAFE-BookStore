@@ -238,8 +238,10 @@ Target "BuildAll" DoNothing
   ==> "AssemblyInfo"
   ==> "BuildClient"
   ==> "Build"
-  ==> "Run"
   ==> "All"
   ==> "Release"
+
+"Build"
+  ==> "Run"
 
 RunTargetOrDefault "All"
