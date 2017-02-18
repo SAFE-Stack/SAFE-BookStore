@@ -7,6 +7,13 @@ nuget System.Net.NetworkInformation
 nuget Newtonsoft.Json
 nuget jose-jwt
 
+group Test
+  source https://nuget.org/api/v2
+  framework >= net45
+  nuget FSharp.Core redirects: force
+  nuget Canopy
+  nuget Expecto
+
 group Build
   source https://nuget.org/api/v2
   
