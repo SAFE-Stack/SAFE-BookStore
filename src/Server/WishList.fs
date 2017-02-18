@@ -14,7 +14,8 @@ open Suave.ServerErrors
 let getWishList (ctx: HttpContext) =
     Auth.useToken ctx (fun token -> async {
         try
-            let wishList :Domain.WishList =
+            // TODO: Get from DB
+            let wishList : Domain.WishList =
                 {
                     UserName = token.UserName
                     Books = 
@@ -29,3 +30,17 @@ let getWishList (ctx: HttpContext) =
         with
         | _ -> return! SERVICE_UNAVAILABLE "Database not available" ctx
     })
+
+let postWishList (ctx: HttpContext) =
+    Auth.useToken ctx (fun token -> async {
+        try
+            let wishList = 
+                ctx.request.rawForm
+                |> System.Text.Encoding.UTF8.GetString
+                |> JsonConvert.DeserializeObject<Domain.WishList>
+
+                // TODO: Save to DB
+            return! Successful.OK (JsonConvert.SerializeObject wishList) ctx
+        with
+        | _ -> return! SERVICE_UNAVAILABLE "Database not available" ctx
+    })    

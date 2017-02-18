@@ -37,6 +37,8 @@ let startServer clientPath =
 
             POST >=> choose [
                 path "/api/users/login" >=> Auth.login
+
+                path "/api/wishlist/" >=> WishList.postWishList
             ]                
             
             NOT_FOUND "Page not found."
