@@ -20,6 +20,8 @@ and LoginMsg =
 and WishListMsg =
 | LoadForUser of string
 | FetchedWishList of WishList
+| RemoveBook of Book
+| UpdateWishListOnServer
 | FetchError of exn
 
 type UserData = {
