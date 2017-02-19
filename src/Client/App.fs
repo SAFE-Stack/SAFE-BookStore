@@ -6,6 +6,7 @@ open Fable.Core.JsInterop
 open Fable.Core
 open Fable.Import
 open Elmish
+open Elmish.React
 open Fable.Import.Browser
 open Fable.PowerPack
 open Elmish.Browser.Navigation
@@ -141,13 +142,12 @@ let viewPage model dispatch =
     | Page.WishList ->
         match model.SubModel with
         | WishListModel m ->
-            [ div [ ] [ WishList.view m dispatch ]]
+            [ div [ ] [ lazyView2 WishList.view m dispatch ]]
         | _ -> [ ]
 
 let view model dispatch =
   div []
-    [ 
-      Menu.view model.Menu dispatch
+    [ lazyView2 Menu.view model.Menu dispatch
       hr [] []
       div [ centerStyle "column" ] (viewPage model dispatch)
     ]
