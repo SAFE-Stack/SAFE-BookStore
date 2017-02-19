@@ -93,11 +93,11 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
         { model with NewBook = { model.NewBook with Link = link }; LinkErrorText = verifyLink link }, Cmd.none
     | RemoveBook book -> 
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
-        model, postWishListCmd(model.Token,wishList)
+        { model with WishList = wishList}, postWishListCmd(model.Token,wishList)
     | AddBook ->
         if verifyBook model.NewBook then
             let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
-            { model with NewBook = Book.empty }, postWishListCmd(model.Token,wishList)
+            { model with WishList = wishList; NewBook = Book.empty }, postWishListCmd(model.Token,wishList)
         else
             model, Cmd.none
     | FetchError _ -> 
