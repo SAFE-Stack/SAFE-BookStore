@@ -16,12 +16,34 @@ type Book = {
         static member empty = { 
             Title = ""
             Authors = ""
-            Link = ""}
+            Link = "" }
 
 type WishList = {
     UserName : string
     Books : Book list }
     with 
-        static member empty userName = 
+        static member New userName = 
             { UserName = userName
               Books = [] }
+
+module Validation =
+
+    let verifyBookTitle title =
+        if String.IsNullOrWhiteSpace title then Some "No title was entered" else
+        None
+
+    let verifyBookAuthors authors =
+        if String.IsNullOrWhiteSpace authors then Some "No author was entered" else
+        None
+
+    let verifyBookLink link =
+        if String.IsNullOrWhiteSpace link then Some "No link was entered" else
+        None
+
+    let verifyBook book =
+        verifyBookTitle book.Title = None &&
+        verifyBookAuthors book.Authors = None &&
+        verifyBookLink book.Link = None
+
+    let verifyWishList wishList =
+        wishList.Books |> List.forall verifyBook

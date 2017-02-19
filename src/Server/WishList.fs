@@ -10,8 +10,9 @@ open Suave.Operators
 open Suave.RequestErrors
 open System
 open Suave.ServerErrors
+open ServerCode.Domain
 
-let defaultWishList userName : Domain.WishList =
+let defaultWishList userName : WishList =
     {
         UserName = userName
         Books = 
@@ -31,9 +32,9 @@ let getWishListFromDB userName =
         defaultWishList userName
     else
         File.ReadAllText(fi.FullName)
-        |> JsonConvert.DeserializeObject<Domain.WishList>
+        |> JsonConvert.DeserializeObject<WishList>
 
-let saveWishListToDB (wishList:Domain.WishList) =
+let saveWishListToDB (wishList:WishList) =
     try
         let fi = FileInfo(getJSONFileName wishList.UserName)
         if not fi.Directory.Exists then
@@ -63,8 +64,11 @@ let postWishList (ctx: HttpContext) =
             if token.UserName <> wishList.UserName then
                 return! UNAUTHORIZED (sprintf "WishList is not matching user %s" token.UserName) ctx
             else
-                saveWishListToDB wishList
-                return! Successful.OK (JsonConvert.SerializeObject wishList) ctx
+                if Validation.verifyWishList wishList then
+                    saveWishListToDB wishList
+                    return! Successful.OK (JsonConvert.SerializeObject wishList) ctx
+                else
+                    return! BAD_REQUEST "WishList is not valid" ctx
         with
         | _ -> return! SERVICE_UNAVAILABLE "Database not available" ctx
     })    

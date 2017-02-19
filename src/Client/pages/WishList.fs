@@ -53,7 +53,7 @@ let postWishListCmd (token,wishList) =
     Cmd.ofPromise postWishList (token,wishList) FetchedWishList FetchError
 
 let init (user:UserData) = 
-    { WishList = WishList.empty user.UserName
+    { WishList = WishList.New user.UserName
       Token = user.Token
       NewBook = Book.empty
       TitleErrorText = None
@@ -61,22 +61,8 @@ let init (user:UserData) =
       LinkErrorText = None
       ErrorMsg = "" }, loadWishListCmd user.Token
 
-let verifyTitle title =
-    if String.IsNullOrWhiteSpace title then Some "No title was entered" else
-    None
 
-let verifyAuthors authors =
-    if String.IsNullOrWhiteSpace authors then Some "No author was entered" else
-    None
 
-let verifyLink link =
-    if String.IsNullOrWhiteSpace link then Some "No link was entered" else
-    None
-
-let verifyBook book = 
-    verifyTitle book.Title = None &&
-    verifyAuthors book.Authors = None &&
-    verifyLink book.Link = None
 
 let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> = 
     match msg with
@@ -86,16 +72,16 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
         let wishList = { wishList with Books = wishList.Books |> List.sortBy (fun b -> b.Title) }
         { model with WishList = wishList }, Cmd.none
     | TitleChanged title -> 
-        { model with NewBook = { model.NewBook with Title = title }; TitleErrorText = verifyTitle title }, Cmd.none
+        { model with NewBook = { model.NewBook with Title = title }; TitleErrorText = Validation.verifyBookTitle title }, Cmd.none
     | AuthorsChanged authors -> 
-        { model with NewBook = { model.NewBook with Authors = authors }; AuthorsErrorText = verifyAuthors authors }, Cmd.none
+        { model with NewBook = { model.NewBook with Authors = authors }; AuthorsErrorText = Validation.verifyBookAuthors authors }, Cmd.none
     | LinkChanged link -> 
-        { model with NewBook = { model.NewBook with Link = link }; LinkErrorText = verifyLink link }, Cmd.none
+        { model with NewBook = { model.NewBook with Link = link }; LinkErrorText = Validation.verifyBookLink link }, Cmd.none
     | RemoveBook book -> 
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
         { model with WishList = wishList}, postWishListCmd(model.Token,wishList)
     | AddBook ->
-        if verifyBook model.NewBook then
+        if Validation.verifyBook model.NewBook then
             let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
             { model with WishList = wishList; NewBook = Book.empty }, postWishListCmd(model.Token,wishList)
         else
@@ -173,7 +159,7 @@ let addNewBookForm (model:Model) dispatch =
                          | Some e -> yield p [ClassName "text-danger"][text e]
                          | _ -> ()
                     ]
-                    button [ClassName ("btn " + buttonActive); OnClick (fun _ -> if verifyBook model.NewBook then dispatch (WishListMsg WishListMsg.AddBook))] [
+                    button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch (WishListMsg WishListMsg.AddBook))] [
                         i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []
                         text "Add"
                     ]  
