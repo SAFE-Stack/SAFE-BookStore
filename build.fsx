@@ -41,6 +41,9 @@ let deployDir = "./deploy"
 // Pattern specifying assemblies to be tested using expecto
 let testExecutables = "test/**/bin/Release/*Tests*.exe"
 
+let dockerUser = "forki"
+let dockerImageName = "fable-suave"
+
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
 // --------------------------------------------------------------------------------------
@@ -289,15 +292,29 @@ Target "Publish" (fun _ ->
         ExecProcess (fun info ->
             info.FileName <- "docker"
             info.WorkingDirectory <- deployDir
-            info.Arguments <- "build -t server .") TimeSpan.MaxValue
+            info.Arguments <- sprintf "build -t %s/%s ." dockerUser dockerImageName) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker build failed"
 )
-
-Target "Deploy" DoNothing
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
+
+Target "Deploy" (fun _ ->
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- "docker"
+            info.WorkingDirectory <- deployDir
+            info.Arguments <- sprintf "login --username \"%s\" --password \"%s\"" dockerUser (getBuildParam "DockerPassword")) TimeSpan.MaxValue
+    if result <> 0 then failwith "Docker login failed"
+
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- "docker"
+            info.WorkingDirectory <- deployDir
+            info.Arguments <- sprintf "push %s/%s" dockerUser dockerImageName) TimeSpan.MaxValue
+    if result <> 0 then failwith "Docker push failed"
+)
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
