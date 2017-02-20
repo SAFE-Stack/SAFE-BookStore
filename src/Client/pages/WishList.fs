@@ -62,8 +62,6 @@ let init (user:UserData) =
       ErrorMsg = "" }, loadWishListCmd user.Token
 
 
-
-
 let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> = 
     match msg with
     | WishListMsg.LoadForUser user ->
