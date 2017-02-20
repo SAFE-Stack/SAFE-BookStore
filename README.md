@@ -14,6 +14,7 @@ In order to kickoff the process run
     > build.cmd run // on windows
     $ ./build.sh run // on unix
     
+Login with test / test
 
 ## Requirements
 
