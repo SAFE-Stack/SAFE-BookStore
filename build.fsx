@@ -62,6 +62,7 @@ let npmTool = platformTool "npm" "npm.cmd"
 
 // Read additional information from the release notes document
 let release = LoadReleaseNotes "RELEASE_NOTES.md"
+let packageVersion = SemVerHelper.parse release.NugetVersion
 
 // Helper active pattern for project types
 let (|Fsproj|Csproj|Vbproj|Shproj|) (projFileName:string) =
@@ -220,17 +221,48 @@ Target "Run" (fun _ ->
     |> ignore
 )
 
+
+Target "Publish" (fun _ ->
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- dotnetExePath
+            info.WorkingDirectory <- serverPath
+            info.Arguments <- "publish -c Release -o \"" + FullName deployDir + "\"") TimeSpan.MaxValue
+    if result <> 0 then failwith "Publish failed"
+
+    let clientDir = deployDir </> "client"
+    let publicDir = clientDir </> "public"
+    let jsDir = clientDir </> "js"
+    let cssDir = clientDir </> "css"
+    let imageDir = clientDir </> "Images"
+
+    !! "src/Client/public/**/*.*" |> CopyFiles publicDir
+    !! "src/Client/js/**/*.*" |> CopyFiles jsDir
+    !! "src/Client/css/**/*.*" |> CopyFiles cssDir
+    !! "src/Images/**/*.*" |> CopyFiles imageDir
+
+    "src/Client/index.html" |> CopyFile clientDir
+
+    "Dockerfile" |> CopyFile deployDir
+
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- "docker"
+            info.WorkingDirectory <- deployDir
+            info.Arguments <- "build -t server .") TimeSpan.MaxValue
+    if result <> 0 then failwith "Docker build failed"
+)
+
+Target "Deploy" DoNothing
+
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
-Target "Release" DoNothing
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
 
 Target "All" DoNothing
-Target "BuildAll" DoNothing
-
 
 "Clean"
   ==> "InstallDotNetCore"
@@ -239,7 +271,8 @@ Target "BuildAll" DoNothing
   ==> "BuildClient"
   ==> "Build"
   ==> "All"
-  ==> "Release"
+  ==> "Publish"
+  ==> "Deploy"
 
 "Build"
   ==> "Run"

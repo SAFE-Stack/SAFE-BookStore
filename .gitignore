@@ -192,3 +192,4 @@ docs/content/release-notes.md
 docs/tools/FSharp.Formatting.svclog
 node_modules
 src/Client/public/
+deploy

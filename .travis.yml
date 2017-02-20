@@ -14,4 +14,4 @@ before_install:
   - chmod +x build.sh
  
 script: 
-  - ./build.sh BuildAll
+  - ./build.sh Build
