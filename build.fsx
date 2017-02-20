@@ -12,6 +12,7 @@ open Fake.ReleaseNotesHelper
 open Fake.UserInputHelper
 open System
 open System.IO
+open Fake.Testing.Expecto
 
 
 let project = "Suave/Fable sample"
@@ -35,6 +36,10 @@ let dotnetExePath =
     |> FullName
 
 let deployDir = "./deploy"
+
+
+// Pattern specifying assemblies to be tested using expecto
+let testExecutables = "test/**/bin/Release/*Tests*.exe"
 
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
@@ -193,12 +198,47 @@ Target "BuildClient" (fun _ ->
     run npmTool "run build" clientPath
 )
 
+
+let vsProjProps = 
+#if MONO
+    [ ("DefineConstants","MONO"); ("Configuration", configuration) ]
+#else
+    [ ("Configuration", configuration); ("Platform", "Any CPU") ]
+#endif
+
+Target "BuildTests" (fun _ ->
+    !! "./Tests.sln"
+    |> MSBuildReleaseExt "" vsProjProps "Rebuild"
+    |> ignore
+)
+
+Target "RunTests" (fun _ ->
+    ActivateFinalTarget "KillProcess"
+
+    let serverProcess =
+        let info = System.Diagnostics.ProcessStartInfo()
+        info.FileName <- dotnetExePath
+        info.WorkingDirectory <- serverPath
+        info.Arguments <- " run"
+        info.UseShellExecute <- false
+        System.Diagnostics.Process.Start info
+
+    !! testExecutables
+    |> Expecto (fun p -> { p with Parallel = false } )
+    |> ignore
+
+    serverProcess.Kill()
+)
+
 // --------------------------------------------------------------------------------------
 // Run the Website
 
-
 let ipAddress = "localhost"
 let port = 8080
+
+FinalTarget "KillProcess" (fun _ ->
+    killProcess "dotnet"
+    killProcess "dotnet.exe")
 
 
 Target "Run" (fun _ ->
@@ -238,6 +278,8 @@ Target "BuildAll" DoNothing
   ==> "AssemblyInfo"
   ==> "BuildClient"
   ==> "Build"
+  ==> "BuildTests"
+  ==> "RunTests"
   ==> "All"
   ==> "Release"
 

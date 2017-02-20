@@ -13,6 +13,7 @@ group Test
   nuget FSharp.Core redirects: force
   nuget Canopy
   nuget Expecto
+  nuget Selenium.WebDriver.ChromeDriver
 
 group Build
   source https://nuget.org/api/v2

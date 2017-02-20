@@ -916,6 +916,7 @@ NUGET
       System.Security.Cryptography.X509Certificates (>= 4.3) - framework: >= net46
       System.Threading.Timer (>= 4.3) - framework: >= net451
     Selenium.WebDriver (3.0)
+    Selenium.WebDriver.ChromeDriver (2.27)
     System.AppContext (4.3) - framework: >= net463
     System.Collections.Concurrent (4.3) - framework: >= net463
     System.Console (4.3) - framework: >= net463
