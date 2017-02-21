@@ -25,7 +25,7 @@ type Model = {
 
 let authUser (login:Login,apiUrl) =
     promise {
-        if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a user." else
+        if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
         if String.IsNullOrEmpty login.Password then return! failwithf "You need to fill in a password" else
 
         let body = toJson login
