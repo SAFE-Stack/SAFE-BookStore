@@ -5,8 +5,8 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("Client")>]
 [<assembly: AssemblyProductAttribute("Suave/Fable sample")>]
 [<assembly: AssemblyDescriptionAttribute("Suave and Fable sample")>]
-[<assembly: AssemblyVersionAttribute("0.1.0")>]
-[<assembly: AssemblyFileVersionAttribute("0.1.0")>]
+[<assembly: AssemblyVersionAttribute("0.1.1")>]
+[<assembly: AssemblyFileVersionAttribute("0.1.1")>]
 [<assembly: AssemblyConfigurationAttribute("Release")>]
 do ()
 
@@ -14,6 +14,6 @@ module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "Client"
     let [<Literal>] AssemblyProduct = "Suave/Fable sample"
     let [<Literal>] AssemblyDescription = "Suave and Fable sample"
-    let [<Literal>] AssemblyVersion = "0.1.0"
-    let [<Literal>] AssemblyFileVersion = "0.1.0"
+    let [<Literal>] AssemblyVersion = "0.1.1"
+    let [<Literal>] AssemblyFileVersion = "0.1.1"
     let [<Literal>] AssemblyConfiguration = "Release"
