@@ -331,13 +331,6 @@ Target "Deploy" (fun _ ->
             info.WorkingDirectory <- deployDir
             info.Arguments <- sprintf "push %s/%s" dockerUser dockerImageName) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker push failed"
-
-    let result =
-        ExecProcess (fun info ->
-            info.FileName <- "docker"
-            info.WorkingDirectory <- deployDir
-            info.Arguments <- sprintf "push %s/%s:%s" dockerUser dockerImageName release.NugetVersion) TimeSpan.MaxValue
-    if result <> 0 then failwith "Docker push tag failed"    
 )
 
 // --------------------------------------------------------------------------------------
