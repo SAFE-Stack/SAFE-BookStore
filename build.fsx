@@ -286,12 +286,9 @@ Target "Publish" (fun _ ->
 
     "src/Client/index.html" |> CopyFile clientDir
 
-    "Dockerfile" |> CopyFile deployDir
-
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
-            info.WorkingDirectory <- deployDir
             info.Arguments <- sprintf "build -t %s/%s ." dockerUser dockerImageName) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker build failed"
 )
