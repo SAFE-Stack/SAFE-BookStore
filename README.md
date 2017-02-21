@@ -4,6 +4,8 @@ This is a work in progress so it may not work yet as is on your machine.
 
 # A web stack designed for developer happiness
 
+The following document describes the Fable + Suave sample project. You can see it running on azure at http://fable-suave.azurewebsites.net.
+
 ## Development mode
 
 This development stack is designed to be used with minimal tooling. A instance of Visual Studio Code together with the excellent [Ionide](http://ionide.io/) plugin should be enough.
