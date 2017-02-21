@@ -202,6 +202,34 @@ Target "BuildClient" (fun _ ->
     run npmTool "run build" clientPath
 )
 
+Target "CreateDockerImage" (fun _ ->
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- dotnetExePath
+            info.WorkingDirectory <- serverPath
+            info.Arguments <- "publish -c Release -o \"" + FullName deployDir + "\"") TimeSpan.MaxValue
+    if result <> 0 then failwith "Publish failed"
+
+    let clientDir = deployDir </> "client"
+    let publicDir = clientDir </> "public"
+    let jsDir = clientDir </> "js"
+    let cssDir = clientDir </> "css"
+    let imageDir = clientDir </> "Images"
+
+    !! "src/Client/public/**/*.*" |> CopyFiles publicDir
+    !! "src/Client/js/**/*.*" |> CopyFiles jsDir
+    !! "src/Client/css/**/*.*" |> CopyFiles cssDir
+    !! "src/Images/**/*.*" |> CopyFiles imageDir
+
+    "src/Client/index.html" |> CopyFile clientDir
+
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- "docker"
+            info.Arguments <- sprintf "build -t %s/%s ." dockerUser dockerImageName) TimeSpan.MaxValue
+    if result <> 0 then failwith "Docker build failed"
+)
+
 
 let vsProjProps = 
 #if MONO
@@ -242,7 +270,8 @@ let port = 8080
 
 FinalTarget "KillProcess" (fun _ ->
     killProcess "dotnet"
-    killProcess "dotnet.exe")
+    killProcess "dotnet.exe"
+)
 
 
 Target "Run" (fun _ ->
@@ -264,34 +293,6 @@ Target "Run" (fun _ ->
     |> ignore
 )
 
-
-Target "Publish" (fun _ ->
-    let result =
-        ExecProcess (fun info ->
-            info.FileName <- dotnetExePath
-            info.WorkingDirectory <- serverPath
-            info.Arguments <- "publish -c Release -o \"" + FullName deployDir + "\"") TimeSpan.MaxValue
-    if result <> 0 then failwith "Publish failed"
-
-    let clientDir = deployDir </> "client"
-    let publicDir = clientDir </> "public"
-    let jsDir = clientDir </> "js"
-    let cssDir = clientDir </> "css"
-    let imageDir = clientDir </> "Images"
-
-    !! "src/Client/public/**/*.*" |> CopyFiles publicDir
-    !! "src/Client/js/**/*.*" |> CopyFiles jsDir
-    !! "src/Client/css/**/*.*" |> CopyFiles cssDir
-    !! "src/Images/**/*.*" |> CopyFiles imageDir
-
-    "src/Client/index.html" |> CopyFile clientDir
-
-    let result =
-        ExecProcess (fun info ->
-            info.FileName <- "docker"
-            info.Arguments <- sprintf "build -t %s/%s ." dockerUser dockerImageName) TimeSpan.MaxValue
-    if result <> 0 then failwith "Docker build failed"
-)
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
@@ -345,9 +346,9 @@ Target "All" DoNothing
   ==> "BuildClient"
   ==> "Build"
   ==> "BuildTests"
+  ==> "CreateDockerImage"
   ==> "RunTests"
   ==> "All"
-  ==> "Publish"
   ==> "PrepareRelease"
   ==> "Deploy"
 
