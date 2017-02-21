@@ -54,6 +54,11 @@ This is a really convenient technique for a shared domain model.
 
 ## Testing
 
+Start the full build (incl. UI tests) with:
+
+    > build.cmd // on windows
+    $ ./build.sh // on unix
+
 ### Expecto
 
 [Expecto](https://github.com/haf/expecto) is a test framework like NUnit or xUnit, but much more developer friendly. With Expecto you write tests as values in normal code. 
