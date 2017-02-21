@@ -83,7 +83,10 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
             let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
             { model with WishList = wishList; NewBook = Book.empty }, postWishListCmd(model.Token,wishList)
         else
-            model, Cmd.none
+            { model with 
+                TitleErrorText = Validation.verifyBookTitle model.NewBook.Title
+                AuthorsErrorText = Validation.verifyBookAuthors model.NewBook.Authors
+                LinkErrorText = Validation.verifyBookLink model.NewBook.Link }, Cmd.none
     | FetchError _ -> 
         model, Cmd.none
 
