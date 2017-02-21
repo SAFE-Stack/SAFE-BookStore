@@ -7,7 +7,7 @@ let main args =
     try
         let clientPath =
             match args |> Array.toList with
-            | clientPath:: _ -> clientPath
+            | clientPath:: _  when Directory.Exists clientPath -> clientPath
             | _ -> 
                 let devPath = Path.Combine("..","Client")
                 if Directory.Exists devPath then devPath else
