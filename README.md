@@ -46,9 +46,9 @@ The communication to the server is done via HTTPS calls to `/api/*`. If a user i
 
 The [Fable](http://fable.io/) compiler is used to compile the F# client code to JavaScript so that it can run in the browser.
 
-### Isomorphic F#
+### Shared code between server and client
 
-`Isomorphic F#` started a bit as a joke about [Isomorphic JavaScript](http://isomorphic.net/). The naming is really bad, but the idea to have the same code running on client and server is really interesting.
+"Isomorphic F#" started a bit as a joke about [Isomorphic JavaScript](http://isomorphic.net/). The naming is really bad, but the idea to have the same code running on client and server is really interesting.
 If you look at `src/Server/Shared/Domain.fs` then you will see code that is shared between client and server. On the server it is compiled to .NET core and for the client the Fable compiler is translating it into JavaScript.
 This is a really convenient technique for a shared domain model.
 
