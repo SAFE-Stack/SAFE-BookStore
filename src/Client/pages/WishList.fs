@@ -168,7 +168,7 @@ let addNewBookForm (model:Model) dispatch =
 
 let view (model:Model) (dispatch: AppMsg -> unit) = 
     div [] [
-        h4 [] [text "Wishlist"]
+        h4 [] [text (sprintf "Wishlist for %s" model.WishList.UserName) ]
         table [ClassName "table table-striped table-hover"] [
             thead [] [
                     tr [] [
