@@ -1,3 +1,2 @@
-### 0.1.0 - Unreleased
-* More awesome stuff coming
-* Added SourceLink for Source Indexing PDB
+### 0.1.0 - 21.02.2017
+* First Azure app services version under http://fable-suave.azurewebsites.net

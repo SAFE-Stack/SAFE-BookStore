@@ -289,13 +289,27 @@ Target "Publish" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
-            info.Arguments <- sprintf "build -t %s/%s ." dockerUser dockerImageName) TimeSpan.MaxValue
+            info.Arguments <- sprintf "build -t %s/%s:%s ." dockerUser dockerImageName release.NugetVersion) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker build failed"
 )
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
+
+Target "PrepareRelease" (fun _ ->
+    Git.Branches.checkout "" false "master"
+    Git.CommandHelper.directRunGitCommand "" "fetch origin" |> ignore
+    Git.CommandHelper.directRunGitCommand "" "fetch origin --tags" |> ignore
+    
+    StageAll ""
+    Git.Commit.Commit "" (sprintf "Bumping version to %O" release.NugetVersion)
+    Git.Branches.pushBranch "" "origin" "master"
+    
+    let tagName = string release.NugetVersion
+    Git.Branches.tag "" tagName
+    Git.Branches.pushTag "" "origin" tagName
+)
 
 Target "Deploy" (fun _ ->
     let result =
@@ -309,7 +323,7 @@ Target "Deploy" (fun _ ->
         ExecProcess (fun info ->
             info.FileName <- "docker"
             info.WorkingDirectory <- deployDir
-            info.Arguments <- sprintf "push %s/%s" dockerUser dockerImageName) TimeSpan.MaxValue
+            info.Arguments <- sprintf "push %s/%s:%s" dockerUser dockerImageName release.NugetVersion) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker push failed"
 )
 
@@ -328,6 +342,7 @@ Target "All" DoNothing
   ==> "RunTests"
   ==> "All"
   ==> "Publish"
+  ==> "PrepareRelease"
   ==> "Deploy"
 
 "Build"
