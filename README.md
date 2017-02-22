@@ -27,6 +27,7 @@ Usually you can just keep this mode running and running. Just edit files, see th
 
 * .NET or Mono
 * npm
+* On OS X/macOS, make sure you have OpenSSL installed and symlinked correctly, as described here: [https://www.microsoft.com/net/core#macos](https://www.microsoft.com/net/core#macos).
 
 ## Technology stack
 
