@@ -347,8 +347,8 @@ Target "All" DoNothing
   ==> "Build"
   ==> "BuildTests"
   ==> "RunTests"
-  ==> "CreateDockerImage"
   ==> "All"
+  ==> "CreateDockerImage"
   ==> "PrepareRelease"
   ==> "Deploy"
 
