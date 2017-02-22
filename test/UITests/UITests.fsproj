@@ -8,6 +8,7 @@
     <ProjectGuid>95d2789c-8b80-49e7-915a-ac670c36d3fb</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>IntegrationTests</RootNamespace>
+    <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AssemblyName>UITests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Name>Canopy.Tests</Name>
