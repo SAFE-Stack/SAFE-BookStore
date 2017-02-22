@@ -14,8 +14,10 @@ let rec findPackages (di:DirectoryInfo) =
 
 let rootDir = findPackages (DirectoryInfo (Directory.GetCurrentDirectory()))
 
+let executingDir () = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
+
 let startChrome() = 
-    canopy.configuration.chromeDir <- Directory.GetCurrentDirectory()
+    canopy.configuration.chromeDir <- executingDir()
     start chrome
 
 [<EntryPoint>]
