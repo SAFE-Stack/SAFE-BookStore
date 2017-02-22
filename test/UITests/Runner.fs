@@ -18,7 +18,8 @@ let executingDir () = System.IO.Path.GetDirectoryName(System.Reflection.Assembly
 
 let startChrome() = 
     canopy.configuration.chromeDir <- executingDir()
-    start chrome
+    canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"packages","test","PhantomJS","tools","phantomjs")
+    start phantomJS    
 
 [<EntryPoint>]
 let main args =

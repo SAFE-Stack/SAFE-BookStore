@@ -954,6 +954,7 @@ NUGET
       System.Security.Cryptography.Primitives (>= 4.3) - framework: >= net46
       System.Security.Cryptography.X509Certificates (>= 4.3) - framework: >= net46
       System.Threading.Timer (>= 4.3) - framework: >= net451
+    PhantomJS (2.1.1)
     Selenium.WebDriver (3.0)
     System.AppContext (4.3) - framework: >= net463
     System.Collections.Concurrent (4.3) - framework: >= net463
