@@ -109,7 +109,7 @@ let update msg model =
     | AppMsg.LoggedIn ->
         let nextPage = Page.WishList
         let m,cmd = urlUpdate (Ok nextPage) model
-        match model.Menu.User with
+        match m.Menu.User with
         | Some user ->
             m, Cmd.batch [cmd; Navigation.modifyUrl (toHash nextPage) ]
         | None ->
