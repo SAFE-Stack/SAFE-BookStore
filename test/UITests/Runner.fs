@@ -4,6 +4,7 @@ open System.IO
 open canopy
 open Expecto
 open System.Diagnostics
+open reporters
 open System
 
 let rec findPackages (di:DirectoryInfo) =
@@ -18,6 +19,8 @@ let executingDir () = System.IO.Path.GetDirectoryName(System.Reflection.Assembly
 
 let startChrome() = 
     canopy.configuration.chromeDir <- executingDir()
+    reporter <- new LiveHtmlReporter(Chrome, configuration.chromeDir) :> IReporter
+    reporter.setEnvironment "canopy test page"
     start chrome
 
 [<EntryPoint>]
