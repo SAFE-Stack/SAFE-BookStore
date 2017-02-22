@@ -12,17 +12,13 @@ let rec findPackages (di:DirectoryInfo) =
     if packages.Exists then di else 
     findPackages di.Parent
 
-let rootDir = findPackages (DirectoryInfo (Directory.GetCurrentDirectory()))
-
-let startChrome() = 
-    canopy.configuration.chromeDir <- Path.Combine(rootDir.FullName,"packages","test/Selenium.WebDriver.ChromeDriver/driver")
-    start chrome
+let rootDir = findPackages (DirectoryInfo (Directory.GetCurrentDirectory()))    
 
 [<EntryPoint>]
 let main args =
     try
         try
-            startChrome()
+            start chrome
             runTestsWithArgs { defaultConfig with ``parallel`` = false } args Tests.tests
         with e ->
             printfn "Error: %s" e.Message
