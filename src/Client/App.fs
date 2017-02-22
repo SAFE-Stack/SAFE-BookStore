@@ -150,7 +150,7 @@ let viewPage model dispatch =
 /// Constructs the view for the application given the model.
 let view model dispatch =
   div []
-    [ id lazyView2 Menu.view model.Menu dispatch
+    [ lazyView2 Menu.view model.Menu dispatch
       hr [] []
       div [ centerStyle "column" ] (viewPage model dispatch)
     ]
