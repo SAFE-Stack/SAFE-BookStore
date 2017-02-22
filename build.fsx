@@ -216,6 +216,19 @@ Target "BuildTests" (fun _ ->
     |> ignore
 )
 
+// --------------------------------------------------------------------------------------
+// Rename driver for macOS or Linux
+
+Target "RenameDrivers" (fun _ ->
+    match Environment.OSVersion.Platform with
+    |  PlatformID.Unix ->
+         if Environment.OSVersion.VersionString.Contains("Unix 4.") //linux kernel 4.x
+         then Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_linux64"
+         //assume macOS (the enum for macOS actually returns Unix so we have to cheese it)
+         else Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_macOS"
+    |  _ -> ()
+)
+
 Target "RunTests" (fun _ ->
     ActivateFinalTarget "KillProcess"
 
@@ -346,6 +359,7 @@ Target "All" DoNothing
   ==> "BuildClient"
   ==> "Build"
   ==> "BuildTests"
+  ==> "RenameDrivers"
   ==> "RunTests"
   ==> "All"
   ==> "CreateDockerImage"
