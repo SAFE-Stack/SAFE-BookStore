@@ -82,7 +82,7 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
     | AddBook ->
         if Validation.verifyBook model.NewBook then
             let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
-            { model with WishList = wishList }, postWishListCmd(model.Token,wishList)
+            { model with WishList = wishList; NewBook = Book.empty }, postWishListCmd(model.Token,wishList)
         else
             { model with 
                 TitleErrorText = Validation.verifyBookTitle model.NewBook.Title
@@ -112,6 +112,7 @@ let newBookForm (model:Model) dispatch =
                              yield input [
                                      HTMLAttr.Type "text"
                                      Name "Title"
+                                     Value (U2.Case1 model.NewBook.Title)
                                      ClassName "form-control"
                                      Placeholder "Please insert book title"
                                      Required true
@@ -149,6 +150,7 @@ let newBookForm (model:Model) dispatch =
                              yield input [ 
                                     HTMLAttr.Type "text"
                                     Name "Link"
+                                    Value (U2.Case1 model.NewBook.Link)
                                     ClassName "form-control"
                                     Placeholder "Please insert link"
                                     Required true
