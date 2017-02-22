@@ -12,13 +12,17 @@ let rec findPackages (di:DirectoryInfo) =
     if packages.Exists then di else 
     findPackages di.Parent
 
-let rootDir = findPackages (DirectoryInfo (Directory.GetCurrentDirectory()))    
+let rootDir = findPackages (DirectoryInfo (Directory.GetCurrentDirectory()))
+
+let startChrome() = 
+    canopy.configuration.chromeDir <- Directory.GetCurrentDirectory()
+    start chrome
 
 [<EntryPoint>]
 let main args =
     try
         try
-            start chrome
+            startChrome()
             runTestsWithArgs { defaultConfig with ``parallel`` = false } args Tests.tests
         with e ->
             printfn "Error: %s" e.Message
