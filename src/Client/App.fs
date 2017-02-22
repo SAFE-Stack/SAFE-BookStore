@@ -133,7 +133,7 @@ let viewPage model dispatch =
     match model.Page with
     | Page.Home ->
         [ words 60 "Welcome!"
-          words 40 "Learn Fabe at http://fable.io" ]
+          a [ Href "http://fable.io" ] [ words 20 "Learn Fable at fable.io" ] ]
 
     | Page.Login -> 
         match model.SubModel with
