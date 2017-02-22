@@ -13,8 +13,8 @@ open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 
-type Model = { 
-    WishList : WishList
+type Model = 
+  { WishList : WishList
     Token : string
     NewBook: Book
     TitleErrorText : string option
@@ -22,6 +22,7 @@ type Model = {
     LinkErrorText : string option
     ErrorMsg : string }
 
+/// Get the wish list from the server, used to populate the model
 let getWishList token =
     promise {        
         let url = "api/wishlist/"
@@ -81,7 +82,7 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
     | AddBook ->
         if Validation.verifyBook model.NewBook then
             let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
-            { model with WishList = wishList; NewBook = Book.empty }, postWishListCmd(model.Token,wishList)
+            { model with WishList = wishList }, postWishListCmd(model.Token,wishList)
         else
             { model with 
                 TitleErrorText = Validation.verifyBookTitle model.NewBook.Title
@@ -90,14 +91,14 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
     | FetchError _ -> 
         model, Cmd.none
 
-let addNewBookForm (model:Model) dispatch =
+let newBookForm (model:Model) dispatch =
     let buttonActive = if String.IsNullOrEmpty model.NewBook.Title || String.IsNullOrEmpty model.NewBook.Authors then "btn-disabled" else "btn-primary"
     
-    let titleStatus = if String.IsNullOrEmpty model.NewBook.Title then "" else "has-feedback has-success"
+    let titleStatus = if String.IsNullOrEmpty model.NewBook.Title then "" else "has-success"
 
-    let authorStatus = if String.IsNullOrEmpty model.NewBook.Authors then "" else "has-feedback has-success"
+    let authorStatus = if String.IsNullOrEmpty model.NewBook.Authors then "" else "has-success"
 
-    let linkStatus = if String.IsNullOrEmpty model.NewBook.Link then "" else "has-feedback has-success"
+    let linkStatus = if String.IsNullOrEmpty model.NewBook.Link then "" else "has-success"
 
     div [] [
         h4 [] [text "New Book"]
@@ -193,5 +194,5 @@ let view (model:Model) (dispatch: AppMsg -> unit) =
                         ]
             ]
         ]
-        addNewBookForm (model) dispatch
+        newBookForm (model) dispatch
     ]

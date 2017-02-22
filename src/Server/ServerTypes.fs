@@ -2,5 +2,8 @@ module ServerCode.ServerTypes
 
 open System
 
-type UserRights = { 
-    UserName : string }
+/// Represents the rights available for a request
+type UserRights = 
+   { UserName : string }
+
+    

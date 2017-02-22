@@ -4,7 +4,7 @@ nuget FSharp.Core prerelease redirects: force
 nuget Suave
 nuget Microsoft.Extensions.Logging.Console
 nuget System.Net.NetworkInformation
-nuget Newtonsoft.Json
+nuget Newtonsoft.Json prerelease
 nuget jose-jwt
 
 group Test

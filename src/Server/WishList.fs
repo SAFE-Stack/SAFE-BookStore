@@ -12,6 +12,7 @@ open System
 open Suave.ServerErrors
 open ServerCode.Domain
 
+/// The default initial data 
 let defaultWishList userName : WishList =
     {
         UserName = userName
@@ -24,8 +25,10 @@ let defaultWishList userName : WishList =
                Link = "https://www.manning.com/books/learn-fsharp" }]
     }
 
+/// Get the file name used to store the data for a specific user
 let getJSONFileName userName = sprintf "./temp/db/%s.json" userName
 
+/// Query the database
 let getWishListFromDB userName =
     let fi = FileInfo(getJSONFileName userName)
     if not fi.Exists then
@@ -34,25 +37,29 @@ let getWishListFromDB userName =
         File.ReadAllText(fi.FullName)
         |> JsonConvert.DeserializeObject<WishList>
 
+/// Save to the database
 let saveWishListToDB (wishList:WishList) =
     try
         let fi = FileInfo(getJSONFileName wishList.UserName)
         if not fi.Directory.Exists then
             fi.Directory.Create()
         File.WriteAllText(fi.FullName,JsonConvert.SerializeObject wishList)
-    with
-    | _ -> ()
+    with exn ->
+        printfn "Save failed %A" exn 
 
 
+/// Handle the GET on /api/wishlist
 let getWishList (ctx: HttpContext) =
     Auth.useToken ctx (fun token -> async {
         try
             let wishList = getWishListFromDB token.UserName
             return! Successful.OK (JsonConvert.SerializeObject wishList) ctx
-        with
-        | _ -> return! SERVICE_UNAVAILABLE "Database not available" ctx
+        with exn ->
+            printfn "SERVICE_UNAVAILABLE, %A" exn 
+            return! SERVICE_UNAVAILABLE "Database not available" ctx
     })
 
+/// Handle the POST on /api/wishlist
 let postWishList (ctx: HttpContext) =
     Auth.useToken ctx (fun token -> async {
         try
@@ -69,6 +76,7 @@ let postWishList (ctx: HttpContext) =
                     return! Successful.OK (JsonConvert.SerializeObject wishList) ctx
                 else
                     return! BAD_REQUEST "WishList is not valid" ctx
-        with
-        | _ -> return! SERVICE_UNAVAILABLE "Database not available" ctx
+        with exn -> 
+            printfn "SERVICE_UNAVAILABLE, %A" exn
+            return! SERVICE_UNAVAILABLE "Database not available" ctx
     })    

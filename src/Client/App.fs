@@ -16,9 +16,9 @@ open Elmish.UrlParser
 // Model
 
 type SubModel =
-| NoSubModel
-| LoginModel of Login.Model
-| WishListModel of WishList.Model
+  | NoSubModel
+  | LoginModel of Login.Model
+  | WishListModel of WishList.Model
 
 type Model =
   { Page : Page
@@ -109,7 +109,7 @@ let update msg model =
     | AppMsg.LoggedIn ->
         let nextPage = Page.WishList
         let m,cmd = urlUpdate (Ok nextPage) model
-        match model.Menu.User with
+        match m.Menu.User with
         | Some user ->
             m, Cmd.batch [cmd; Navigation.modifyUrl (toHash nextPage) ]
         | None ->
@@ -128,10 +128,12 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Client.Style
 
+/// Constructs the view for a page given the model and dispatcher.
 let viewPage model dispatch =
     match model.Page with
     | Page.Home ->
-        [ words 60 "Welcome!" ]
+        [ words 60 "Welcome!"
+          words 40 "Learn Fabe at http://fable.io" ]
 
     | Page.Login -> 
         match model.SubModel with
@@ -145,9 +147,10 @@ let viewPage model dispatch =
             [ div [ ] [ lazyView2 WishList.view m dispatch ]]
         | _ -> [ ]
 
+/// Constructs the view for the application given the model.
 let view model dispatch =
   div []
-    [ lazyView2 Menu.view model.Menu dispatch
+    [ id lazyView2 Menu.view model.Menu dispatch
       hr [] []
       div [ centerStyle "column" ] (viewPage model dispatch)
     ]
@@ -155,7 +158,7 @@ let view model dispatch =
 open Elmish.React
 
 // App
-Program.mkProgram init update view
+Program.mkProgram init update (lazyView2 view)
 |> Program.toNavigable hashParser urlUpdate
 |> Program.withConsoleTrace
 |> Program.withReact "elmish-app"

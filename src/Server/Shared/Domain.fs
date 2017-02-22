@@ -4,27 +4,29 @@ open System
 
 type JWT = string
 
-type Login = { 
-    UserName : string
-    Password : string }
+type Login = 
+    { UserName : string
+      Password : string }
 
-type Book = {
-    Title: string
-    Authors: string
-    Link: string }
-    with
-        static member empty = { 
-            Title = ""
-            Authors = ""
-            Link = "" }
+/// The data for each book in /api/wishlist
+type Book = 
+    { Title: string
+      Authors: string
+      Link: string }
 
-type WishList = {
-    UserName : string
-    Books : Book list }
-    with 
-        static member New userName = 
-            { UserName = userName
-              Books = [] }
+    static member empty = 
+        { Title = ""
+          Authors = ""
+          Link = "" }
+
+/// The logical representation of the data for /api/wishlist
+type WishList = 
+    { UserName : string
+      Books : Book list }
+
+    static member New userName = 
+        { UserName = userName
+          Books = [] }
 
 module Validation =
 
