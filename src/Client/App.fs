@@ -158,7 +158,7 @@ let view model dispatch =
 open Elmish.React
 
 // App
-Program.mkProgram init update (lazyView2 view)
+Program.mkProgram init update view
 |> Program.toNavigable hashParser urlUpdate
 |> Program.withConsoleTrace
 |> Program.withReact "elmish-app"
