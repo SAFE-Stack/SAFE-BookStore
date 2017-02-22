@@ -75,6 +75,10 @@ let update msg model =
             Page = Page.Login
             SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.modifyUrl (toHash Page.Login) ]
 
+    | StorageFailure e ->
+        console.log("Unable to access local storage:",e)
+        model, []
+
     | LoginMsg msg ->
         match model.SubModel with
         | LoginModel m -> 
@@ -85,8 +89,8 @@ let update msg model =
                 let newUser : UserData = { UserName = m.Login.UserName; Token = token }
                 let cmd =              
                     if model.Menu.User = Some newUser then cmd else
-                    Utils.save "user" newUser
-                    Cmd.batch [cmd; Cmd.ofMsg LoggedIn ]
+                    Cmd.batch [cmd
+                               Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn) StorageFailure ]
 
                 { model with 
                     SubModel = LoginModel m
@@ -115,12 +119,15 @@ let update msg model =
         | None ->
             m, Cmd.ofMsg Logout
 
-    | AppMsg.Logout ->
-        Utils.delete "user"
+    | AppMsg.LoggedOut ->
         { model with
             Page = Page.Home
             SubModel = NoSubModel
-            Menu = { model.Menu with User = None } }, Navigation.modifyUrl (toHash Page.Home)
+            Menu = { model.Menu with User = None } }, 
+        Navigation.modifyUrl (toHash Page.Home)
+
+    | AppMsg.Logout ->
+        model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure 
 
 // VIEW
 

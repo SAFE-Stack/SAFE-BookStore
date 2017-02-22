@@ -5,6 +5,8 @@ open ServerCode.Domain
 
 type AppMsg = 
 | LoggedIn
+| LoggedOut
+| StorageFailure of exn
 | OpenLogIn
 | LoginMsg of LoginMsg
 | WishListMsg of WishListMsg
