@@ -76,7 +76,7 @@ let update msg model =
             SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.modifyUrl (toHash Page.Login) ]
 
     | StorageFailure e ->
-        console.log("Unable to access local storage:",e)
+        printfn "Unable to access local storage: %A" e
         model, []
 
     | LoginMsg msg ->
