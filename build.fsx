@@ -220,13 +220,12 @@ Target "BuildTests" (fun _ ->
 // Rename driver for macOS or Linux
 
 Target "RenameDrivers" (fun _ ->
-    match Environment.OSVersion.Platform with
-    |  PlatformID.Unix ->
-         if Environment.OSVersion.VersionString.Contains("Unix 4.") //linux kernel 4.x
-         then Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_linux64"
-         //assume macOS (the enum for macOS actually returns Unix so we have to cheese it)
-         else Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_macOS"
-    |  _ -> ()
+    if not isWindows then
+        run npmTool "install phantomjs" ""
+    if isMacOS then
+        Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_macOS"
+    elif isLinux then
+        Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_linux64"    
 )
 
 Target "RunTests" (fun _ ->
@@ -239,6 +238,8 @@ Target "RunTests" (fun _ ->
         info.Arguments <- " run"
         info.UseShellExecute <- false
         System.Diagnostics.Process.Start info
+
+    System.Threading.Thread.Sleep 5000 |> ignore  // give server some time to start
 
     !! testExecutables
     |> Expecto (fun p -> { p with Parallel = false } )
