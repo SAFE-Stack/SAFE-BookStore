@@ -79,9 +79,6 @@
     <Compile Include="Tests.fs" />
     <Compile Include="Runner.fs" />
     <None Include="paket.references" />
-    <Content Include="phantomjs-license.txt">
-      <Paket>True</Paket>
-    </Content>
     <Content Include="App.config" />
     <None Include="chromedriver.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
