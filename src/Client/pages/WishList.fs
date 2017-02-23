@@ -13,8 +13,8 @@ open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 
-type Model = { 
-    WishList : WishList
+type Model = 
+  { WishList : WishList
     Token : string
     NewBook: Book
     TitleErrorText : string option
@@ -22,6 +22,7 @@ type Model = {
     LinkErrorText : string option
     ErrorMsg : string }
 
+/// Get the wish list from the server, used to populate the model
 let getWishList token =
     promise {        
         let url = "api/wishlist/"
@@ -90,14 +91,14 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
     | FetchError _ -> 
         model, Cmd.none
 
-let addNewBookForm (model:Model) dispatch =
+let newBookForm (model:Model) dispatch =
     let buttonActive = if String.IsNullOrEmpty model.NewBook.Title || String.IsNullOrEmpty model.NewBook.Authors then "btn-disabled" else "btn-primary"
     
-    let titleStatus = if String.IsNullOrEmpty model.NewBook.Title then "" else "has-feedback has-success"
+    let titleStatus = if String.IsNullOrEmpty model.NewBook.Title then "" else "has-success"
 
-    let authorStatus = if String.IsNullOrEmpty model.NewBook.Authors then "" else "has-feedback has-success"
+    let authorStatus = if String.IsNullOrEmpty model.NewBook.Authors then "" else "has-success"
 
-    let linkStatus = if String.IsNullOrEmpty model.NewBook.Link then "" else "has-feedback has-success"
+    let linkStatus = if String.IsNullOrEmpty model.NewBook.Link then "" else "has-success"
 
     div [] [
         h4 [] [text "New Book"]
@@ -111,6 +112,7 @@ let addNewBookForm (model:Model) dispatch =
                              yield input [
                                      HTMLAttr.Type "text"
                                      Name "Title"
+                                     Value (U2.Case1 model.NewBook.Title)
                                      ClassName "form-control"
                                      Placeholder "Please insert book title"
                                      Required true
@@ -148,6 +150,7 @@ let addNewBookForm (model:Model) dispatch =
                              yield input [ 
                                     HTMLAttr.Type "text"
                                     Name "Link"
+                                    Value (U2.Case1 model.NewBook.Link)
                                     ClassName "form-control"
                                     Placeholder "Please insert link"
                                     Required true
@@ -193,5 +196,5 @@ let view (model:Model) (dispatch: AppMsg -> unit) =
                         ]
             ]
         ]
-        addNewBookForm (model) dispatch
+        newBookForm (model) dispatch
     ]
