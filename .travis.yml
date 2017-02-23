@@ -1,5 +1,5 @@
 language: csharp
-sudo: false  # use the new container-based Travis infrastructure 
+sudo: true
 dist: trusty
 
 addons:
