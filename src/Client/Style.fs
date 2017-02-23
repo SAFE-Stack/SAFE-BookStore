@@ -18,7 +18,7 @@ let viewLink page description =
       Href (toHash page) ]
     [ unbox description]
 
-let internal centerStyle direction =
+let centerStyle direction =
     Style [ Display "flex"
             FlexDirection direction
             AlignItems "center"
@@ -29,7 +29,6 @@ let internal centerStyle direction =
 let words size message =
     span [ Style [ unbox("fontSize", size |> sprintf "%dpx") ] ] [ unbox message ]
 
-
 let text s = text [] [unbox s ]
 
 let buttonLink cssClass onClick elements = 
@@ -38,10 +37,10 @@ let buttonLink cssClass onClick elements =
         OnTouchStart (fun _ -> onClick())
         Style [ unbox("cursor", "pointer") ] ] elements
 
-let internal onEnter msg dispatch =
-    function
-    | (ev:React.KeyboardEvent) when ev.keyCode = 13. ->
-        ev.preventDefault()
-        dispatch msg
-    | _ -> ()
-    |> OnKeyDown
+let onEnter msg dispatch =
+    OnKeyDown (fun (ev:React.KeyboardEvent) ->
+        match ev with 
+        | _ when ev.keyCode = 13. ->
+            ev.preventDefault()
+            dispatch msg
+        | _ -> ())

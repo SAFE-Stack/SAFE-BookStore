@@ -15,7 +15,8 @@ let login (ctx: HttpContext) = async {
         |> JsonConvert.DeserializeObject<Domain.Login>
 
     try
-        if login.UserName <> "test" || login.Password <> "test" then
+        if (login.UserName <> "test" || login.Password <> "test") && 
+           (login.UserName <> "test2" || login.Password <> "test2") then
             return! failwithf "Could not authenticate %s" login.UserName
         let user : ServerTypes.UserRights = { UserName = login.UserName }
         let token = TokenUtils.encode user

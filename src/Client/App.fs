@@ -16,9 +16,9 @@ open Elmish.UrlParser
 // Model
 
 type SubModel =
-| NoSubModel
-| LoginModel of Login.Model
-| WishListModel of WishList.Model
+  | NoSubModel
+  | LoginModel of Login.Model
+  | WishListModel of WishList.Model
 
 type Model =
   { Page : Page
@@ -135,10 +135,12 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Client.Style
 
+/// Constructs the view for a page given the model and dispatcher.
 let viewPage model dispatch =
     match model.Page with
     | Page.Home ->
-        [ words 60 "Welcome!" ]
+        [ words 60 "Welcome!"
+          a [ Href "http://fable.io" ] [ words 20 "Learn Fable at fable.io" ] ]
 
     | Page.Login -> 
         match model.SubModel with
@@ -152,6 +154,7 @@ let viewPage model dispatch =
             [ div [ ] [ lazyView2 WishList.view m dispatch ]]
         | _ -> [ ]
 
+/// Constructs the view for the application given the model.
 let view model dispatch =
   div []
     [ lazyView2 Menu.view model.Menu dispatch
