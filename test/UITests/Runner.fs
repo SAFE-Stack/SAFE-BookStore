@@ -24,7 +24,7 @@ let isWindows =
     | PlatformID.WinCE -> true
     | _ -> false
 
-let startChrome() = 
+let startBrowser() = 
     canopy.configuration.chromeDir <- executingDir()
     if isWindows then
         canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"packages/test/PhantomJS/tools/phantomjs")
@@ -39,7 +39,7 @@ let startChrome() =
 let main args =
     try
         try
-            startChrome()
+            startBrowser()
             runTestsWithArgs { defaultConfig with ``parallel`` = false } args Tests.tests
         with e ->
             printfn "Error: %s" e.Message

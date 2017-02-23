@@ -239,6 +239,8 @@ Target "RunTests" (fun _ ->
         info.UseShellExecute <- false
         System.Diagnostics.Process.Start info
 
+    System.Threading.Thread.Sleep 5000 |> ignore  // give server some time to start
+
     !! testExecutables
     |> Expecto (fun p -> { p with Parallel = false } )
     |> ignore
