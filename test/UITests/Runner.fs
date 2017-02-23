@@ -19,7 +19,8 @@ let executingDir () = System.IO.Path.GetDirectoryName(System.Reflection.Assembly
 let startChrome() = 
     canopy.configuration.chromeDir <- executingDir()
     canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"node_modules/phantomjs/bin")
-    start phantomJS    
+    start phantomJS 
+    resize (1280, 960)
 
 [<EntryPoint>]
 let main args =
