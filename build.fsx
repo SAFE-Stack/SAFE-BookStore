@@ -220,6 +220,8 @@ Target "BuildTests" (fun _ ->
 // Rename driver for macOS or Linux
 
 Target "RenameDrivers" (fun _ ->
+    if not isWindows then
+        run npmTool "install phantomjs" ""
     if isMacOS then
         Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_macOS"
     elif isLinux then
