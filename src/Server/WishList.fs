@@ -11,6 +11,11 @@ open Suave.RequestErrors
 open System
 open Suave.ServerErrors
 open ServerCode.Domain
+open Suave.Logging
+open Suave.Logging.Message
+
+let logger = Log.create "FableSample"
+
 
 /// The default initial data 
 let defaultWishList userName : WishList =
@@ -45,8 +50,7 @@ let saveWishListToDB (wishList:WishList) =
             fi.Directory.Create()
         File.WriteAllText(fi.FullName,JsonConvert.SerializeObject wishList)
     with exn ->
-        printfn "Save failed %A" exn 
-
+        logger.error (eventX "Save failed with exception" >> addExn exn)
 
 /// Handle the GET on /api/wishlist
 let getWishList (ctx: HttpContext) =
@@ -55,7 +59,7 @@ let getWishList (ctx: HttpContext) =
             let wishList = getWishListFromDB token.UserName
             return! Successful.OK (JsonConvert.SerializeObject wishList) ctx
         with exn ->
-            printfn "SERVICE_UNAVAILABLE, %A" exn 
+            logger.error (eventX "SERVICE_UNAVAILABLE" >> addExn exn)
             return! SERVICE_UNAVAILABLE "Database not available" ctx
     })
 
@@ -76,7 +80,7 @@ let postWishList (ctx: HttpContext) =
                     return! Successful.OK (JsonConvert.SerializeObject wishList) ctx
                 else
                     return! BAD_REQUEST "WishList is not valid" ctx
-        with exn -> 
-            printfn "SERVICE_UNAVAILABLE, %A" exn
+        with exn ->
+            logger.error (eventX "Database not available" >> addExn exn)
             return! SERVICE_UNAVAILABLE "Database not available" ctx
     })    
