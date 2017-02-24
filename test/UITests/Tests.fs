@@ -19,6 +19,9 @@ let tests =
             url serverUrl
             waitForElement ".elmish-app"
 
+            let logout = someElement  ".logout"
+            if logout.IsSome then click "Logout"
+
             click "Login"
 
             "#username" << "test"
