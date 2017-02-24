@@ -29,5 +29,5 @@ let view (model:Model) dispatch =
           if model.User = None then 
               yield viewLink (Login) "Login" 
           else 
-              yield buttonLink "" (fun _ -> dispatch Logout) [ text "Logout" ]
+              yield buttonLink "logout" (fun _ -> dispatch Logout) [ text "Logout" ]
         ]
