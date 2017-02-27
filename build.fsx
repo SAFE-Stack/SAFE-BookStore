@@ -9,7 +9,6 @@ open Fake
 open Fake.Git
 open Fake.AssemblyInfoFile
 open Fake.ReleaseNotesHelper
-open Fake.UserInputHelper
 open System
 open System.IO
 open Fake.Testing.Expecto
@@ -60,7 +59,8 @@ let run' timeout cmd args dir =
 let run = run' System.TimeSpan.MaxValue
 
 let platformTool tool winTool =
-    if isUnix then tool else winTool
+    let tool = if isUnix then tool else winTool
+    tool
     |> ProcessHelper.tryFindFileOnPath
     |> function Some t -> t | _ -> failwithf "%s not found" tool 
 
@@ -146,13 +146,14 @@ Target "InstallDotNetCore" (fun _ ->
                 sprintf "dotnet-dev-ubuntu-x64.%s.tar.gz" dotnetcliVersion
             else
                 sprintf "dotnet-dev-osx-x64.%s.tar.gz" dotnetcliVersion
-        let downloadPath = 
-                sprintf "https://dotnetcli.azureedge.net/dotnet/Sdk/%s/%s" dotnetcliVersion archiveFileName
+        let downloadPath = sprintf "https://dotnetcli.azureedge.net/dotnet/Sdk/%s/%s" dotnetcliVersion archiveFileName
         let localPath = Path.Combine(dotnetSDKPath, archiveFileName)
 
         tracefn "Installing '%s' to '%s'" downloadPath localPath
         
-        use webclient = new Net.WebClient()
+        let proxy = Net.WebRequest.DefaultWebProxy
+        proxy.Credentials <- Net.CredentialCache.DefaultCredentials
+        use webclient = new Net.WebClient(Proxy = proxy)
         webclient.DownloadFile(downloadPath, localPath)
 
         if not isWindows then
