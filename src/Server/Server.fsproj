@@ -20,10 +20,7 @@
       <Paket>True</Paket>
     </Content>
 
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.0-beta-060000" PrivateAssets="All" />
-    <DotNetCliToolReference Include="dotnet-compile-fsc" Version="1.0.0-preview2-020000" />
-
-    <EmbeddedResource Include="**\*.resx" />
+    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.*" PrivateAssets="All" />
     <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0-msbuild2-final" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
