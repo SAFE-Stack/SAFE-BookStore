@@ -26,13 +26,11 @@ let clientPath = "./src/Client" |> FullName
 
 let serverPath = "./src/Server/" |> FullName
 
-let dotnetcliVersion = "1.0.0-rc4-004771"
+let dotnetcliVersion = "1.0.1"
 
 let dotnetSDKPath = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) </> "dotnetcore" |> FullName
 
-let dotnetExePath =
-    dotnetSDKPath </> (if isWindows then "dotnet.exe" else "dotnet")
-    |> FullName
+let mutable dotnetExePath = "dotnet"
 
 let deployDir = "./deploy"
 
@@ -121,17 +119,13 @@ Target "Clean" (fun _ ->
 Target "InstallDotNetCore" (fun _ ->
     let correctVersionInstalled = 
         try
-            if FileInfo(dotnetExePath |> Path.GetFullPath).Exists then
-                let processResult = 
-                    ExecProcessAndReturnMessages (fun info ->  
-                    info.FileName <- dotnetExePath
-                    info.WorkingDirectory <- Environment.CurrentDirectory
-                    info.Arguments <- "--version") (TimeSpan.FromMinutes 30.)
+            let processResult = 
+                ExecProcessAndReturnMessages (fun info ->  
+                info.FileName <- dotnetExePath
+                info.WorkingDirectory <- Environment.CurrentDirectory
+                info.Arguments <- "--version") (TimeSpan.FromMinutes 30.)
 
-                processResult.Messages |> separated "" = dotnetcliVersion
-                
-            else
-                false
+            processResult.Messages |> separated "" = dotnetcliVersion
         with 
         | _ -> false
 
@@ -172,8 +166,10 @@ Target "InstallDotNetCore" (fun _ ->
         System.IO.Directory.EnumerateDirectories dotnetSDKPath
         |> Seq.iter (fun path -> tracefn " - %s%c" path System.IO.Path.DirectorySeparatorChar)
 
-    let oldPath = System.Environment.GetEnvironmentVariable("PATH")
-    System.Environment.SetEnvironmentVariable("PATH", sprintf "%s%s%s" dotnetSDKPath (System.IO.Path.PathSeparator.ToString()) oldPath)
+        dotnetExePath <- dotnetSDKPath </> (if isWindows then "dotnet.exe" else "dotnet")
+
+    // let oldPath = System.Environment.GetEnvironmentVariable("PATH")
+    // System.Environment.SetEnvironmentVariable("PATH", sprintf "%s%s%s" dotnetSDKPath (System.IO.Path.PathSeparator.ToString()) oldPath)
 )
 
 // --------------------------------------------------------------------------------------
