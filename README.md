@@ -15,9 +15,12 @@ Start the development mode with:
     > build.cmd run // on windows
     $ ./build.sh run // on unix
 
-This should download all dependencies like .NET Core SDK, node, ... and start the development server. It will also open a browser with the website on http://localhost:8080.
+This should download all dependencies like .NET Core SDK, node, ... and start the development server. It will also open a browser with the website on http://localhost:8080.  
 
-You can now edit files in `src/Server` or `src/Client` and recompile + browser refresh will be triggered automatically. 
+If you have problems with the download of the .NET Core SDK via the `build.cmd` or `build.sh` script, please install the SDK manually from [here](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.0.4-download.md). Verify
+that you have at least SDK version 1.0.1 installed (`dotnet --version`) and then rerun the build script.
+
+You can now edit files in `src/Server` or `src/Client` and recompile + browser refresh will be triggered automatically.
 
 ![Development mode](https://cloud.githubusercontent.com/assets/57396/23174149/af93da32-f85b-11e6-8de2-01c274f54a27.gif)
 
@@ -31,13 +34,13 @@ Usually you can just keep this mode running and running. Just edit files, see th
 
 ## Technology stack
 
-### Suave on .NET Core 
+### Suave on .NET Core
 
 The webserver backend is running as a [Suave.io](https://suave.io/) service on .NET Core.
 
 In development mode the server is automatically restarted whenever a file in `src/Server` is saved.
 
-### React/Elmish client 
+### React/Elmish client
 
 The client is [React](https://facebook.github.io/react/) single page application that uses [fable-elmish](https://github.com/fable-compiler/fable-elmish) to provide a scaffold for the code.
 
@@ -62,7 +65,7 @@ Start the full build (incl. UI tests) with:
 
 ### Expecto
 
-[Expecto](https://github.com/haf/expecto) is a test framework like NUnit or xUnit, but much more developer friendly. With Expecto you write tests as values in normal code. 
+[Expecto](https://github.com/haf/expecto) is a test framework like NUnit or xUnit, but much more developer friendly. With Expecto you write tests as values in normal code.
 Tests can be composed, reduced, filtered, repeated and passed as values, because they are values. This gives the programmer a lot of leverage when writing tests.
 
 If you are in [development mode](#development-mode) then you can use Expecto's focused test feature to run a selected test against the running server.
@@ -81,7 +84,7 @@ If you are in [development mode](#development-mode) then you can use Expecto's f
             "#password" << "test"
 
             click "Log In"
-            
+
             waitForElement "Isaac Abraham"
 
 ![Canopy in action](https://cloud.githubusercontent.com/assets/57396/23131425/38d06e8c-f78a-11e6-9ebc-8442b0abf752.gif)
@@ -100,4 +103,3 @@ If you are in [development mode](#development-mode) then you can use Expecto's f
 
 - [@forki](https://github.com/forki)
 - [@alfonsogarciacaro](https://github.com/alfonsogarciacaro)
-
