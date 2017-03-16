@@ -911,7 +911,7 @@ NUGET
 GROUP Build
 NUGET
   remote: https://www.nuget.org/api/v2
-    FAKE (4.50.1)
+    FAKE (4.55)
 
 GROUP Test
 FRAMEWORK: >= NET45
@@ -921,9 +921,9 @@ NUGET
       FSharp.Core (>= 4.0.1.7-alpha) - framework: >= net463
       NETStandard.Library (>= 1.6) - framework: >= net463
       System.Xml.XDocument (>= 4.0.11) - framework: >= net463
-    canopy (1.1.4)
+    canopy (1.2)
       FSharp.Core (>= 3.0.2)
-      Selenium.WebDriver (3.0)
+      Selenium.WebDriver (>= 3.3)
     Expecto (4.0.3)
       Argu (>= 3.2)
       FSharp.Core (>= 3.1.2.5)
@@ -955,7 +955,7 @@ NUGET
       System.Security.Cryptography.X509Certificates (>= 4.3) - framework: >= net46
       System.Threading.Timer (>= 4.3) - framework: >= net451
     PhantomJS (2.1.1)
-    Selenium.WebDriver (3.0)
+    Selenium.WebDriver (3.3)
     System.AppContext (4.3) - framework: >= net463
     System.Collections.Concurrent (4.3) - framework: >= net463
     System.Console (4.3) - framework: >= net463
