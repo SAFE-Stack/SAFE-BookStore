@@ -117,20 +117,24 @@ Target "Clean" (fun _ ->
 
 
 Target "InstallDotNetCore" (fun _ ->
-    let correctVersionInstalled = 
+
+    let buildLocalPath = dotnetSDKPath </> (if isWindows then "dotnet.exe" else "dotnet")
+    let correctVersionInstalled exe = 
         try
             let processResult = 
                 ExecProcessAndReturnMessages (fun info ->  
-                info.FileName <- dotnetExePath
+                info.FileName <- exe
                 info.WorkingDirectory <- Environment.CurrentDirectory
                 info.Arguments <- "--version") (TimeSpan.FromMinutes 30.)
-
             processResult.Messages |> separated "" = dotnetcliVersion
         with 
         | _ -> false
 
-    if correctVersionInstalled then
-        tracefn "dotnetcli %s already installed" dotnetcliVersion
+    if correctVersionInstalled dotnetExePath  then
+        tracefn "dotnetcli %s already installed in PATH" dotnetcliVersion
+    elif correctVersionInstalled buildLocalPath then
+        tracefn "cmd %s already installed in LocalApplicationData" dotnetcliVersion
+        dotnetExePath <- buildLocalPath
     else
         CleanDir dotnetSDKPath
         let archiveFileName = 
@@ -159,17 +163,14 @@ Target "InstallDotNetCore" (fun _ ->
             |> assertExitCodeZero
         else  
             System.IO.Compression.ZipFile.ExtractToDirectory(localPath, dotnetSDKPath)
-        
+
         tracefn "dotnet cli path - %s" dotnetSDKPath
         System.IO.Directory.EnumerateFiles dotnetSDKPath
         |> Seq.iter (fun path -> tracefn " - %s" path)
         System.IO.Directory.EnumerateDirectories dotnetSDKPath
         |> Seq.iter (fun path -> tracefn " - %s%c" path System.IO.Path.DirectorySeparatorChar)
 
-        dotnetExePath <- dotnetSDKPath </> (if isWindows then "dotnet.exe" else "dotnet")
-
-    // let oldPath = System.Environment.GetEnvironmentVariable("PATH")
-    // System.Environment.SetEnvironmentVariable("PATH", sprintf "%s%s%s" dotnetSDKPath (System.IO.Path.PathSeparator.ToString()) oldPath)
+        dotnetExePath <- buildLocalPath
 )
 
 // --------------------------------------------------------------------------------------
