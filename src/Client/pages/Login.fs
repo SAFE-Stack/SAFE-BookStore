@@ -114,7 +114,7 @@ let view model (dispatch: AppMsg -> unit) =
                     ClassName "form-control input-lg"
                     Placeholder "Username"
                     Value (U2.Case1 model.Login.UserName)
-                    OnInput (fun ev -> dispatch (LoginMsg (SetUserName (unbox ev.target?value))))
+                    OnChange (fun ev -> dispatch (LoginMsg (SetUserName !!ev.target?value)))
                     AutoFocus true ] []
           ]
 
@@ -128,7 +128,7 @@ let view model (dispatch: AppMsg -> unit) =
                         ClassName "form-control input-lg"
                         Placeholder "Password"
                         Value (U2.Case1 model.Login.Password)
-                        OnInput (fun ev -> dispatch (LoginMsg (SetPassword (unbox ev.target?value))))
+                        OnChange (fun ev -> dispatch (LoginMsg (SetPassword !!ev.target?value)))
                         onEnter (LoginMsg ClickLogIn) dispatch  ] []
             ]    
            
