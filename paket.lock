@@ -1,6 +1,6 @@
 NUGET
   remote: https://www.nuget.org/api/v2
-    FSharp.Core (4.1) - redirects: force
+    FSharp.Core (4.1.0.2) - redirects: force
       System.Collections (>= 4.0.11) - framework: >= netstandard16
       System.Console (>= 4.0) - framework: >= netstandard16
       System.Diagnostics.Debug (>= 4.0.11) - framework: >= netstandard16
@@ -51,14 +51,14 @@ NUGET
       System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
       System.Runtime.InteropServices (>= 4.3) - framework: dnxcore50, >= netstandard13
       System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard13
-    Microsoft.Extensions.Configuration.Abstractions (1.1) - framework: >= net451, >= netstandard13
+    Microsoft.Extensions.Configuration.Abstractions (1.1.1) - framework: >= net451, >= netstandard13
       Microsoft.Extensions.Primitives (>= 1.1) - framework: >= netstandard10
       NETStandard.Library (>= 1.6.1) - framework: >= netstandard10
-    Microsoft.Extensions.Logging.Abstractions (1.1) - framework: >= net451, >= netstandard13
+    Microsoft.Extensions.Logging.Abstractions (1.1.1) - framework: >= net451, >= netstandard13
       NETStandard.Library (>= 1.6.1) - framework: >= net45, >= netstandard11
-    Microsoft.Extensions.Logging.Console (1.1)
-      Microsoft.Extensions.Configuration.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
-      Microsoft.Extensions.Logging.Abstractions (>= 1.1) - framework: >= net451, >= netstandard13
+    Microsoft.Extensions.Logging.Console (1.1.1)
+      Microsoft.Extensions.Configuration.Abstractions (>= 1.1.1) - framework: >= net451, >= netstandard13
+      Microsoft.Extensions.Logging.Abstractions (>= 1.1.1) - framework: >= net451, >= netstandard13
       NETStandard.Library (>= 1.6.1) - framework: >= net451, >= netstandard13
     Microsoft.Extensions.Primitives (1.1) - framework: >= net451, >= netstandard13
       NETStandard.Library (>= 1.6.1) - framework: >= netstandard10
@@ -147,7 +147,7 @@ NUGET
       System.Threading.Timer (>= 4.3) - framework: >= net451, >= netstandard12
       System.Xml.ReaderWriter (>= 4.3) - framework: >= netstandard10
       System.Xml.XDocument (>= 4.3) - framework: >= netstandard10
-    Newtonsoft.Json (9.0.2-beta2)
+    Newtonsoft.Json (10.0.1-beta1)
       Microsoft.CSharp (>= 4.0.1) - framework: >= netstandard10
       System.Collections (>= 4.0.11) - framework: >= netstandard10
       System.ComponentModel.TypeConverter (>= 4.1) - framework: >= netstandard10
@@ -640,12 +640,12 @@ NUGET
       Microsoft.NETCore.Targets (>= 1.1) - framework: >= netstandard13
       System.Runtime (>= 4.3) - framework: >= netstandard13
     System.Runtime.InteropServices (4.3) - framework: >= net451, dnxcore50, >= netstandard13, netstandard14
-      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
-      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
-      System.Reflection (>= 4.3) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
-      System.Reflection.Primitives (>= 4.3) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
-      System.Runtime (>= 4.3) - framework: net462, >= net463, dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
-      System.Runtime.Handles (>= 4.3) - framework: dnxcore50, netstandard13, >= netstandard15
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15, netcore11
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15, netcore11
+      System.Reflection (>= 4.3) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15, netcore11
+      System.Reflection.Primitives (>= 4.3) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15, netcore11
+      System.Runtime (>= 4.3) - framework: net462, >= net463, dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15, netcore11
+      System.Runtime.Handles (>= 4.3) - framework: dnxcore50, netstandard13, >= netstandard15, netcore11
     System.Runtime.InteropServices.RuntimeInformation (4.3) - framework: >= net451, >= netstandard13
       runtime.native.System (>= 4.3) - framework: >= netstandard11
       System.Reflection (>= 4.3) - framework: dnxcore50, >= netstandard11
@@ -808,7 +808,7 @@ NUGET
       System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard16
       System.Globalization (>= 4.3) - framework: dnxcore50, >= netstandard16
       System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard16
-      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard16
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard16, netcore11
       System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard16
       System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard16
     System.Threading (4.3) - framework: >= net451, dnxcore50, >= netstandard10, netstandard13, netstandard14
@@ -911,7 +911,7 @@ NUGET
 GROUP Build
 NUGET
   remote: https://www.nuget.org/api/v2
-    FAKE (4.50.1)
+    FAKE (4.55)
 
 GROUP Test
 FRAMEWORK: >= NET45
@@ -921,14 +921,14 @@ NUGET
       FSharp.Core (>= 4.0.1.7-alpha) - framework: >= net463
       NETStandard.Library (>= 1.6) - framework: >= net463
       System.Xml.XDocument (>= 4.0.11) - framework: >= net463
-    canopy (1.1.4)
+    canopy (1.2)
       FSharp.Core (>= 3.0.2)
-      Selenium.WebDriver (3.0)
+      Selenium.WebDriver (>= 3.3)
     Expecto (4.0.3)
       Argu (>= 3.2)
       FSharp.Core (>= 3.1.2.5)
       Mono.Cecil (>= 0.9.6.4)
-    FSharp.Core (4.1) - redirects: force
+    FSharp.Core (4.1.0.2) - redirects: force
       System.ValueTuple (>= 4.3)
     Microsoft.Win32.Primitives (4.3) - framework: >= net463
     Mono.Cecil (0.9.6.4)
@@ -955,7 +955,7 @@ NUGET
       System.Security.Cryptography.X509Certificates (>= 4.3) - framework: >= net46
       System.Threading.Timer (>= 4.3) - framework: >= net451
     PhantomJS (2.1.1)
-    Selenium.WebDriver (3.0)
+    Selenium.WebDriver (3.3)
     System.AppContext (4.3) - framework: >= net463
     System.Collections.Concurrent (4.3) - framework: >= net463
     System.Console (4.3) - framework: >= net463
