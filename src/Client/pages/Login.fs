@@ -72,7 +72,7 @@ let update (msg:LoginMsg) model : Model*Cmd<LoginMsg> =
     | LoginMsg.SetPassword pw ->
         { model with Login = { model.Login with Password = pw }}, []
     | LoginMsg.ClickLogIn ->
-        model, authUserCmd model.Login "/api/users/login"       
+        model, authUserCmd model.Login "/api/users/login"
     | LoginMsg.AuthError exn ->
         { model with ErrorMsg = string (exn.Message) }, []
 
@@ -113,7 +113,7 @@ let view model (dispatch: AppMsg -> unit) =
                     HTMLAttr.Type "text"
                     ClassName "form-control input-lg"
                     Placeholder "Username"
-                    Value (U2.Case1 model.Login.UserName)
+                    DefaultValue (U2.Case1 model.Login.UserName)
                     OnChange (fun ev -> dispatch (LoginMsg (SetUserName !!ev.target?value)))
                     AutoFocus true ] []
           ]
@@ -127,7 +127,7 @@ let view model (dispatch: AppMsg -> unit) =
                         HTMLAttr.Type "password"
                         ClassName "form-control input-lg"
                         Placeholder "Password"
-                        Value (U2.Case1 model.Login.Password)
+                        DefaultValue (U2.Case1 model.Login.Password)
                         OnChange (fun ev -> dispatch (LoginMsg (SetPassword !!ev.target?value)))
                         onEnter (LoginMsg ClickLogIn) dispatch  ] []
             ]    

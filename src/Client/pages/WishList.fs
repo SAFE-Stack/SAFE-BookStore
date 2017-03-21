@@ -112,7 +112,7 @@ let newBookForm (model:Model) dispatch =
                              yield input [
                                      HTMLAttr.Type "text"
                                      Name "Title"
-                                     Value (U2.Case1 model.NewBook.Title)
+                                     DefaultValue (U2.Case1 model.NewBook.Title)
                                      ClassName "form-control"
                                      Placeholder "Please insert book title"
                                      Required true
@@ -131,7 +131,7 @@ let newBookForm (model:Model) dispatch =
                              yield input [ 
                                      HTMLAttr.Type "text"
                                      Name "Author"
-                                     Value (U2.Case1 model.NewBook.Authors)
+                                     DefaultValue (U2.Case1 model.NewBook.Authors)
                                      ClassName "form-control"
                                      Placeholder "Please insert authors"
                                      Required true
@@ -150,7 +150,7 @@ let newBookForm (model:Model) dispatch =
                              yield input [ 
                                     HTMLAttr.Type "text"
                                     Name "Link"
-                                    Value (U2.Case1 model.NewBook.Link)
+                                    DefaultValue (U2.Case1 model.NewBook.Link)
                                     ClassName "form-control"
                                     Placeholder "Please insert link"
                                     Required true
