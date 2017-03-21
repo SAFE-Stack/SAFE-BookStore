@@ -24,7 +24,7 @@
     <DotNetCliToolReference Include="dotnet-compile-fsc" Version="1.0.0-preview2-020000" />
 
     <EmbeddedResource Include="**\*.resx" />
-    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0-msbuild2-final" />
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
