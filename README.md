@@ -102,21 +102,21 @@ If you are in [development mode](#development-mode) then you can use Expecto's f
 ## Build path
 
 Mixing Fsharp with Javascript and Fable, and throwing a bit of webpack in the middle doesn't provide the most straightforward build process.
-Here is how it works for [Development mode](EADME.md#development-mode)
+Here is how it works for [Development mode](README.md#development-mode)
 
     > build.cmd run // on windows
     $ ./build.sh run // on unix
 
-This command will call in **build.fsx** the target "Run"
-This command will start in parallel :
-* a **dotnet watch** build on the Server.fsproj (Note that Suave is launched on port 8085)
-* a **npm run watch** command in src/Client folder
-* a browser on port 8080
+This command will call in **build.fsx** the target "Run".
+It will start in parallel :
+* a **dotnet watch** build on the [Server.fsproj](src/Server/Server.fsproj) (note: Suave is launched on port **8085**)
+* a **npm run watch** command in [src/Client](src/Client) folder
+* a browser on port **8080**
 
-On the Javascript side, we have :
-1. [Build.fsx](build.fsx) starts npm with  **run** argument telling to executre the **watch** target.
-2. All npm script target can be found in [src/Client/package.json](src/Client/package.json). **watch** will start fable compilation with **-d** for target debug and **-w** (watch) to recompile project much faster on file modification. 
-3. All Fable script target can be found in [src/Client/fableconfig.json](src/Client/fableconfig.json). Debug target (**-d**) script will start **webpack-dev-server** in watch mode and with hot reloading.
+On the Javascript side :
+1. [Build.fsx](build.fsx) starts npm with  **run** argument telling to execute the **watch** target.
+2. All npm scripts can be found in [src/Client/package.json](src/Client/package.json). **watch** will start fable compilation with **-d** for target debug and **-w** (watch) to recompile project much faster on file modification. 
+3. All Fable scripts can be found in [src/Client/fableconfig.json](src/Client/fableconfig.json). Debug target (**-d**) script will start **webpack-dev-server** in watch mode and with hot reloading.
 4. Config for **webpack-dev-server is found** in [src/Client/webpack.config.js](src/Client/webpack.config.js). In this config, webpack-dev-server is running on port 8080. Any call to /api/ is routed to port 8085 (our original Suave webserver)
 
 ## Maintainer(s)
