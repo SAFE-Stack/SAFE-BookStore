@@ -56,6 +56,14 @@ let run' timeout cmd args dir =
 
 let run = run' System.TimeSpan.MaxValue
 
+let runDotnet workingDir args =
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- dotnetExePath
+            info.WorkingDirectory <- workingDir
+            info.Arguments <- args) TimeSpan.MaxValue
+    if result <> 0 then failwithf "dotnet %s failed" args    
+
 let platformTool tool winTool =
     let tool = if isUnix then tool else winTool
     tool
@@ -177,27 +185,17 @@ Target "InstallDotNetCore" (fun _ ->
 // Build library & test project
 
 Target "Build" (fun _ ->
-    let result =
-        ExecProcess (fun info ->
-            info.FileName <- dotnetExePath
-            info.WorkingDirectory <- serverPath
-            info.Arguments <- "restore") TimeSpan.MaxValue
-    if result <> 0 then failwith "Restore failed"
-
-    let result =
-        ExecProcess (fun info ->
-            info.FileName <- dotnetExePath
-            info.WorkingDirectory <- serverPath
-            info.Arguments <- "build") TimeSpan.MaxValue
-    if result <> 0 then failwith "Build failed"
+    runDotnet serverPath "restore"
+    runDotnet serverPath "build"
 )
 
 Target "InstallClient" (fun _ ->
     run npmTool "install" ""
+    runDotnet clientPath "restore"
 )
 
 Target "BuildClient" (fun _ ->
-    run npmTool "run build" clientPath
+    runDotnet clientPath "fable npm-run build"
 )
 
 
@@ -267,7 +265,7 @@ Target "Run" (fun _ ->
                 info.Arguments <- "watch run") TimeSpan.MaxValue
         if result <> 0 then failwith "Website shut down." }
 
-    let fablewatch = async { run npmTool "run watch" clientPath }
+    let fablewatch = async { runDotnet clientPath "fable npm-run start" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
@@ -353,8 +351,8 @@ Target "All" DoNothing
   ==> "InstallDotNetCore"
   ==> "InstallClient"
   ==> "AssemblyInfo"
-  ==> "BuildClient"
   ==> "Build"
+  ==> "BuildClient"
   ==> "BuildTests"
   ==> "RenameDrivers"
   ==> "RunTests"

@@ -6,7 +6,7 @@ open Elmish
 open Fable.Import.Browser
 open Fable.PowerPack
 open Elmish.Browser.Navigation
-open Elmish.UrlParser
+open Elmish.Browser.UrlParser
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Client.Style
@@ -29,5 +29,5 @@ let view (model:Model) dispatch =
           if model.User = None then 
               yield viewLink (Login) "Login" 
           else 
-              yield buttonLink "logout" (fun _ -> dispatch Logout) [ text "Logout" ]
+              yield buttonLink "logout" (fun _ -> dispatch Logout) [ str "Logout" ]
         ]

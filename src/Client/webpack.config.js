@@ -1,63 +1,59 @@
 var path = require("path");
 var webpack = require("webpack");
 
-var cfg = {
+function resolve(filePath) {
+  return path.join(__dirname, filePath)
+}
+
+var babelOptions = {
+  presets: [["es2015", {"modules": false}]],
+  plugins: ["transform-runtime"]
+}
+
+var isProduction = process.env.NODE_ENV === "production";
+console.log("Bundling for " + (isProduction ? "production" : "development") + "...")
+
+module.exports = {
   devtool: "source-map",
-  entry: "./out/Client/App.js",
+  entry: resolve('./Client.fsproj'),
   output: {
-    path: path.join(__dirname, "public"),
+    path: resolve('./public'),
     publicPath: "/public",
     filename: "bundle.js"
+  },
+  devServer: {
+    proxy: {
+      '/api/*': {
+        target: 'http://localhost:8085',
+        changeOrigin: true
+      }
+    }
   },
   module: {
     rules: [
       {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: "source-map-loader",
-        enforce: "pre"
+        test: /\.fs(x|proj)?$/,
+        use: {
+          loader: "fable-loader",
+          options: {
+            babel: babelOptions,
+            define: isProduction ? [] : ["DEBUG"]
+          }
+        }
       },
       {
         test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        options: {
-          presets: [["es2015", {"modules" : false}]],
-          plugins: ["transform-runtime"]
+        exclude: /node_modules[\\\/](?!fable-)/,
+        use: {
+          loader: 'babel-loader',
+          options: babelOptions
         },
       }
     ]
   },
   resolve: {
     modules: [
-      "node_modules", path.resolve("../../node_modules/")
+      "node_modules", resolve("./node_modules/")
     ]
   }
 };
-
-cfg.entry = [
-  "webpack-dev-server/client?http://localhost:8080",
-  'webpack/hot/only-dev-server',
-  "./out/Client/App.js",
-];
-cfg.plugins = [
-  new webpack.HotModuleReplacementPlugin()
-];
-cfg.module.loaders = [
-    {
-      test: /\.js$/,
-      exclude: /node_modules/,
-      loader: "react-hot-loader"
-    }
-];
-
-cfg.devServer = {
-  proxy: {
-    '/api/*': {
-      target: 'http://localhost:8085',
-      changeOrigin: true
-    }
-  }
-};  
-
-module.exports = cfg;

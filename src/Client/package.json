@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node ../../node_modules/fable-compiler --target production",
-    "watch": "node ../../node_modules/fable-compiler -d -w",
+    "build": "node ../../node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=production \"node ../../node_modules/webpack/bin/webpack.js -p\"",
     "start": "node ../../node_modules/webpack-dev-server/bin/webpack-dev-server.js"
   }
 }

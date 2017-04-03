@@ -27,7 +27,7 @@ let getWishList token =
     promise {        
         let url = "api/wishlist/"
         let props = 
-            [ RequestProperties.Headers [
+            [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
 
         return! Fable.PowerPack.Fetch.fetchAs<WishList> url props
@@ -42,10 +42,10 @@ let postWishList (token,wishList) =
         let body = toJson wishList
         let props = 
             [ RequestProperties.Method HttpMethod.POST
-              RequestProperties.Headers [
+              Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token)
                 HttpRequestHeaders.ContentType "application/json" ]
-              RequestProperties.Body (unbox body) ]
+              RequestProperties.Body !^body ]
 
         return! Fable.PowerPack.Fetch.fetchAs<WishList> url props
     }
@@ -101,7 +101,7 @@ let newBookForm (model:Model) dispatch =
     let linkStatus = if String.IsNullOrEmpty model.NewBook.Link then "" else "has-success"
 
     div [] [
-        h4 [] [text "New Book"]
+        h4 [] [str "New Book"]
 
         div [ClassName "container"] [
             div [ClassName "row"] [
@@ -116,13 +116,13 @@ let newBookForm (model:Model) dispatch =
                                      ClassName "form-control"
                                      Placeholder "Please insert book title"
                                      Required true
-                                     OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.TitleChanged (unbox ev.target?value)))) ] []
+                                     OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.TitleChanged !!ev.target?value))) ] []
                              match model.TitleErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
                         ]
                         match model.TitleErrorText with
-                        | Some e -> yield p [ClassName "text-danger"][text e]
+                        | Some e -> yield p [ClassName "text-danger"][str e]
                         | _ -> ()
                     ]
                     div [ClassName ("form-group has-feedback" + authorStatus) ] [
@@ -135,13 +135,13 @@ let newBookForm (model:Model) dispatch =
                                      ClassName "form-control"
                                      Placeholder "Please insert authors"
                                      Required true
-                                     OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.AuthorsChanged (unbox ev.target?value))))] []
+                                     OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.AuthorsChanged !!ev.target?value)))] []
                              match model.AuthorsErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
                          ]
                          match model.AuthorsErrorText with
-                         | Some e -> yield p [ClassName "text-danger"][text e]
+                         | Some e -> yield p [ClassName "text-danger"][str e]
                          | _ -> ()
                     ]
                     div [ClassName ("form-group has-feedback" + linkStatus)] [
@@ -154,18 +154,18 @@ let newBookForm (model:Model) dispatch =
                                     ClassName "form-control"
                                     Placeholder "Please insert link"
                                     Required true
-                                    OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.LinkChanged (unbox ev.target?value))))] []
+                                    OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.LinkChanged !!ev.target?value)))] []
                              match model.LinkErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
                          ]
                          match model.LinkErrorText with
-                         | Some e -> yield p [ClassName "text-danger"][text e]
+                         | Some e -> yield p [ClassName "text-danger"][str e]
                          | _ -> ()
                     ]
                     button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch (WishListMsg WishListMsg.AddBook))] [
                         i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []
-                        text "Add"
+                        str "Add"
                     ]  
                 ]                    
             ]        
@@ -174,12 +174,12 @@ let newBookForm (model:Model) dispatch =
 
 let view (model:Model) (dispatch: AppMsg -> unit) = 
     div [] [
-        h4 [] [text (sprintf "Wishlist for %s" model.WishList.UserName) ]
+        h4 [] [str (sprintf "Wishlist for %s" model.WishList.UserName) ]
         table [ClassName "table table-striped table-hover"] [
             thead [] [
                     tr [] [
-                        th [] [text "Title"]
-                        th [] [text "Authors"]
+                        th [] [str "Title"]
+                        th [] [str "Authors"]
                 ]
             ]                
             tbody[] [
@@ -188,11 +188,11 @@ let view (model:Model) (dispatch: AppMsg -> unit) =
                       tr [] [
                         td [] [ 
                             if String.IsNullOrWhiteSpace book.Link then 
-                                yield text book.Title
+                                yield str book.Title
                             else
-                                yield a [ Href book.Link; Target "_blank"] [text book.Title ] ]
-                        td [] [ text book.Authors ]
-                        td [] [ buttonLink "" (fun _ -> dispatch (WishListMsg (RemoveBook book))) [ text "Remove" ] ]
+                                yield a [ Href book.Link; Target "_blank"] [str book.Title ] ]
+                        td [] [ str book.Authors ]
+                        td [] [ buttonLink "" (fun _ -> dispatch (WishListMsg (RemoveBook book))) [ str "Remove" ] ]
                         ]
             ]
         ]
