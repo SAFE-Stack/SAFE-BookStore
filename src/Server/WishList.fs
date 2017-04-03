@@ -3,7 +3,6 @@ module ServerCode.WishList
 open System.IO
 open Suave
 open Suave.Logging
-open Newtonsoft.Json
 open System.Net
 open Suave.Filters
 open Suave.Operators
@@ -40,7 +39,7 @@ let getWishListFromDB userName =
         defaultWishList userName
     else
         File.ReadAllText(fi.FullName)
-        |> JsonConvert.DeserializeObject<WishList>
+        |> JsonUtils.ofJson<WishList>
 
 /// Save to the database
 let saveWishListToDB (wishList:WishList) =
@@ -48,7 +47,7 @@ let saveWishListToDB (wishList:WishList) =
         let fi = FileInfo(getJSONFileName wishList.UserName)
         if not fi.Directory.Exists then
             fi.Directory.Create()
-        File.WriteAllText(fi.FullName,JsonConvert.SerializeObject wishList)
+        File.WriteAllText(fi.FullName, JsonUtils.toJson wishList)
     with exn ->
         logger.error (eventX "Save failed with exception" >> addExn exn)
 
@@ -57,7 +56,7 @@ let getWishList (ctx: HttpContext) =
     Auth.useToken ctx (fun token -> async {
         try
             let wishList = getWishListFromDB token.UserName
-            return! Successful.OK (JsonConvert.SerializeObject wishList) ctx
+            return! Successful.OK (JsonUtils.toJson wishList) ctx
         with exn ->
             logger.error (eventX "SERVICE_UNAVAILABLE" >> addExn exn)
             return! SERVICE_UNAVAILABLE "Database not available" ctx
@@ -70,14 +69,14 @@ let postWishList (ctx: HttpContext) =
             let wishList = 
                 ctx.request.rawForm
                 |> System.Text.Encoding.UTF8.GetString
-                |> JsonConvert.DeserializeObject<Domain.WishList>
+                |> JsonUtils.ofJson<Domain.WishList>
             
             if token.UserName <> wishList.UserName then
                 return! UNAUTHORIZED (sprintf "WishList is not matching user %s" token.UserName) ctx
             else
                 if Validation.verifyWishList wishList then
                     saveWishListToDB wishList
-                    return! Successful.OK (JsonConvert.SerializeObject wishList) ctx
+                    return! Successful.OK (JsonUtils.toJson wishList) ctx
                 else
                     return! BAD_REQUEST "WishList is not valid" ctx
         with exn ->

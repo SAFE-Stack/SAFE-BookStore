@@ -1,7 +1,6 @@
 module ServerCode.Auth
 
 open Suave
-open Newtonsoft.Json
 open Suave.RequestErrors
 
 let unauthorized s = Suave.Response.response HTTP_401 s
@@ -12,7 +11,7 @@ let login (ctx: HttpContext) = async {
     let login = 
         ctx.request.rawForm 
         |> System.Text.Encoding.UTF8.GetString
-        |> JsonConvert.DeserializeObject<Domain.Login>
+        |> JsonUtils.ofJson<Domain.Login>
 
     try
         if (login.UserName <> "test" || login.Password <> "test") && 
