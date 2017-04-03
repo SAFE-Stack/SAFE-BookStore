@@ -1,5 +1,8 @@
 NUGET
   remote: https://www.nuget.org/api/v2
+    Fable.Core (1.0.0-narumi-905)
+      FSharp.Core (>= 4.1.0.2) - framework: >= net463, >= netstandard16
+      NETStandard.Library (>= 1.6.1) - framework: >= net463, >= netstandard16
     FSharp.Core (4.1.0.2) - redirects: force
       System.Collections (>= 4.0.11) - framework: >= netstandard16
       System.Console (>= 4.0) - framework: >= netstandard16

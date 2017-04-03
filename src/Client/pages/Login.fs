@@ -32,9 +32,9 @@ let authUser (login:Login,apiUrl) =
 
         let props = 
             [ RequestProperties.Method HttpMethod.POST
-              RequestProperties.Headers [
+              Fetch.requestHeaders [
                 HttpRequestHeaders.ContentType "application/json" ]
-              RequestProperties.Body (unbox body) ]
+              RequestProperties.Body !^body ]
         
         try
 
@@ -93,15 +93,15 @@ let view model (dispatch: AppMsg -> unit) =
     match model.State with
     | LoggedIn _ ->
         div [Id "greeting"] [
-          h3 [ ClassName "text-center" ] [ text (sprintf "Hi %s!" model.Login.UserName) ]
+          h3 [ ClassName "text-center" ] [ str (sprintf "Hi %s!" model.Login.UserName) ]
         ]
 
     | LoggedOut ->
         div [ClassName "signInBox" ] [
-          h3 [ ClassName "text-center" ] [ text "Log in with 'test' / 'test'."]
+          h3 [ ClassName "text-center" ] [ str "Log in with 'test' / 'test'."]
            
           div [ ClassName showErrorClass ] [
-                  div [ ClassName "alert alert-danger" ] [ text model.ErrorMsg ]
+                  div [ ClassName "alert alert-danger" ] [ str model.ErrorMsg ]
            ]
 
           div [ ClassName "input-group input-group-lg" ] [
@@ -133,7 +133,7 @@ let view model (dispatch: AppMsg -> unit) =
             ]    
            
           div [ ClassName "text-center" ] [
-              button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch (LoginMsg ClickLogIn)) ] [ text "Log In" ]
+              button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch (LoginMsg ClickLogIn)) ] [ str "Log In" ]
           ]                   
         ]    
  

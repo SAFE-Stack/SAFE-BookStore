@@ -11,7 +11,7 @@ open Fable.Import.Browser
 open Fable.PowerPack
 open Elmish.Browser.Navigation
 open Client.Messages
-open Elmish.UrlParser
+open Elmish.Browser.UrlParser
 
 // Model
 
@@ -29,24 +29,21 @@ type Model =
 /// The URL is turned into a Result.
 let pageParser : Parser<Page->_,_> =
     oneOf 
-        [ format Home (s "home")
-          format Page.Login (s "login")
-          format WishList (s "wishlist") ]
+        [ map Home (s "home")
+          map Page.Login (s "login")
+          map WishList (s "wishlist") ]
 
-let hashParser (location:Location) =
-    UrlParser.parse id pageParser (location.hash.Substring 1)
-    
-let urlUpdate (result:Result<Page,string>) model =
+let urlUpdate (result:Page option) model =
     match result with
-    | Error e ->
-        Browser.console.error("Error parsing url:", e)
+    | None ->
+        Browser.console.error("Error parsing url")
         ( model, Navigation.modifyUrl (toHash model.Page) )
 
-    | Ok (Page.Login as page) ->
+    | Some (Page.Login as page) ->
         let m,cmd = Login.init model.Menu.User
         { model with Page = page; SubModel = LoginModel m }, Cmd.map LoginMsg cmd
 
-    | Ok (Page.WishList as page) ->
+    | Some (Page.WishList as page) ->
         match model.Menu.User with
         | Some user ->
             let m,cmd = WishList.init user
@@ -54,7 +51,7 @@ let urlUpdate (result:Result<Page,string>) model =
         | None ->
             model, Cmd.ofMsg Logout
 
-    | Ok (Home as page) ->
+    | Some (Home as page) ->
         { model with Page = page; Menu = { model.Menu with query = "" } }, []
 
 let init result =
@@ -112,7 +109,7 @@ let update msg model =
 
     | AppMsg.LoggedIn ->
         let nextPage = Page.WishList
-        let m,cmd = urlUpdate (Ok nextPage) model
+        let m,cmd = urlUpdate (Some nextPage) model
         match m.Menu.User with
         | Some user ->
             m, Cmd.batch [cmd; Navigation.modifyUrl (toHash nextPage) ]
@@ -166,7 +163,7 @@ open Elmish.React
 
 // App
 Program.mkProgram init update view
-|> Program.toNavigable hashParser urlUpdate
+|> Program.toNavigable (parseHash pageParser) urlUpdate
 |> Program.withConsoleTrace
 |> Program.withReact "elmish-app"
 |> Program.run
