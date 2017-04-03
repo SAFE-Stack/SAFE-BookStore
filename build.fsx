@@ -186,7 +186,7 @@ Target "InstallDotNetCore" (fun _ ->
 
 Target "BuildServer" (fun _ ->
     runDotnet serverPath "restore"
-    runDotnet serverPath "buildServer"
+    runDotnet serverPath "build"
 )
 
 Target "InstallClient" (fun _ ->
