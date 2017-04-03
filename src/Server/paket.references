@@ -3,4 +3,5 @@ Suave
 Microsoft.Extensions.Logging.Console
 System.Net.NetworkInformation
 Newtonsoft.Json
+Fable.JsonConverter
 jose-jwt

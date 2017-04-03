@@ -184,7 +184,7 @@ Target "InstallDotNetCore" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
-Target "Build" (fun _ ->
+Target "BuildServer" (fun _ ->
     runDotnet serverPath "restore"
     runDotnet serverPath "build"
 )
@@ -345,13 +345,14 @@ Target "Deploy" (fun _ ->
 )
 
 // -------------------------------------------------------------------------------------
+Target "Build" DoNothing
 Target "All" DoNothing
 
 "Clean"
   ==> "InstallDotNetCore"
   ==> "InstallClient"
   ==> "AssemblyInfo"
-  ==> "Build"
+  ==> "BuildServer"
   ==> "BuildClient"
   ==> "BuildTests"
   ==> "RenameDrivers"
@@ -361,7 +362,10 @@ Target "All" DoNothing
   ==> "PrepareRelease"
   ==> "Deploy"
 
-"Build"
+"BuildClient"
+  ==> "Build"
+
+"InstallClient"
   ==> "Run"
 
 RunTargetOrDefault "All"
