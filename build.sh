@@ -27,15 +27,6 @@ run() {
   fi
 }
 
-yesno() {
-  # NOTE: Defaults to NO
-  read -p "$1 [y/N] " ynresult
-  case "$ynresult" in
-    [yY]*) true ;;
-    *) false ;;
-  esac
-}
-
 run $PAKET_EXE restore
 
 [ ! -e build.fsx ] && run $PAKET_EXE update
