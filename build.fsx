@@ -3,7 +3,6 @@
 // --------------------------------------------------------------------------------------
 
 #r @"packages/build/FAKE/tools/FakeLib.dll"
-#r "System.IO.Compression.FileSystem"
 
 open Fake
 open Fake.Git
@@ -27,8 +26,6 @@ let clientPath = "./src/Client" |> FullName
 let serverPath = "./src/Server/" |> FullName
 
 let dotnetcliVersion = "1.0.1"
-
-let dotnetSDKPath = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) </> "dotnetcore" |> FullName
 
 let mutable dotnetExePath = "dotnet"
 
@@ -78,43 +75,6 @@ let npmTool = platformTool "npm" "npm.cmd"
 let release = LoadReleaseNotes "RELEASE_NOTES.md"
 let packageVersion = SemVerHelper.parse release.NugetVersion
 
-// Helper active pattern for project types
-let (|Fsproj|Csproj|Vbproj|Shproj|) (projFileName:string) =
-    match projFileName with
-    | f when f.EndsWith("fsproj") -> Fsproj
-    | f when f.EndsWith("csproj") -> Csproj
-    | f when f.EndsWith("vbproj") -> Vbproj
-    | f when f.EndsWith("shproj") -> Shproj
-    | _                           -> failwith (sprintf "Project file %s not supported. Unknown project type." projFileName)
-
-// Generate assembly info files with the right version & up-to-date information
-Target "AssemblyInfo" (fun _ ->
-    let getAssemblyInfoAttributes projectName =
-        [ Attribute.Title (projectName)
-          Attribute.Product project
-          Attribute.Description summary
-          Attribute.Version release.AssemblyVersion
-          Attribute.FileVersion release.AssemblyVersion
-          Attribute.Configuration configuration ]
-
-    let getProjectDetails projectPath =
-        let projectName = System.IO.Path.GetFileNameWithoutExtension(projectPath)
-        ( projectPath,
-          projectName,
-          System.IO.Path.GetDirectoryName(projectPath),
-          (getAssemblyInfoAttributes projectName)
-        )
-
-    !! "src/**/*.??proj"
-    |> Seq.map getProjectDetails
-    |> Seq.iter (fun (projFileName, projectName, folderName, attributes) ->
-        match projFileName with
-        | Fsproj -> CreateFSharpAssemblyInfo (folderName </> "AssemblyInfo.fs") attributes
-        | Csproj -> CreateCSharpAssemblyInfo ((folderName </> "Properties") </> "AssemblyInfo.cs") attributes
-        | Vbproj -> CreateVisualBasicAssemblyInfo ((folderName </> "My Project") </> "AssemblyInfo.vb") attributes
-        | Shproj -> ()
-        )
-)
 
 // --------------------------------------------------------------------------------------
 // Clean build results
@@ -123,62 +83,8 @@ Target "Clean" (fun _ ->
     CleanDirs ["bin"; "temp"; "docs/output"; deployDir; Path.Combine(clientPath,"public/bundle")]
 )
 
-
 Target "InstallDotNetCore" (fun _ ->
-
-    let buildLocalPath = dotnetSDKPath </> (if isWindows then "dotnet.exe" else "dotnet")
-    let correctVersionInstalled exe = 
-        try
-            let processResult = 
-                ExecProcessAndReturnMessages (fun info ->  
-                info.FileName <- exe
-                info.WorkingDirectory <- Environment.CurrentDirectory
-                info.Arguments <- "--version") (TimeSpan.FromMinutes 30.)
-            processResult.Messages |> separated "" = dotnetcliVersion
-        with 
-        | _ -> false
-
-    if correctVersionInstalled dotnetExePath  then
-        tracefn "dotnetcli %s already installed in PATH" dotnetcliVersion
-    elif correctVersionInstalled buildLocalPath then
-        tracefn "cmd %s already installed in LocalApplicationData" dotnetcliVersion
-        dotnetExePath <- buildLocalPath
-    else
-        CleanDir dotnetSDKPath
-        let archiveFileName = 
-            if isWindows then
-                sprintf "dotnet-dev-win-x64.%s.zip" dotnetcliVersion
-            elif isLinux then
-                sprintf "dotnet-dev-ubuntu-x64.%s.tar.gz" dotnetcliVersion
-            else
-                sprintf "dotnet-dev-osx-x64.%s.tar.gz" dotnetcliVersion
-        let downloadPath = sprintf "https://dotnetcli.azureedge.net/dotnet/Sdk/%s/%s" dotnetcliVersion archiveFileName
-        let localPath = Path.Combine(dotnetSDKPath, archiveFileName)
-
-        tracefn "Installing '%s' to '%s'" downloadPath localPath
-        
-        let proxy = Net.WebRequest.DefaultWebProxy
-        proxy.Credentials <- Net.CredentialCache.DefaultCredentials
-        use webclient = new Net.WebClient(Proxy = proxy)
-        webclient.DownloadFile(downloadPath, localPath)
-
-        if not isWindows then
-            let assertExitCodeZero x =
-                if x = 0 then () else
-                failwithf "Command failed with exit code %i" x
-
-            Shell.Exec("tar", sprintf """-xvf "%s" -C "%s" """ localPath dotnetSDKPath)
-            |> assertExitCodeZero
-        else  
-            System.IO.Compression.ZipFile.ExtractToDirectory(localPath, dotnetSDKPath)
-
-        tracefn "dotnet cli path - %s" dotnetSDKPath
-        System.IO.Directory.EnumerateFiles dotnetSDKPath
-        |> Seq.iter (fun path -> tracefn " - %s" path)
-        System.IO.Directory.EnumerateDirectories dotnetSDKPath
-        |> Seq.iter (fun path -> tracefn " - %s%c" path System.IO.Path.DirectorySeparatorChar)
-
-        dotnetExePath <- buildLocalPath
+    dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
 )
 
 // --------------------------------------------------------------------------------------
@@ -199,16 +105,9 @@ Target "BuildClient" (fun _ ->
 )
 
 
-let vsProjProps = 
-#if MONO
-    [ ("DefineConstants","MONO"); ("Configuration", configuration) ]
-#else
-    [ ("Configuration", configuration); ("Platform", "Any CPU") ]
-#endif
-
 Target "BuildTests" (fun _ ->
     !! "./Tests.sln"
-    |> MSBuildReleaseExt "" vsProjProps "Rebuild"
+    |> MSBuildReleaseExt "" [ ("Configuration", configuration); ("Platform", "Any CPU") ] "Rebuild"
     |> ignore
 )
 
@@ -354,7 +253,6 @@ Target "All" DoNothing
 "Clean"
   ==> "InstallDotNetCore"
   ==> "InstallClient"
-  ==> "AssemblyInfo"
   ==> "BuildServer"
   ==> "BuildClient"
   ==> "BuildTests"
