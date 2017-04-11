@@ -162,16 +162,9 @@ Target "BuildClient" (fun _ ->
 )
 
 
-let vsProjProps = 
-#if MONO
-    [ ("DefineConstants","MONO"); ("Configuration", configuration) ]
-#else
-    [ ("Configuration", configuration); ("Platform", "Any CPU") ]
-#endif
-
 Target "BuildTests" (fun _ ->
     !! "./Tests.sln"
-    |> MSBuildReleaseExt "" vsProjProps "Rebuild"
+    |> MSBuildReleaseExt "" [ ("Configuration", configuration); ("Platform", "Any CPU") ] "Rebuild"
     |> ignore
 )
 
