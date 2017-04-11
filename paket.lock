@@ -902,7 +902,7 @@ NUGET
 GROUP Build
 NUGET
   remote: https://www.nuget.org/api/v2
-    FAKE (4.56)
+    FAKE (4.58.3)
 
 GROUP Test
 FRAMEWORK: >= NET45
