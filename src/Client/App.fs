@@ -155,7 +155,7 @@ let viewPage model dispatch =
 let view model dispatch =
   div []
     [ lazyView2 Menu.view model.Menu dispatch
-      hr [] []
+      hr []
       div [ centerStyle "column" ] (viewPage model dispatch)
     ]
 
