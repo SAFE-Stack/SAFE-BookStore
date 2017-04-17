@@ -115,7 +115,7 @@ let view model (dispatch: AppMsg -> unit) =
                     Placeholder "Username"
                     DefaultValue (U2.Case1 model.Login.UserName)
                     OnChange (fun ev -> dispatch (LoginMsg (SetUserName !!ev.target?value)))
-                    AutoFocus true ] []
+                    AutoFocus true ]
           ]
 
           div [ ClassName "input-group input-group-lg" ] [
@@ -129,7 +129,7 @@ let view model (dispatch: AppMsg -> unit) =
                         Placeholder "Password"
                         DefaultValue (U2.Case1 model.Login.Password)
                         OnChange (fun ev -> dispatch (LoginMsg (SetPassword !!ev.target?value)))
-                        onEnter (LoginMsg ClickLogIn) dispatch  ] []
+                        onEnter (LoginMsg ClickLogIn) dispatch  ]
             ]    
            
           div [ ClassName "text-center" ] [

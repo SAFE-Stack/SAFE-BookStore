@@ -116,7 +116,7 @@ let newBookForm (model:Model) dispatch =
                                      ClassName "form-control"
                                      Placeholder "Please insert book title"
                                      Required true
-                                     OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.TitleChanged !!ev.target?value))) ] []
+                                     OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.TitleChanged !!ev.target?value))) ]
                              match model.TitleErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
@@ -135,7 +135,7 @@ let newBookForm (model:Model) dispatch =
                                      ClassName "form-control"
                                      Placeholder "Please insert authors"
                                      Required true
-                                     OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.AuthorsChanged !!ev.target?value)))] []
+                                     OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.AuthorsChanged !!ev.target?value)))]
                              match model.AuthorsErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
@@ -154,7 +154,7 @@ let newBookForm (model:Model) dispatch =
                                     ClassName "form-control"
                                     Placeholder "Please insert link"
                                     Required true
-                                    OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.LinkChanged !!ev.target?value)))] []
+                                    OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.LinkChanged !!ev.target?value)))]
                              match model.LinkErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
