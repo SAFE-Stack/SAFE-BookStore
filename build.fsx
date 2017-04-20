@@ -90,8 +90,11 @@ Target "InstallDotNetCore" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
-Target "BuildServer" (fun _ ->
+Target "InstallServer" (fun _ ->
     runDotnet serverPath "restore"
+)
+
+Target "BuildServer" (fun _ ->
     runDotnet serverPath "build"
 )
 
@@ -252,6 +255,7 @@ Target "All" DoNothing
 
 "Clean"
   ==> "InstallDotNetCore"
+  ==> "InstallServer"
   ==> "InstallClient"
   ==> "BuildServer"
   ==> "BuildClient"
