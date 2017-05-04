@@ -12,12 +12,12 @@ let startServer clientPath =
     if not (Directory.Exists clientPath) then
         failwithf "Client-HomePath '%s' doesn't exist." clientPath
 
-    let outPath = Path.Combine(clientPath,"public")
-    if not (Directory.Exists outPath) then
-        failwithf "Out-HomePath '%s' doesn't exist." outPath
+    // let outPath = Path.Combine(clientPath,"public")
+    // if not (Directory.Exists outPath) then
+    //     failwithf "Out-HomePath '%s' doesn't exist." outPath
 
-    if Directory.EnumerateFiles outPath |> Seq.isEmpty then
-        failwithf "Out-HomePath '%s' is empty." outPath
+    // if Directory.EnumerateFiles outPath |> Seq.isEmpty then
+    //     failwithf "Out-HomePath '%s' is empty." outPath
 
     let logger = Logging.Targets.create Logging.Info [| "Suave" |]
 
@@ -39,8 +39,8 @@ let startServer clientPath =
                 path "/api/users/login" >=> Auth.login
 
                 path "/api/wishlist/" >=> WishList.postWishList
-            ]                
-            
+            ]
+
             NOT_FOUND "Page not found."
 
         ] >=> logWithLevelStructured Logging.Info logger logFormatStructured
