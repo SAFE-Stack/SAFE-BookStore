@@ -23,7 +23,7 @@ let startServer clientPath =
 
     let serverConfig =
         { defaultConfig with
-            logger = Targets.create LogLevel.Debug [||]
+            logger = Targets.create LogLevel.Debug [|"ServerCode"; "Server" |]
             homeFolder = Some clientPath
             bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") 8085us] }
 
