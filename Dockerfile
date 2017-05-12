@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:1.1.0-sdk-msbuild-rc4
+FROM microsoft/dotnet:1.1.1-sdk-1.0.1
 COPY /deploy /app
 WORKDIR /app
 EXPOSE 8085
