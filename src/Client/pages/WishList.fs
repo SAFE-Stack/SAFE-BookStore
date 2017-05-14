@@ -92,7 +92,11 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
         model, Cmd.none
 
 let newBookForm (model:Model) dispatch =
-    let buttonActive = if String.IsNullOrEmpty model.NewBook.Title || String.IsNullOrEmpty model.NewBook.Authors then "btn-disabled" else "btn-primary"
+    let buttonActive = if String.IsNullOrEmpty model.NewBook.Title ||
+                          String.IsNullOrEmpty model.NewBook.Authors ||
+                          String.IsNullOrEmpty model.NewBook.Link
+                        then "btn-disabled"
+                        else "btn-primary"
     
     let titleStatus = if String.IsNullOrEmpty model.NewBook.Title then "" else "has-success"
 
