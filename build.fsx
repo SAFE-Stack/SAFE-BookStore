@@ -68,7 +68,7 @@ let platformTool tool winTool =
     |> function Some t -> t | _ -> failwithf "%s not found" tool
 
 let nodeTool = platformTool "node" "node.exe"
-
+let npmTool = platformTool "npm" "npm.cmd"
 let yarnTool = platformTool "yarn" "yarn.cmd"
 
 // Read additional information from the release notes document
@@ -123,7 +123,7 @@ Target "BuildTests" (fun _ ->
 
 Target "RenameDrivers" (fun _ ->
     if not isWindows then
-        run yarnTool "install phantomjs" ""
+        run npmTool "install phantomjs" ""
     try
         if isMacOS && not <| File.Exists "test/UITests/bin/Release/chromedriver" then
             Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_macOS"
