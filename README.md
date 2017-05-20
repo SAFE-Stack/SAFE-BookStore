@@ -2,11 +2,19 @@
 
 The following document describes the Fable + Suave sample project. You can see it running on azure at http://fable-suave.azurewebsites.net.
 
+## Requirements
+
+- [Mono](http://www.mono-project.com/) on MacOS/Linux (on Windows .NET Framework is installed by default)
+- [node.js](https://nodejs.org/) - JavaScript runtime
+- [yarn](https://yarnpkg.com/) - Package manager for npm modules
+
+> On OS X/macOS, make sure you have OpenSSL installed and symlinked correctly, as described here: [https://www.microsoft.com/net/core#macos](https://www.microsoft.com/net/core#macos).
+
+[dotnet SDK 1.0.4](https://www.microsoft.com/net/core) is required but it'll be downloaded automatically by the build script if not installed (see below). Other tools like Paket or FAKE will also be installed by the build script.
+
 ## Development mode
 
-This development stack is designed to be used with minimal tooling. A instance of Visual Studio Code together with the excellent [Ionide](http://ionide.io/) plugin should be enough.
-
-> If you have problems with Ionide and the new .fsproj format, try setting the environment variable `UseCommonOutputDirectory` in your shell to `true`, and restart VS Code.
+This development stack is designed to be used with minimal tooling. An instance of Visual Studio Code together with the excellent [Ionide](http://ionide.io/) plugin should be enough.
 
 Start the development mode with:
 
@@ -15,22 +23,16 @@ Start the development mode with:
 
 This command will call in **build.fsx** the target "Run". It will start in parallel:
 - **dotnet watch run** in [src/Server](src/Server/Server) (note: Suave is launched on port **8085**)
-- **dotnet fable npm-run start** in [src/Client](src/Client) (note: the Webpack development server will serve files on http://localhost:8080)
+- **dotnet fable webpack-dev-server** in [src/Client](src/Client) (note: the Webpack development server will serve files on http://localhost:8080)
 
-Previously, the build script should download all dependencies like .NET Core SDK, node... If you have problems with the download of the .NET Core SDK via the `build.cmd` or `build.sh` script, please install the SDK manually from [here](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.0.4-download.md). Verify
-that you have at least SDK version 1.0.1 installed (`dotnet --version`) and then rerun the build script.
+Previously, the build script should download all dependencies like .NET Core SDK, Fable... If you have problems with the download of the .NET Core SDK via the `build.cmd` or `build.sh` script, please install the SDK manually from [here](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.0.4-download.md). Verify
+that you have at least SDK version 1.0.4 installed (`dotnet --version`) and then rerun the build script.
 
 You can now edit files in `src/Server` or `src/Client` and recompile + browser refresh will be triggered automatically.
 
 ![Development mode](https://cloud.githubusercontent.com/assets/57396/23174149/af93da32-f85b-11e6-8de2-01c274f54a27.gif)
 
 Usually you can just keep this mode running and running. Just edit files, see the browser refreshing and commit + push with git.
-
-## Requirements
-
-* .NET or Mono
-* npm
-* On OS X/macOS, make sure you have OpenSSL installed and symlinked correctly, as described here: [https://www.microsoft.com/net/core#macos](https://www.microsoft.com/net/core#macos).
 
 ## Technology stack
 
