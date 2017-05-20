@@ -67,7 +67,7 @@ let platformTool tool winTool =
     |> ProcessHelper.tryFindFileOnPath
     |> function Some t -> t | _ -> failwithf "%s not found" tool
 
-let nodePath = platformTool "node" "node.exe"
+let nodeTool = platformTool "node" "node.exe"
 
 let yarnTool = platformTool "yarn" "yarn.cmd"
 
@@ -99,6 +99,9 @@ Target "BuildServer" (fun _ ->
 )
 
 Target "InstallClient" (fun _ ->
+    printfn "Node version:"
+    run nodeTool "--version" __SOURCE_DIRECTORY__
+    printfn "Yarn version:"
     run yarnTool "install" __SOURCE_DIRECTORY__
     runDotnet clientPath "restore"
 )
