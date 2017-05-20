@@ -102,6 +102,7 @@ Target "InstallClient" (fun _ ->
     printfn "Node version:"
     run nodeTool "--version" __SOURCE_DIRECTORY__
     printfn "Yarn version:"
+    run yarnTool "--version" __SOURCE_DIRECTORY__
     run yarnTool "install" __SOURCE_DIRECTORY__
     runDotnet clientPath "restore"
 )

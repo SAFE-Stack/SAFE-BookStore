@@ -12,6 +12,8 @@ addons:
 
 before_install:
   - chmod +x build.sh
+  - nvm install 6.10.3
+  - nvm use 6.10.3
   # Repo for newer Node.js versions
   - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   # Repo for Yarn
