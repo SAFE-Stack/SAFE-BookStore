@@ -1,5 +1,5 @@
 language: csharp
-sudo: false  # use the new container-based Travis infrastructure 
+sudo: required
 dist: trusty
 
 addons:
@@ -12,6 +12,16 @@ addons:
 
 before_install:
   - chmod +x build.sh
- 
-script: 
+  - nvm install 6.10.3
+  - nvm use 6.10.3
+  # Yarn
+  - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+  - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+  - sudo apt-get update && sudo apt-get install yarn
+
+cache:
+  directories:
+  - $HOME/.yarn-cache
+
+script:
   - ./build.sh All

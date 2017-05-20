@@ -28,7 +28,7 @@ type Model =
 
 /// The URL is turned into a Result.
 let pageParser : Parser<Page->_,_> =
-    oneOf 
+    oneOf
         [ map Home (s "home")
           map Page.Login (s "login")
           map WishList (s "wishlist") ]
@@ -56,7 +56,7 @@ let urlUpdate (result:Page option) model =
 
 let init result =
     let menu,menuCmd = Menu.init()
-    let m = 
+    let m =
         { Page = Home
           Menu = menu
           SubModel = NoSubModel }
@@ -78,32 +78,32 @@ let update msg model =
 
     | LoginMsg msg ->
         match model.SubModel with
-        | LoginModel m -> 
+        | LoginModel m ->
             let m,cmd = Login.update msg m
-            let cmd = Cmd.map LoginMsg cmd  
+            let cmd = Cmd.map LoginMsg cmd
             match m.State with
-            | Login.LoginState.LoggedIn token -> 
+            | Login.LoginState.LoggedIn token ->
                 let newUser : UserData = { UserName = m.Login.UserName; Token = token }
-                let cmd =              
+                let cmd =
                     if model.Menu.User = Some newUser then cmd else
                     Cmd.batch [cmd
                                Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn) StorageFailure ]
 
-                { model with 
+                { model with
                     SubModel = LoginModel m
                     Menu = { model.Menu with User = Some newUser }}, cmd
-            | _ -> 
-                { model with 
+            | _ ->
+                { model with
                     SubModel = LoginModel m
                     Menu = { model.Menu with User = None } }, cmd
         | _ -> model, Cmd.none
 
     | WishListMsg msg ->
         match model.SubModel with
-        | WishListModel m -> 
+        | WishListModel m ->
             let m,cmd = WishList.update msg m
-            let cmd = Cmd.map WishListMsg cmd 
-            { model with 
+            let cmd = Cmd.map WishListMsg cmd
+            { model with
                 SubModel = WishListModel m }, cmd
         | _ -> model, Cmd.none
 
@@ -120,11 +120,11 @@ let update msg model =
         { model with
             Page = Page.Home
             SubModel = NoSubModel
-            Menu = { model.Menu with User = None } }, 
+            Menu = { model.Menu with User = None } },
         Navigation.modifyUrl (toHash Page.Home)
 
     | AppMsg.Logout ->
-        model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure 
+        model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
 
 // VIEW
 
@@ -139,9 +139,9 @@ let viewPage model dispatch =
         [ words 60 "Welcome!"
           a [ Href "http://fable.io" ] [ words 20 "Learn Fable at fable.io" ] ]
 
-    | Page.Login -> 
+    | Page.Login ->
         match model.SubModel with
-        | LoginModel m -> 
+        | LoginModel m ->
             [ div [ ] [ Login.view m dispatch ]]
         | _ -> [ ]
 
@@ -160,10 +160,14 @@ let view model dispatch =
     ]
 
 open Elmish.React
+open Elmish.Debug
 
 // App
 Program.mkProgram init update view
 |> Program.toNavigable (parseHash pageParser) urlUpdate
 |> Program.withConsoleTrace
 |> Program.withReact "elmish-app"
+#if DEBUG
+|> Program.withDebugger
+#endif
 |> Program.run

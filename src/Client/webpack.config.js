@@ -10,8 +10,8 @@ var babelOptions = {
   plugins: ["transform-runtime"]
 }
 
-var isProduction = process.env.NODE_ENV === "production";
-console.log("Bundling for " + (isProduction ? "production" : "development") + "...")
+var isProduction = process.argv.indexOf("-p") >= 0;
+console.log("Bundling for " + (isProduction ? "production" : "development") + "...");
 
 module.exports = {
   devtool: "source-map",
@@ -43,7 +43,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules[\\\/](?!fable-)/,
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: babelOptions
