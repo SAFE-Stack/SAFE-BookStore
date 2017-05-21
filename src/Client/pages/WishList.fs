@@ -16,7 +16,8 @@ open Fable.PowerPack.Fetch.Fetch_types
 type Model = 
   { WishList : WishList
     Token : string
-    NewBook: Book
+    NewBook : Book
+    NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/fable-compiler/fable-suave-scaffold/issues/107#issuecomment-301312224
     TitleErrorText : string option
     AuthorsErrorText : string option
     LinkErrorText : string option
@@ -57,6 +58,7 @@ let init (user:UserData) =
     { WishList = WishList.New user.UserName
       Token = user.Token
       NewBook = Book.empty
+      NewBookId = Guid.NewGuid()
       TitleErrorText = None
       AuthorsErrorText = None
       LinkErrorText = None
@@ -82,7 +84,7 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
     | AddBook ->
         if Validation.verifyBook model.NewBook then
             let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
-            { model with WishList = wishList; NewBook = Book.empty }, postWishListCmd(model.Token,wishList)
+            { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid() }, postWishListCmd(model.Token,wishList)
         else
             { model with 
                 TitleErrorText = Validation.verifyBookTitle model.NewBook.Title
@@ -114,6 +116,7 @@ let newBookForm (model:Model) dispatch =
                         yield div [ClassName "input-group"] [
                              yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon-pencil"] [] ]
                              yield input [
+                                     Key ("Title_" + model.NewBookId.ToString())
                                      HTMLAttr.Type "text"
                                      Name "Title"
                                      DefaultValue (U2.Case1 model.NewBook.Title)
@@ -133,6 +136,7 @@ let newBookForm (model:Model) dispatch =
                          yield div [ClassName "input-group"][
                              yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon-user"] [] ]
                              yield input [ 
+                                     Key ("Author_" + model.NewBookId.ToString())
                                      HTMLAttr.Type "text"
                                      Name "Author"
                                      DefaultValue (U2.Case1 model.NewBook.Authors)
@@ -152,6 +156,7 @@ let newBookForm (model:Model) dispatch =
                          yield div [ClassName "input-group"] [
                              yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon glyphicon-pencil"] [] ]
                              yield input [ 
+                                    Key ("Link_" + model.NewBookId.ToString())
                                     HTMLAttr.Type "text"
                                     Name "Link"
                                     DefaultValue (U2.Case1 model.NewBook.Link)
