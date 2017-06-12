@@ -3,3 +3,4 @@ Fable.Core
 Fable.Elmish.Browser
 Fable.Elmish.Debugger
 Fable.Elmish.React
+Fable.Remoting.Client

@@ -51,35 +51,28 @@ let saveWishListToDB (wishList:WishList) =
     with exn ->
         logger.error (eventX "Save failed with exception" >> addExn exn)
 
-/// Handle the GET on /api/wishlist
-let getWishList (ctx: HttpContext) =
-    Auth.useToken ctx (fun token -> async {
-        try
-            let wishList = getWishListFromDB token.UserName
-            return! Successful.OK (JsonUtils.toJson wishList) ctx
-        with exn ->
-            logger.error (eventX "SERVICE_UNAVAILABLE" >> addExn exn)
-            return! SERVICE_UNAVAILABLE "Database not available" ctx
-    })
 
-/// Handle the POST on /api/wishlist
-let postWishList (ctx: HttpContext) =
-    Auth.useToken ctx (fun token -> async {
-        try
-            let wishList = 
-                ctx.request.rawForm
-                |> System.Text.Encoding.UTF8.GetString
-                |> JsonUtils.ofJson<Domain.WishList>
-            
-            if token.UserName <> wishList.UserName then
-                return! UNAUTHORIZED (sprintf "WishList is not matching user %s" token.UserName) ctx
-            else
-                if Validation.verifyWishList wishList then
-                    saveWishListToDB wishList
-                    return! Successful.OK (JsonUtils.toJson wishList) ctx
-                else
-                    return! BAD_REQUEST "WishList is not valid" ctx
-        with exn ->
-            logger.error (eventX "Database not available" >> addExn exn)
-            return! SERVICE_UNAVAILABLE "Database not available" ctx
-    })    
+let getWishList authToken = 
+    match Token.isValid authToken with
+    | None -> Response.Error UserNotLoggedIn
+    | Some userRights ->
+        let userName = userRights.UserName
+        getWishListFromDB userName
+        |> Success
+    |> Async.result
+
+
+let createWishList (input: AuthorizedRequest<WishList>) =
+    match Token.isValid input.AuthToken with
+    | None -> Response.Error UserNotLoggedIn
+    | Some user ->
+        let wishList = input.Request
+        if user.UserName <> wishList.UserName then
+            Response.Error UserUnauthorized
+        else
+            match Validation.verifyWishList wishList with
+            | false -> Response.Error RequestInvalid
+            | true -> 
+                saveWishListToDB wishList
+                Success wishList
+    |> Async.result

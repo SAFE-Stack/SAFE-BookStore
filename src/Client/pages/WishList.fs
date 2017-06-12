@@ -13,6 +13,8 @@ open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 
+open ServerCode.Logic
+
 type Model = 
   { WishList : WishList
     Token : string
@@ -23,36 +25,31 @@ type Model =
     LinkErrorText : string option
     ErrorMsg : string }
 
-/// Get the wish list from the server, used to populate the model
-let getWishList token =
-    promise {        
-        let url = "api/wishlist/"
-        let props = 
-            [ Fetch.requestHeaders [
-                HttpRequestHeaders.Authorization ("Bearer " + token) ]]
 
-        return! Fable.PowerPack.Fetch.fetchAs<WishList> url props
-    }
+let fetchedWishList = function 
+    | Success wishList -> FetchedWishList wishList
+    | Error err -> 
+        match err with
+        | UserNotLoggedIn -> FetchError "User was not logged in"
+        | UserUnauthorized -> FetchError "User does not have rights to do this operation"
+        | RequestInvalid -> FetchError "The request was not valid"
+        | Unknown -> FetchError "Unknown server error occured"
 
 let loadWishListCmd token = 
-    Cmd.ofPromise getWishList token FetchedWishList FetchError
+    Cmd.ofAsync server.getWishList 
+                token 
+                fetchedWishList 
+                (fun ex -> FetchError (ex.Message))
 
-let postWishList (token,wishList) =
-    promise {        
-        let url = "api/wishlist/"
-        let body = toJson wishList
-        let props = 
-            [ RequestProperties.Method HttpMethod.POST
-              Fetch.requestHeaders [
-                HttpRequestHeaders.Authorization ("Bearer " + token)
-                HttpRequestHeaders.ContentType "application/json" ]
-              RequestProperties.Body !^body ]
+let createWishListCmd (token,wishList) = 
+    let request  = 
+          { AuthToken = token
+            Request = wishList }
 
-        return! Fable.PowerPack.Fetch.fetchAs<WishList> url props
-    }
-
-let postWishListCmd (token,wishList) = 
-    Cmd.ofPromise postWishList (token,wishList) FetchedWishList FetchError
+    Cmd.ofAsync server.createWishList 
+                request 
+                fetchedWishList 
+                (fun ex -> FetchError ex.Message)
 
 let init (user:UserData) = 
     { WishList = WishList.New user.UserName
@@ -80,11 +77,11 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
         { model with NewBook = { model.NewBook with Link = link }; LinkErrorText = Validation.verifyBookLink link }, Cmd.none
     | RemoveBook book -> 
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
-        { model with WishList = wishList}, postWishListCmd(model.Token,wishList)
+        { model with WishList = wishList}, createWishListCmd (model.Token, wishList)
     | AddBook ->
         if Validation.verifyBook model.NewBook then
             let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
-            { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid() }, postWishListCmd(model.Token,wishList)
+            { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid() }, createWishListCmd (model.Token,wishList)
         else
             { model with 
                 TitleErrorText = Validation.verifyBookTitle model.NewBook.Title

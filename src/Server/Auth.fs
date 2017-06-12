@@ -1,36 +1,15 @@
 module ServerCode.Auth
 
-open Suave
-open Suave.RequestErrors
+open ServerCode.Domain
 
-let unauthorized s = Suave.Response.response HTTP_401 s
+let users = 
+    [ "admin", "pass"
+      "user", "qwerty" 
+      "employee", "12345" ] 
 
-let UNAUTHORIZED s = unauthorized (UTF8.bytes s)
-
-let login (ctx: HttpContext) = async {
-    let login = 
-        ctx.request.rawForm 
-        |> System.Text.Encoding.UTF8.GetString
-        |> JsonUtils.ofJson<Domain.Login>
-
-    try
-        if (login.UserName <> "test" || login.Password <> "test") && 
-           (login.UserName <> "test2" || login.Password <> "test2") then
-            return! failwithf "Could not authenticate %s" login.UserName
-        let user : ServerTypes.UserRights = { UserName = login.UserName }
-        let token = TokenUtils.encode user
-
-        return! Successful.OK token ctx
-    with
-    | _ -> return! UNAUTHORIZED (sprintf "User '%s' can't be logged in." login.UserName) ctx
-}
-
-let useToken ctx f = async {
-    match ctx.request.header "Authorization" with
-    | Choice1Of2 accesstoken when accesstoken.StartsWith "Bearer " -> 
-        let jwt = accesstoken.Replace("Bearer ","")
-        match TokenUtils.isValid jwt with
-        | None -> return! FORBIDDEN "Accessing this API is not allowed" ctx
-        | Some token -> return! f token
-    | _ -> return! BAD_REQUEST "Request doesn't contain a JSON Web Token" ctx
-}
+let authorize (info: LoginInfo) = 
+    users
+    |> List.tryFind (fun (userName, pass) ->
+         userName = info.UserName && pass = info.Password)
+    |> Option.map (fun _ -> Token.encode info)
+    |> Async.result

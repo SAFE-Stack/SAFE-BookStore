@@ -20,7 +20,7 @@ type WishListMsg =
   | TitleChanged of string
   | AuthorsChanged of string
   | LinkChanged of string
-  | FetchError of exn
+  | FetchError of string
 
 /// The different messages processed by the application
 type AppMsg = 

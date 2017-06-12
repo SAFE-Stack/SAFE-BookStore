@@ -4,7 +4,7 @@ open System
 
 type JWT = string
 
-type Login = 
+type LoginInfo = 
     { UserName : string
       Password : string }
 
@@ -27,6 +27,27 @@ type WishList =
     static member New userName = 
         { UserName = userName
           Books = [] }
+
+type ServerError = 
+    | RequestInvalid
+    | UserNotLoggedIn
+    | UserUnauthorized
+    | Unknown
+
+type Response<'a> = 
+    | Success of 'a
+    | Error of ServerError
+
+type AuthorizedRequest<'a> = 
+    { AuthToken : string 
+      Request   : 'a     }
+
+type AuthToken = string
+
+type IServer = 
+    { authorize : LoginInfo -> Async<AuthToken option> 
+      getWishList : AuthToken -> Async<Response<WishList>>
+      createWishList : AuthorizedRequest<WishList> -> Async<Response<WishList>> }
 
 module Validation =
 

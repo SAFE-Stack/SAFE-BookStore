@@ -1,12 +1,12 @@
 <Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Shared/Domain.fs" />
     <Compile Include="ServerTypes.fs" />
-    <Compile Include="TokenUtils.fs" />
+    <Compile Include="Token.fs" />
     <Compile Include="JsonUtils.fs" />
     <Compile Include="Auth.fs" />
     <Compile Include="WishList.fs" />

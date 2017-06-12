@@ -12,6 +12,8 @@ open System
 open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
+open ServerCode.Logic
+
 
     
 type LoginState =
@@ -20,38 +22,19 @@ type LoginState =
 
 type Model = { 
     State : LoginState
-    Login : Login
+    Login : LoginInfo
     ErrorMsg : string }
 
-let authUser (login:Login,apiUrl) =
-    promise {
-        if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
-        if String.IsNullOrEmpty login.Password then return! failwithf "You need to fill in a password." else
 
-        let body = toJson login
+let authTokenResult = function
+    | Some token -> GetTokenSuccess token
+    | None -> AuthError (Exception("Could not authenticate user"))
 
-        let props = 
-            [ RequestProperties.Method HttpMethod.POST
-              Fetch.requestHeaders [
-                HttpRequestHeaders.ContentType "application/json" ]
-              RequestProperties.Body !^body ]
-        
-        try
-
-            let! response = Fetch.fetch apiUrl props
-
-            if not response.Ok then
-                return! failwithf "Error: %d" response.Status
-            else    
-                let! data = response.text() 
-                return data
-        with
-        | _ -> return! failwithf "Could not authenticate user."
-    }
-
-let authUserCmd login apiUrl = 
-    Cmd.ofPromise authUser (login,apiUrl) GetTokenSuccess AuthError
-
+let authUserCmd (login: LoginInfo) = 
+    Cmd.ofAsync server.authorize login authTokenResult AuthError
+                 
+                
+              
 let init (user:UserData option) = 
     match user with
     | None ->
@@ -72,6 +55,11 @@ let update (msg:LoginMsg) model : Model*Cmd<LoginMsg> =
     | LoginMsg.SetPassword pw ->
         { model with Login = { model.Login with Password = pw }}, []
     | LoginMsg.ClickLogIn ->
+        if String.IsNullOrEmpty model.Login.UserName 
+        then { model with ErrorMsg = "You need to fill in a username." }
+        elif String.IsNullOrEmpty model.Login.Password 
+        then { model with ErrorMsg = "You need to fill in a password" }
+
         model, authUserCmd model.Login "/api/users/login"
     | LoginMsg.AuthError exn ->
         { model with ErrorMsg = string (exn.Message) }, []

@@ -1,4 +1,4 @@
-module ServerCode.TokenUtils
+module ServerCode.Token
 
 open System.IO
 open System.Text

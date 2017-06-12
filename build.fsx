@@ -25,7 +25,7 @@ let clientPath = "./src/Client" |> FullName
 
 let serverPath = "./src/Server/" |> FullName
 
-let dotnetcliVersion = "1.0.4"
+let dotnetcliVersion = "2.0.0"
 
 let mutable dotnetExePath = "dotnet"
 

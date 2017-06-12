@@ -7,6 +7,18 @@ open System.Net
 open Suave.Filters
 open Suave.Operators
 open Suave.RequestErrors
+open ServerCode.Domain
+open Fable.Remoting.Suave
+
+let serverImplementation : IServer = 
+    { authorize = Auth.authorize
+      getWishList = WishList.getWishList
+      createWishList = WishList.createWishList }
+
+let routeBuilder typeName methodName = 
+    sprintf "/api/%s/%s" typeName methodName
+
+let fableWebPart = FableSuaveAdapter.webPartWithBuilderFor serverImplementation routeBuilder
 
 let startServer clientPath =
     if not (Directory.Exists clientPath) then
@@ -31,16 +43,9 @@ let startServer clientPath =
         choose [
             GET >=> choose [
                 path "/" >=> Files.browseFileHome "index.html"
-                pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
+                pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome ]
 
-                path "/api/wishlist/" >=> WishList.getWishList ]
-
-            POST >=> choose [
-                path "/api/users/login" >=> Auth.login
-
-                path "/api/wishlist/" >=> WishList.postWishList
-            ]
-
+            fableWebPart       
             NOT_FOUND "Page not found."
 
         ] >=> logWithLevelStructured Logging.Info logger logFormatStructured

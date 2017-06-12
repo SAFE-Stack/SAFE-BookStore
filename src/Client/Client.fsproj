@@ -1,9 +1,10 @@
 ﻿<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../Server/Shared/Domain.fs" />
+    <Compile Include="Server.fs" />
     <Compile Include="Messages.fs" />
     <Compile Include="Style.fs" />
     <Compile Include="Utils.fs" />
@@ -12,7 +13,7 @@
     <Compile Include="pages/Login.fs" />
     <Compile Include="App.fs" />
     <PackageReference Include="FSharp.NET.Sdk" Version="1.0.*" PrivateAssets="All" />
-    <DotNetCliToolReference Include="dotnet-fable" Version="1.0.4" />
+    <DotNetCliToolReference Include="dotnet-fable" Version="1.0.8" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

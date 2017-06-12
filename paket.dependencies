@@ -1,5 +1,7 @@
 source https://nuget.org/api/v2
 
+nuget Fable.Remoting.Client
+nuget Fable.Remoting.Suave.Core
 nuget FSharp.Core prerelease redirects: force
 nuget Fable.JsonConverter prerelease
 nuget Suave
@@ -9,7 +11,7 @@ nuget Newtonsoft.Json prerelease
 nuget jose-jwt
 
 # Keep this version synced with dotnet-fable in .fsproj
-nuget Fable.Core 1.0.4
+nuget Fable.Core 1.0.8
 
 nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger
