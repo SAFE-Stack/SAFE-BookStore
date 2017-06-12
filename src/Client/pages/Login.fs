@@ -28,13 +28,11 @@ type Model = {
 
 let authTokenResult = function
     | Some token -> GetTokenSuccess token
-    | None -> AuthError (Exception("Could not authenticate user"))
+    | None -> AuthError "Could not authenticate user"
 
 let authUserCmd (login: LoginInfo) = 
-    Cmd.ofAsync server.authorize login authTokenResult AuthError
-                 
-                
-              
+    Cmd.ofAsync server.authorize login authTokenResult (fun ex -> AuthError ex.Message)
+                                         
 let init (user:UserData option) = 
     match user with
     | None ->
@@ -56,11 +54,10 @@ let update (msg:LoginMsg) model : Model*Cmd<LoginMsg> =
         { model with Login = { model.Login with Password = pw }}, []
     | LoginMsg.ClickLogIn ->
         if String.IsNullOrEmpty model.Login.UserName 
-        then { model with ErrorMsg = "You need to fill in a username." }
+        then { model with ErrorMsg = "You need to fill in a username." }, Cmd.none
         elif String.IsNullOrEmpty model.Login.Password 
-        then { model with ErrorMsg = "You need to fill in a password" }
-
-        model, authUserCmd model.Login "/api/users/login"
+        then { model with ErrorMsg = "You need to fill in a password" }, Cmd.none
+        else  model, authUserCmd model.Login
     | LoginMsg.AuthError exn ->
         { model with ErrorMsg = string (exn.Message) }, []
 
