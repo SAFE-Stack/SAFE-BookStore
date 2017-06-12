@@ -31,7 +31,10 @@ let authTokenResult = function
     | None -> AuthError "Could not authenticate user"
 
 let authUserCmd (login: LoginInfo) = 
-    Cmd.ofAsync server.authorize login authTokenResult (fun ex -> AuthError ex.Message)
+    Cmd.ofAsync server.authorize 
+                login 
+                authTokenResult 
+                (fun ex -> AuthError ex.Message)
                                          
 let init (user:UserData option) = 
     match user with
@@ -58,8 +61,8 @@ let update (msg:LoginMsg) model : Model*Cmd<LoginMsg> =
         elif String.IsNullOrEmpty model.Login.Password 
         then { model with ErrorMsg = "You need to fill in a password" }, Cmd.none
         else  model, authUserCmd model.Login
-    | LoginMsg.AuthError exn ->
-        { model with ErrorMsg = string (exn.Message) }, []
+    | LoginMsg.AuthError msg ->
+        { model with ErrorMsg = msg }, []
 
 let [<Literal>] ENTER_KEY = 13.
 
