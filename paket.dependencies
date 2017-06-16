@@ -1,6 +1,7 @@
 source https://nuget.org/api/v2
 
 nuget FSharp.Core prerelease redirects: force
+nuget FSharp.NET.Sdk
 nuget Fable.JsonConverter prerelease
 nuget Suave
 nuget Microsoft.Extensions.Logging.Console
