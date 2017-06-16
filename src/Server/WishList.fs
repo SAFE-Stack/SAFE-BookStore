@@ -1,5 +1,7 @@
 module ServerCode.WishList
 
+(* The wish list API web parts and data access functions. *)
+
 open System.IO
 open Suave
 open Suave.Logging

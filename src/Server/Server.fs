@@ -1,5 +1,7 @@
 module ServerCode.Server
 
+(* Web server module *)
+
 open System.IO
 open Suave
 open Suave.Logging
@@ -8,16 +10,10 @@ open Suave.Filters
 open Suave.Operators
 open Suave.RequestErrors
 
+// Fire up our web server!
 let startServer clientPath port =
     if not (Directory.Exists clientPath) then
         failwithf "Client-HomePath '%s' doesn't exist." clientPath
-
-    // let outPath = Path.Combine(clientPath,"public")
-    // if not (Directory.Exists outPath) then
-    //     failwithf "Out-HomePath '%s' doesn't exist." outPath
-
-    // if Directory.EnumerateFiles outPath |> Seq.isEmpty then
-    //     failwithf "Out-HomePath '%s' is empty." outPath
 
     let logger = Logging.Targets.create Logging.Info [| "Suave" |]
     let serverConfig =

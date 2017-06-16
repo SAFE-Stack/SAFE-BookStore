@@ -1,5 +1,7 @@
 ﻿module ServerCode.Program
 
+(* Web server entry point *)
+
 open System.IO
 
 let GetEnvVar var = 

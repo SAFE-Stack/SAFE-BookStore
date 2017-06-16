@@ -1,9 +1,13 @@
 namespace ServerCode.Domain
 
+(* API model shared between client and server *)
+   
 open System
 
+// Json web token type.
 type JWT = string
 
+// Login credentials.
 type Login = 
     { UserName : string
       Password : string }
@@ -24,10 +28,14 @@ type WishList =
     { UserName : string
       Books : Book list }
 
+    // Create a new WishList.  This is supported in client code too,
+    // thanks to the magic of https://www.nuget.org/packages/Fable.JsonConverter
     static member New userName = 
         { UserName = userName
           Books = [] }
 
+
+// Model validation functions.  Write your validation functions once, for server and client!
 module Validation =
 
     let verifyBookTitle title =

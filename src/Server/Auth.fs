@@ -1,5 +1,7 @@
 module ServerCode.Auth
 
+(*  Login web part and functions for API web part request authorisation with JWT *)
+
 open Suave
 open Suave.RequestErrors
 
@@ -7,6 +9,7 @@ let unauthorized s = Suave.Response.response HTTP_401 s
 
 let UNAUTHORIZED s = unauthorized (UTF8.bytes s)
 
+// Login web part that authenticates a user and returns a token in the HTTP body.
 let login (ctx: HttpContext) = async {
     let login = 
         ctx.request.rawForm 
@@ -25,6 +28,9 @@ let login (ctx: HttpContext) = async {
     | _ -> return! UNAUTHORIZED (sprintf "User '%s' can't be logged in." login.UserName) ctx
 }
 
+// Invokes a function that produces the output for a web part, if the HttpContext
+// contains a valid auth token. Use to authorise the expressions in your web part
+// code (e.g. WishList.getWishList).
 let useToken ctx f = async {
     match ctx.request.header "Authorization" with
     | Choice1Of2 accesstoken when accesstoken.StartsWith "Bearer " -> 
