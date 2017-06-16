@@ -1,6 +1,5 @@
+/// Module of server domain types. 
 module ServerCode.ServerTypes
-
-(* Type we are using on the server only? *)
 
 open System
 

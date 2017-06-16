@@ -1,6 +1,5 @@
+/// Domain model shared between client and server.
 namespace ServerCode.Domain
-
-(* API model shared between client and server *)
    
 open System
 

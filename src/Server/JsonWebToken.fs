@@ -1,10 +1,8 @@
+/// JSON Web Token (JWT) functions.
 module ServerCode.JsonWebToken
 
-(* JSON Web Tokens (JWT) functions
-
-   - Create and validate JWT.
-   - Learn about JWT https://jwt.io/introduction/
-   - This module uses the JOSE-JWT library https://github.com/dvsekhvalnov/jose-jwt   *)
+//  Learn about JWT https://jwt.io/introduction/
+//  This module uses the JOSE-JWT library https://github.com/dvsekhvalnov/jose-jwt
 
 open System.IO
 open System.Text
@@ -41,7 +39,7 @@ let decode<'a> (jwt:string) : 'a =
     decodeString jwt
     |> JsonConvert.DeserializeObject<'a>
 
-// Returns true if the JSON Web Token is successfully decoded and the signature is verified.
+/// Returns true if the JSON Web Token is successfully decoded and the signature is verified.
 let isValid (jwt:string) : ServerTypes.UserRights option =
     try
         let token = decode jwt

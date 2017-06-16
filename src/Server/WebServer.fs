@@ -1,6 +1,5 @@
+/// Functions for managing the Suave web server.
 module ServerCode.WebServer
-
-(* Web server module *)
 
 open System.IO
 open Suave
