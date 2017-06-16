@@ -1,4 +1,4 @@
-module ServerCode.TokenUtils
+module ServerCode.JsonWebToken
 
 (* JSON Web Tokens (JWT) functions
 

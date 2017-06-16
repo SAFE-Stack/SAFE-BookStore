@@ -17,7 +17,6 @@ open Suave.Logging.Message
 
 let logger = Log.create "FableSample"
 
-
 /// The default initial data 
 let defaultWishList userName : WishList =
     {
@@ -41,7 +40,7 @@ let getWishListFromDB userName =
         defaultWishList userName
     else
         File.ReadAllText(fi.FullName)
-        |> JsonUtils.ofJson<WishList>
+        |> FableJson.ofJson<WishList>
 
 /// Save to the database
 let saveWishListToDB (wishList:WishList) =
@@ -49,7 +48,7 @@ let saveWishListToDB (wishList:WishList) =
         let fi = FileInfo(getJSONFileName wishList.UserName)
         if not fi.Directory.Exists then
             fi.Directory.Create()
-        File.WriteAllText(fi.FullName, JsonUtils.toJson wishList)
+        File.WriteAllText(fi.FullName, FableJson.toJson wishList)
     with exn ->
         logger.error (eventX "Save failed with exception" >> addExn exn)
 
@@ -58,7 +57,7 @@ let getWishList (ctx: HttpContext) =
     Auth.useToken ctx (fun token -> async {
         try
             let wishList = getWishListFromDB token.UserName
-            return! Successful.OK (JsonUtils.toJson wishList) ctx
+            return! Successful.OK (FableJson.toJson wishList) ctx
         with exn ->
             logger.error (eventX "SERVICE_UNAVAILABLE" >> addExn exn)
             return! SERVICE_UNAVAILABLE "Database not available" ctx
@@ -71,14 +70,14 @@ let postWishList (ctx: HttpContext) =
             let wishList = 
                 ctx.request.rawForm
                 |> System.Text.Encoding.UTF8.GetString
-                |> JsonUtils.ofJson<Domain.WishList>
+                |> FableJson.ofJson<Domain.WishList>
             
             if token.UserName <> wishList.UserName then
                 return! UNAUTHORIZED (sprintf "WishList is not matching user %s" token.UserName) ctx
             else
                 if Validation.verifyWishList wishList then
                     saveWishListToDB wishList
-                    return! Successful.OK (JsonUtils.toJson wishList) ctx
+                    return! Successful.OK (FableJson.toJson wishList) ctx
                 else
                     return! BAD_REQUEST "WishList is not valid" ctx
         with exn ->

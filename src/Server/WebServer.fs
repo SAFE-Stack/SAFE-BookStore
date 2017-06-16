@@ -1,4 +1,4 @@
-module ServerCode.Server
+module ServerCode.WebServer
 
 (* Web server module *)
 
@@ -11,7 +11,7 @@ open Suave.Operators
 open Suave.RequestErrors
 
 // Fire up our web server!
-let startServer clientPath port =
+let start clientPath port =
     if not (Directory.Exists clientPath) then
         failwithf "Client-HomePath '%s' doesn't exist." clientPath
 
