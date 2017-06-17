@@ -11,7 +11,6 @@
     <Compile Include="pages/WishList.fs" />
     <Compile Include="pages/Login.fs" />
     <Compile Include="App.fs" />
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.*" PrivateAssets="All" />
     <DotNetCliToolReference Include="dotnet-fable" Version="1.0.4" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
