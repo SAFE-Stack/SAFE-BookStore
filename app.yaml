@@ -1,0 +1,7 @@
+service: suave-fable
+runtime: custom
+env: flex
+health_check:
+  enable_health_check: False
+env_variables:
+  SUAVE_FABLE_PORT: '8080'

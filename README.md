@@ -101,6 +101,22 @@ If you are in [development mode](#development-mode) then you can use Expecto's f
 
 [Paket](https://fsprojects.github.io/Paket/) is a dependency manager and allows easier management of the NuGet packages.
 
+## Deployment alternatives
+
+### Google Cloud AppEngine
+
+The repository comes with a sample `app.yaml` file which is used to deploy to Google Cloud AppEngine using the custom flex environment. At the moment it seems like the application must run on port `8080` and that is set as a environment variable in the `app.yaml` file. When you run the deploy command it will first look for the `app.yaml` file and then look for the `Dockerfile` for what should deploy. The container that is deploy is exactly that same as the one that should have been deployed to Azure, but it is only set up to deploy from local to Google Cloud at the moment, and not from CI server to Google Cloud.
+
+Before you can execute the deploy command you also need to build the solution with the `Publish` target, that is so the container image will get the compiled binaries when the container build is executed via the deploy command.
+
+To execute the deploy you need a Google Cloud account and project configured as well as the tooling installed, https://cloud.google.com/sdk/downloads. The command you need to run is:
+
+    gcloud app deploy -q <--version=main> <--verbosity=debug>
+
+The `version` and `verbosity` flag isn't need, but it is recommended to use the `version` flag so you don't up with to many versions of your application without removing previous ones. Use `verbosity=debug` if you are having some problems.
+
+Deploy to the flex environment with a custom runtime like this is might take some time, but the instructions here should work.
+
 ## Maintainer(s)
 
 - [@forki](https://github.com/forki)
