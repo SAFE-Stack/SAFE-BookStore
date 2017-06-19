@@ -19,15 +19,20 @@ let tests =
             url serverUrl
             waitForElement ".elmish-app"
 
-            let logout = someElement  ".logout"
-            if logout.IsSome then click "Logout"
+            let logoutLinkSelector = ".logout"
+            let loginLinkSelector = "Login"
 
-            click "Login"
+            let logout = someElement logoutLinkSelector 
+            if logout.IsSome then
+                click logoutLinkSelector 
+                waitForElement loginLinkSelector
+
+            click loginLinkSelector
 
             "#username" << "test"
             "#password" << "test"
 
             click "Log In"
             
-            waitForElement "Isaac Abraham"
+            waitForElement logoutLinkSelector
     ]
