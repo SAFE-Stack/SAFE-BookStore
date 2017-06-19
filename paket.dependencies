@@ -1,6 +1,6 @@
 source https://nuget.org/api/v2
 
-nuget Fable.Remoting.Client
+nuget Fable.Remoting.Client 1.0.6-pre
 nuget Fable.Remoting.Suave.Core
 nuget FSharp.Core prerelease redirects: force
 nuget Fable.JsonConverter prerelease
