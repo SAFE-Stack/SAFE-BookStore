@@ -8,7 +8,7 @@ open Suave.Filters
 open Suave.Operators
 open Suave.RequestErrors
 
-let startServer clientPath =
+let startServer clientPath port =
     if not (Directory.Exists clientPath) then
         failwithf "Client-HomePath '%s' doesn't exist." clientPath
 
@@ -20,12 +20,11 @@ let startServer clientPath =
     //     failwithf "Out-HomePath '%s' is empty." outPath
 
     let logger = Logging.Targets.create Logging.Info [| "Suave" |]
-
     let serverConfig =
         { defaultConfig with
             logger = Targets.create LogLevel.Debug [|"ServerCode"; "Server" |]
             homeFolder = Some clientPath
-            bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") 8085us] }
+            bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") port] }
 
     let app =
         choose [

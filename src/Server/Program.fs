@@ -2,6 +2,16 @@
 
 open System.IO
 
+let GetEnvVar var = 
+    match System.Environment.GetEnvironmentVariable(var) with
+    | null -> None
+    | value -> Some value
+
+let getPortsOrDefault defaultVal = 
+    match System.Environment.GetEnvironmentVariable("SUAVE_FABLE_PORT") with
+    | null -> defaultVal
+    | value -> value |> uint16
+
 [<EntryPoint>]
 let main args =
     try
@@ -13,7 +23,7 @@ let main args =
                 if Directory.Exists devPath then devPath else
                 @"./client"
 
-        Server.startServer (Path.GetFullPath clientPath)
+        Server.startServer (Path.GetFullPath clientPath) (getPortsOrDefault 8085us)
         0
     with
     | exn ->

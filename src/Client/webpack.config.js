@@ -11,6 +11,7 @@ var babelOptions = {
 }
 
 var isProduction = process.argv.indexOf("-p") >= 0;
+var port = process.env.SUAVE_FABLE_PORT || "8085";
 console.log("Bundling for " + (isProduction ? "production" : "development") + "...");
 
 module.exports = {
@@ -24,7 +25,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api/*': {
-        target: 'http://localhost:8085',
+        target: 'http://localhost:' + port,
         changeOrigin: true
       }
     }
