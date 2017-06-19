@@ -8,7 +8,7 @@ type LoginMsg =
   | GetTokenSuccess of string
   | SetUserName of string
   | SetPassword of string
-  | AuthError of exn
+  | AuthError of string
   | ClickLogIn
 
 /// The different messages processed when interacting with the wish list

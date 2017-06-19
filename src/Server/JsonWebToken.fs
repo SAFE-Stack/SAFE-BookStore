@@ -1,4 +1,4 @@
-module ServerCode.Token
+module ServerCode.JsonWebToken
 
 open System.IO
 open System.Text

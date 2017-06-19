@@ -3,6 +3,7 @@ module ServerCode.WishList
 open System.IO
 open Suave
 open Suave.Logging
+open Newtonsoft.Json
 open System.Net
 open Suave.Filters
 open Suave.Operators
@@ -39,7 +40,7 @@ let getWishListFromDB userName =
         defaultWishList userName
     else
         File.ReadAllText(fi.FullName)
-        |> JsonUtils.ofJson<WishList>
+        |> JsonConvert.DeserializeObject<WishList>
 
 /// Save to the database
 let saveWishListToDB (wishList:WishList) =
@@ -47,13 +48,13 @@ let saveWishListToDB (wishList:WishList) =
         let fi = FileInfo(getJSONFileName wishList.UserName)
         if not fi.Directory.Exists then
             fi.Directory.Create()
-        File.WriteAllText(fi.FullName, JsonUtils.toJson wishList)
+        File.WriteAllText(fi.FullName,  JsonConvert.SerializeObject wishList)
     with exn ->
         logger.error (eventX "Save failed with exception" >> addExn exn)
 
 
 let getWishList authToken = 
-    match Token.isValid authToken with
+    match JsonWebToken.isValid authToken with
     | None -> Response.Error UserNotLoggedIn
     | Some userRights ->
         let userName = userRights.UserName
@@ -63,7 +64,7 @@ let getWishList authToken =
 
 
 let createWishList (input: AuthorizedRequest<WishList>) =
-    match Token.isValid input.AuthToken with
+    match JsonWebToken.isValid input.AuthToken with
     | None -> Response.Error UserNotLoggedIn
     | Some user ->
         let wishList = input.Request

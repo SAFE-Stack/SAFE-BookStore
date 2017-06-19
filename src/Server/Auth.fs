@@ -11,5 +11,5 @@ let authorize (info: LoginInfo) =
     users
     |> List.tryFind (fun (userName, pass) ->
          userName = info.UserName && pass = info.Password)
-    |> Option.map (fun _ -> Token.encode info)
+    |> Option.map (fun _ -> JsonWebToken.encode info)
     |> Async.result

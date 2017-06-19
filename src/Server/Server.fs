@@ -18,6 +18,7 @@ let serverImplementation : IServer =
 let routeBuilder typeName methodName = 
     sprintf "/api/%s/%s" typeName methodName
 
+FableSuaveAdapter.logger <- Some (printfn "%s")
 let fableWebPart = FableSuaveAdapter.webPartWithBuilderFor serverImplementation routeBuilder
 
 let startServer clientPath =
