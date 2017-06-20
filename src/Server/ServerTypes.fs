@@ -1,3 +1,4 @@
+/// Module of server domain types. 
 module ServerCode.ServerTypes
 
 open System

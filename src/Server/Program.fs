@@ -1,4 +1,5 @@
-﻿module ServerCode.Program
+﻿/// Server program entry point module.
+module ServerCode.Program
 
 open System.IO
 
@@ -23,7 +24,7 @@ let main args =
                 if Directory.Exists devPath then devPath else
                 @"./client"
 
-        Server.startServer (Path.GetFullPath clientPath) (getPortsOrDefault 8085us)
+        WebServer.start (Path.GetFullPath clientPath) (getPortsOrDefault 8085us)
         0
     with
     | exn ->
