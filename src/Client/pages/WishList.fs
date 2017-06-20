@@ -7,11 +7,25 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open ServerCode.Domain
 open Style
-open Messages
 open System
 open Fable.Core.JsInterop
+open Client.Model
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
+
+// Messages.
+
+type Msg =
+  | LoadForUser of string
+  | FetchedWishList of WishList
+  | RemoveBook of Book
+  | AddBook
+  | TitleChanged of string
+  | AuthorsChanged of string
+  | LinkChanged of string
+  | FetchError of exn
+
+// Model.
 
 type Model = 
   { WishList : WishList
@@ -22,6 +36,8 @@ type Model =
     AuthorsErrorText : string option
     LinkErrorText : string option
     ErrorMsg : string }
+
+// REST
 
 /// Get the wish list from the server, used to populate the model
 let getWishList token =
@@ -54,6 +70,8 @@ let postWishList (token,wishList) =
 let postWishListCmd (token,wishList) = 
     Cmd.ofPromise postWishList (token,wishList) FetchedWishList FetchError
 
+// State.
+
 let init (user:UserData) = 
     { WishList = WishList.New user.UserName
       Token = user.Token
@@ -65,9 +83,9 @@ let init (user:UserData) =
       ErrorMsg = "" }, loadWishListCmd user.Token
 
 
-let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> = 
+let update (msg:Msg) model : Model*Cmd<Msg> = 
     match msg with
-    | WishListMsg.LoadForUser user ->
+    | LoadForUser user ->
         model, []
     | FetchedWishList wishList ->
         let wishList = { wishList with Books = wishList.Books |> List.sortBy (fun b -> b.Title) }
@@ -92,6 +110,8 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
                 LinkErrorText = Validation.verifyBookLink model.NewBook.Link }, Cmd.none
     | FetchError _ -> 
         model, Cmd.none
+
+// View
 
 let newBookForm (model:Model) dispatch =
     let buttonActive = if String.IsNullOrEmpty model.NewBook.Title ||
@@ -123,7 +143,7 @@ let newBookForm (model:Model) dispatch =
                                      ClassName "form-control"
                                      Placeholder "Please insert book title"
                                      Required true
-                                     OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.TitleChanged !!ev.target?value))) ]
+                                     OnChange (fun (ev:React.FormEvent) -> dispatch (TitleChanged !!ev.target?value)) ]
                              match model.TitleErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
@@ -143,7 +163,7 @@ let newBookForm (model:Model) dispatch =
                                      ClassName "form-control"
                                      Placeholder "Please insert authors"
                                      Required true
-                                     OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.AuthorsChanged !!ev.target?value)))]
+                                     OnChange (fun (ev:React.FormEvent) -> dispatch (AuthorsChanged !!ev.target?value))]
                              match model.AuthorsErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
@@ -163,7 +183,7 @@ let newBookForm (model:Model) dispatch =
                                     ClassName "form-control"
                                     Placeholder "Please insert link"
                                     Required true
-                                    OnChange (fun (ev:React.FormEvent) -> dispatch (WishListMsg (WishListMsg.LinkChanged !!ev.target?value)))]
+                                    OnChange (fun (ev:React.FormEvent) -> dispatch (LinkChanged !!ev.target?value))]
                              match model.LinkErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
@@ -172,7 +192,7 @@ let newBookForm (model:Model) dispatch =
                          | Some e -> yield p [ClassName "text-danger"][str e]
                          | _ -> ()
                     ]
-                    button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch (WishListMsg WishListMsg.AddBook))] [
+                    button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch AddBook)] [
                         i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []
                         str "Add"
                     ]  
@@ -181,7 +201,7 @@ let newBookForm (model:Model) dispatch =
         ]
     ]
 
-let view (model:Model) (dispatch: AppMsg -> unit) = 
+let view (model:Model) (dispatch: Msg -> unit) = 
     div [] [
         h4 [] [str (sprintf "Wishlist for %s" model.WishList.UserName) ]
         table [ClassName "table table-striped table-hover"] [
@@ -201,7 +221,7 @@ let view (model:Model) (dispatch: AppMsg -> unit) =
                             else
                                 yield a [ Href book.Link; Target "_blank"] [str book.Title ] ]
                         td [] [ str book.Authors ]
-                        td [] [ buttonLink "" (fun _ -> dispatch (WishListMsg (RemoveBook book))) [ str "Remove" ] ]
+                        td [] [ buttonLink "" (fun _ -> dispatch (RemoveBook book)) [ str "Remove" ] ]
                         ]
             ]
         ]

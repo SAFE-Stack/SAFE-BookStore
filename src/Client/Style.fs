@@ -10,7 +10,7 @@ open Fable.Import.Browser
 open Fable.PowerPack
 open Elmish.Browser.Navigation
 open Elmish.Browser.UrlParser
-open Messages
+open Client.Model
 module R = Fable.Helpers.React
 
 
