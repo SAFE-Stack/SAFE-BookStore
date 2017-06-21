@@ -32,7 +32,8 @@ let pageParser : Parser<Page->_,_> =
     oneOf
         [ map Home (s "home")
           map Page.Login (s "login")
-          map WishList (s "wishlist") ]
+          map WishList (s "wishlist")
+          map Home top ]
 
 let urlUpdate (result:Page option) model =
     match result with
