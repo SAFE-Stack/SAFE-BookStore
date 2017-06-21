@@ -4,12 +4,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../Server/Shared/Domain.fs" />
-    <Compile Include="Messages.fs" />
+    <Compile Include="Model.fs" />
     <Compile Include="Style.fs" />
     <Compile Include="Utils.fs" />
-    <Compile Include="pages/Menu.fs" />
+    <Compile Include="components/Menu.fs" />
     <Compile Include="pages/WishList.fs" />
     <Compile Include="pages/Login.fs" />
+    <Compile Include="Messages.fs" />
     <Compile Include="App.fs" />
     <!--Keep this version synced with dotnet-fable in .fsproj-->
     <DotNetCliToolReference Include="dotnet-fable" Version="1.1.3" />

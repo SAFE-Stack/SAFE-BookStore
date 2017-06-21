@@ -10,16 +10,28 @@ open Elmish.Browser.UrlParser
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Client.Style
-open Client.Messages
 open System
+open Client.Model
 open Fable.Core.JsInterop
+
+// Messages.
+
+type Msg = 
+  | LogOut
+
+
+// Model.
 
 type Model = {
     User : UserData option
     query : string
 }
 
+// State.
+
 let init() = { User = Utils.load "user"; query = "" },Cmd.none
+
+// View
 
 let view (model:Model) dispatch =
     div [ centerStyle "row" ] [ 
@@ -29,5 +41,5 @@ let view (model:Model) dispatch =
           if model.User = None then 
               yield viewLink (Login) "Login" 
           else 
-              yield buttonLink "logout" (fun _ -> dispatch Logout) [ str "Logout" ]
+              yield buttonLink "logout" (fun _ -> dispatch LogOut) [ str "Logout" ]
         ]
