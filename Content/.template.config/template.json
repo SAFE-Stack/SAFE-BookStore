@@ -1,0 +1,15 @@
+{
+  "author": "Maxime Mangel",
+  "classifications": [ "Fable", "Elmish", "React", "Suave" ],
+  "name": "Fable+Elmish+Suave : Scaffold",
+  "tags": {
+    "language": "F#",
+    "type": "project"
+  },
+  "identity": "Fable.Template.SuaveScaffold",
+  "groupIdentity": "FableElmishSuave",
+  "shortName": "fable-suave-scaffold",
+  "sourceName": "FableElmishReactTemplate",
+  // This allows using the `-n` option to create a new directory
+  "preferNameDirectory": true
+}
