@@ -110,9 +110,6 @@ csx
 # Windows Store app package directory
 AppPackages/
 
-# VSCode
-.vscode/
-
 # Vim
 *.swp
 
