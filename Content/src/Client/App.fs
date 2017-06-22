@@ -10,6 +10,7 @@ open Elmish.React
 open Fable.Import.Browser
 open Fable.PowerPack
 open Elmish.Browser.Navigation
+open Client.Model
 open Client.Messages
 open Elmish.Browser.UrlParser
 
@@ -31,7 +32,8 @@ let pageParser : Parser<Page->_,_> =
     oneOf
         [ map Home (s "home")
           map Page.Login (s "login")
-          map WishList (s "wishlist") ]
+          map WishList (s "wishlist")
+          map Home top ]
 
 let urlUpdate (result:Page option) model =
     match result with
@@ -49,7 +51,7 @@ let urlUpdate (result:Page option) model =
             let m,cmd = WishList.init user
             { model with Page = page; SubModel = WishListModel m }, Cmd.map WishListMsg cmd
         | None ->
-            model, Cmd.ofMsg Logout
+            model, Cmd.ofMsg LogOut
 
     | Some (Home as page) ->
         { model with Page = page; Menu = { model.Menu with query = "" } }, []
@@ -66,7 +68,7 @@ let init result =
 
 let update msg model =
     match msg, model.SubModel with
-    | AppMsg.OpenLogIn, _ ->
+    | Msg.OpenLogIn, _ ->
         let m,cmd = Login.init None
         { model with
             Page = Page.Login
@@ -105,24 +107,28 @@ let update msg model =
 
     | WishListMsg msg, _ -> model, Cmd.none
 
-    | AppMsg.LoggedIn, _ ->
+    // Log out can come from App or Menu.
+    | MenuMsg Menu.Msg.LogOut, _
+    | Msg.LogOut, _ ->
+        model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
+
+    | Msg.LoggedIn, _ ->
         let nextPage = Page.WishList
         let m,cmd = urlUpdate (Some nextPage) model
         match m.Menu.User with
         | Some user ->
             m, Cmd.batch [cmd; Navigation.modifyUrl (toHash nextPage) ]
         | None ->
-            m, Cmd.ofMsg Logout
+            m, Cmd.ofMsg LogOut
 
-    | AppMsg.LoggedOut, _ ->
+
+    | Msg.LoggedOut, _ ->
         { model with
             Page = Page.Home
             SubModel = NoSubModel
             Menu = { model.Menu with User = None } },
         Navigation.modifyUrl (toHash Page.Home)
 
-    | AppMsg.Logout, _ ->
-        model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
 
 // VIEW
 
@@ -140,19 +146,19 @@ let viewPage model dispatch =
     | Page.Login ->
         match model.SubModel with
         | LoginModel m ->
-            [ div [ ] [ Login.view m dispatch ]]
+            [ div [ ] [ Login.view m (LoginMsg >> dispatch) ]]
         | _ -> [ ]
 
     | Page.WishList ->
         match model.SubModel with
         | WishListModel m ->
-            [ div [ ] [ lazyView2 WishList.view m dispatch ]]
+            [ div [ ] [ lazyView2 WishList.view m (WishListMsg >> dispatch) ]]
         | _ -> [ ]
 
 /// Constructs the view for the application given the model.
 let view model dispatch =
   div []
-    [ lazyView2 Menu.view model.Menu dispatch
+    [ lazyView2 Menu.view model.Menu (MenuMsg >> dispatch)
       hr []
       div [ centerStyle "column" ] (viewPage model dispatch)
     ]
