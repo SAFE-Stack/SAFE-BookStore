@@ -1,4 +1,8 @@
-module ServerCode.TokenUtils
+/// JSON Web Token (JWT) functions.
+module ServerCode.JsonWebToken
+
+//  Learn about JWT https://jwt.io/introduction/
+//  This module uses the JOSE-JWT library https://github.com/dvsekhvalnov/jose-jwt
 
 open System.IO
 open System.Text
@@ -11,7 +15,7 @@ let private createPassPhrase() =
     crypto.GetBytes(randomNumber)
     randomNumber
 
-let passPhrase =
+let private passPhrase =
     let encoding = Encoding.UTF8
     let fi = FileInfo("./temp/token.txt")
     if not fi.Exists then
@@ -19,12 +23,12 @@ let passPhrase =
         if not fi.Directory.Exists then
             fi.Directory.Create()
         File.WriteAllBytes(fi.FullName,passPhrase)
-
     File.ReadAllBytes(fi.FullName)
-let encodeString (payload:string) =
+
+let private encodeString (payload:string) =
     Jose.JWT.Encode(payload, passPhrase, Jose.JweAlgorithm.A256KW, Jose.JweEncryption.A256CBC_HS512)
 
-let decodeString (jwt:string) =
+let private decodeString (jwt:string) =
     Jose.JWT.Decode(jwt, passPhrase, Jose.JweAlgorithm.A256KW, Jose.JweEncryption.A256CBC_HS512)
 
 let encode token =
@@ -35,6 +39,7 @@ let decode<'a> (jwt:string) : 'a =
     decodeString jwt
     |> JsonConvert.DeserializeObject<'a>
 
+/// Returns true if the JSON Web Token is successfully decoded and the signature is verified.
 let isValid (jwt:string) : ServerTypes.UserRights option =
     try
         let token = decode jwt

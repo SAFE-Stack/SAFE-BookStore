@@ -6,13 +6,12 @@
   <ItemGroup>
     <Compile Include="Shared/Domain.fs" />
     <Compile Include="ServerTypes.fs" />
-    <Compile Include="TokenUtils.fs" />
-    <Compile Include="JsonUtils.fs" />
+    <Compile Include="JsonWebToken.fs" />
+    <Compile Include="FableJson.fs" />
     <Compile Include="Auth.fs" />
     <Compile Include="WishList.fs" />
-    <Compile Include="Server.fs" />
+    <Compile Include="WebServer.fs" />
     <Compile Include="Program.fs" />
-    <PackageReference Include="FSharp.NET.Sdk" Version="1.0.*" PrivateAssets="All" />
     <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

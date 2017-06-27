@@ -25,7 +25,7 @@ let clientPath = "./src/Client" |> FullName
 
 let serverPath = "./src/Server/" |> FullName
 
-let dotnetcliVersion = "1.0.1"
+let dotnetcliVersion = "1.0.4"
 
 let mutable dotnetExePath = "dotnet"
 
@@ -59,17 +59,17 @@ let runDotnet workingDir args =
             info.FileName <- dotnetExePath
             info.WorkingDirectory <- workingDir
             info.Arguments <- args) TimeSpan.MaxValue
-    if result <> 0 then failwithf "dotnet %s failed" args    
+    if result <> 0 then failwithf "dotnet %s failed" args
 
 let platformTool tool winTool =
     let tool = if isUnix then tool else winTool
     tool
     |> ProcessHelper.tryFindFileOnPath
-    |> function Some t -> t | _ -> failwithf "%s not found" tool 
+    |> function Some t -> t | _ -> failwithf "%s not found" tool
 
-let nodePath = platformTool "node" "node.exe"
-
+let nodeTool = platformTool "node" "node.exe"
 let npmTool = platformTool "npm" "npm.cmd"
+let yarnTool = platformTool "yarn" "yarn.cmd"
 
 // Read additional information from the release notes document
 let release = LoadReleaseNotes "RELEASE_NOTES.md"
@@ -99,12 +99,16 @@ Target "BuildServer" (fun _ ->
 )
 
 Target "InstallClient" (fun _ ->
-    run npmTool "install" ""
+    printfn "Node version:"
+    run nodeTool "--version" __SOURCE_DIRECTORY__
+    printfn "Yarn version:"
+    run yarnTool "--version" __SOURCE_DIRECTORY__
+    run yarnTool "install" __SOURCE_DIRECTORY__
     runDotnet clientPath "restore"
 )
 
 Target "BuildClient" (fun _ ->
-    runDotnet clientPath "fable npm-run build"
+    runDotnet clientPath "fable webpack -- -p"
 )
 
 
@@ -170,7 +174,7 @@ Target "Run" (fun _ ->
                 info.Arguments <- "watch run") TimeSpan.MaxValue
         if result <> 0 then failwith "Website shut down." }
 
-    let fablewatch = async { runDotnet clientPath "fable npm-run start" }
+    let fablewatch = async { runDotnet clientPath "fable webpack-dev-server" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
@@ -189,11 +193,11 @@ Target "PrepareRelease" (fun _ ->
     Git.Branches.checkout "" false "master"
     Git.CommandHelper.directRunGitCommand "" "fetch origin" |> ignore
     Git.CommandHelper.directRunGitCommand "" "fetch origin --tags" |> ignore
-    
+
     StageAll ""
     Git.Commit.Commit "" (sprintf "Bumping version to %O" release.NugetVersion)
     Git.Branches.pushBranch "" "origin" "master"
-    
+
     let tagName = string release.NugetVersion
     Git.Branches.tag "" tagName
     Git.Branches.pushTag "" "origin" tagName
@@ -202,10 +206,10 @@ Target "PrepareRelease" (fun _ ->
         ExecProcess (fun info ->
             info.FileName <- "docker"
             info.Arguments <- sprintf "tag %s/%s %s/%s:%s" dockerUser dockerImageName dockerUser dockerImageName release.NugetVersion) TimeSpan.MaxValue
-    if result <> 0 then failwith "Docker tag failed"    
+    if result <> 0 then failwith "Docker tag failed"
 )
 
-Target "CreateDockerImage" (fun _ ->
+Target "Publish" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- dotnetExePath
@@ -225,7 +229,9 @@ Target "CreateDockerImage" (fun _ ->
     !! "src/Images/**/*.*" |> CopyFiles imageDir
 
     "src/Client/index.html" |> CopyFile clientDir
+)
 
+Target "CreateDockerImage" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
@@ -263,6 +269,7 @@ Target "All" DoNothing
   ==> "RenameDrivers"
   ==> "RunTests"
   ==> "All"
+  ==> "Publish"
   ==> "CreateDockerImage"
   ==> "PrepareRelease"
   ==> "Deploy"
