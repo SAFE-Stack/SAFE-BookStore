@@ -70,7 +70,7 @@ let update msg model =
         let m,cmd = Login.init None
         { model with
             Page = Page.Login
-            SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.modifyUrl (toHash Page.Login) ]
+            SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.newUrl (toHash Page.Login) ]
 
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
@@ -110,7 +110,7 @@ let update msg model =
         let m,cmd = urlUpdate (Some nextPage) model
         match m.Menu.User with
         | Some user ->
-            m, Cmd.batch [cmd; Navigation.modifyUrl (toHash nextPage) ]
+            m, Cmd.batch [cmd; Navigation.newUrl (toHash nextPage) ]
         | None ->
             m, Cmd.ofMsg Logout
 
@@ -119,7 +119,7 @@ let update msg model =
             Page = Page.Home
             SubModel = NoSubModel
             Menu = { model.Menu with User = None } },
-        Navigation.modifyUrl (toHash Page.Home)
+        Navigation.newUrl (toHash Page.Home)
 
     | AppMsg.Logout, _ ->
         model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
