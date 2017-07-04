@@ -25,6 +25,8 @@ let clientPath = "./src/Client" |> FullName
 
 let serverPath = "./src/Server/" |> FullName
 
+let serverTestsPath = "./test/ServerTests" |> FullName
+
 let dotnetcliVersion = "1.0.4"
 
 let mutable dotnetExePath = "dotnet"
@@ -173,13 +175,22 @@ Target "Run" (fun _ ->
                 info.WorkingDirectory <- serverPath
                 info.Arguments <- "watch run") TimeSpan.MaxValue
         if result <> 0 then failwith "Website shut down." }
-
+    
+    let unitTestsWatch = async {
+        let result = 
+            ExecProcess (fun info ->
+                info.FileName <- dotnetExePath
+                info.WorkingDirectory <- serverTestsPath
+                info.Arguments <- "watch run") TimeSpan.MaxValue
+            
+        if result <> 0 then failwith "Website shut down." }
+   
     let fablewatch = async { runDotnet clientPath "fable webpack-dev-server" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
 
-    Async.Parallel [| dotnetwatch; fablewatch; openBrowser |]
+    Async.Parallel [| dotnetwatch; unitTestsWatch; fablewatch; openBrowser |]
     |> Async.RunSynchronously
     |> ignore
 )
