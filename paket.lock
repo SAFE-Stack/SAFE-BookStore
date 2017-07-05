@@ -1,6 +1,6 @@
 NUGET
   remote: https://www.nuget.org/api/v2
-    Fable.Core (1.1.4)
+    Fable.Core (1.1.6)
       FSharp.Core (>= 4.1.17) - restriction: >= netstandard1.6
       NETStandard.Library (>= 1.6.1) - restriction: >= netstandard1.6
     Fable.Elmish (0.9.1) - restriction: >= netstandard1.6

@@ -12,7 +12,7 @@
     <Compile Include="pages/Login.fs" />
     <Compile Include="App.fs" />
     <!--Keep this version synced with dotnet-fable in .fsproj-->
-    <DotNetCliToolReference Include="dotnet-fable" Version="1.1.4" />
+    <DotNetCliToolReference Include="dotnet-fable" Version="1.1.6" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
