@@ -100,6 +100,14 @@ Target "BuildServer" (fun _ ->
     runDotnet serverPath "build"
 )
 
+Target "InstallServerTests" (fun _ ->
+    runDotnet serverTestsPath "restore"
+)
+
+Target "BuildServerTests" (fun _ ->
+    runDotnet serverPath "build"
+)
+
 Target "InstallClient" (fun _ ->
     printfn "Node version:"
     run nodeTool "--version" __SOURCE_DIRECTORY__
@@ -135,7 +143,11 @@ Target "RenameDrivers" (fun _ ->
     | exn -> failwithf "Could not rename chromedriver at test/UITests/bin/Release/chromedriver. Message: %s" exn.Message
 )
 
-Target "RunTests" (fun _ ->
+Target "RunServerTests" (fun _ ->
+    runDotnet serverTestsPath "run"
+)
+
+Target "RunExecutableTests" (fun _ ->
     ActivateFinalTarget "KillProcess"
 
     let serverProcess =
@@ -273,12 +285,15 @@ Target "All" DoNothing
 "Clean"
   ==> "InstallDotNetCore"
   ==> "InstallServer"
+  ==> "InstallServerTests"
   ==> "InstallClient"
   ==> "BuildServer"
+  ==> "BuildServerTests"
+  ==> "RunServerTests"
   ==> "BuildClient"
   ==> "BuildTests"
   ==> "RenameDrivers"
-  ==> "RunTests"
+  ==> "RunExecutableTests"
   ==> "All"
   ==> "Publish"
   ==> "CreateDockerImage"
