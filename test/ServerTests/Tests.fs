@@ -3,7 +3,6 @@ module ServerTests.Tests
 open Expecto
 open ServerCode
 
-[<Tests>]
 let wishListTests =
   testList "Wishlist" [
     testCase "default contains F# mastering book" <| fun _ ->
