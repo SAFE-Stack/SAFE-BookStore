@@ -7,9 +7,9 @@ open System.Diagnostics
 open System
 
 let rec findPackages (di:DirectoryInfo) =
-    if di = null then failwith "Could not find packages folder"
+    if isNull di then failwith "Could not find packages folder"
     let packages = DirectoryInfo(Path.Combine(di.FullName,"packages"))
-    if packages.Exists then di else 
+    if packages.Exists then di else
     findPackages di.Parent
 
 let rootDir = findPackages (DirectoryInfo (Directory.GetCurrentDirectory()))
