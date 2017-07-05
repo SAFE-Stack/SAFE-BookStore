@@ -65,65 +65,63 @@ let init result =
     m,Cmd.batch[cmd; menuCmd]
 
 let update msg model =
-    match msg with
-    | AppMsg.OpenLogIn ->
+    match msg, model.SubModel with
+    | AppMsg.OpenLogIn, _ ->
         let m,cmd = Login.init None
         { model with
             Page = Page.Login
-            SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.modifyUrl (toHash Page.Login) ]
+            SubModel = LoginModel m }, Cmd.batch [cmd; Navigation.newUrl (toHash Page.Login) ]
 
-    | StorageFailure e ->
+    | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
         model, []
 
-    | LoginMsg msg ->
-        match model.SubModel with
-        | LoginModel m ->
-            let m,cmd = Login.update msg m
-            let cmd = Cmd.map LoginMsg cmd
-            match m.State with
-            | Login.LoginState.LoggedIn token ->
-                let newUser : UserData = { UserName = m.Login.UserName; Token = token }
-                let cmd =
-                    if model.Menu.User = Some newUser then cmd else
-                    Cmd.batch [cmd
-                               Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn) StorageFailure ]
+    | LoginMsg msg, LoginModel m ->
+        let m,cmd = Login.update msg m
+        let cmd = Cmd.map LoginMsg cmd
+        match m.State with
+        | Login.LoginState.LoggedIn token ->
+            let newUser : UserData = { UserName = m.Login.UserName; Token = token }
+            let cmd =
+                if model.Menu.User = Some newUser then cmd else
+                Cmd.batch [cmd
+                           Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn) StorageFailure ]
 
-                { model with
-                    SubModel = LoginModel m
-                    Menu = { model.Menu with User = Some newUser }}, cmd
-            | _ ->
-                { model with
-                    SubModel = LoginModel m
-                    Menu = { model.Menu with User = None } }, cmd
-        | _ -> model, Cmd.none
-
-    | WishListMsg msg ->
-        match model.SubModel with
-        | WishListModel m ->
-            let m,cmd = WishList.update msg m
-            let cmd = Cmd.map WishListMsg cmd
             { model with
-                SubModel = WishListModel m }, cmd
-        | _ -> model, Cmd.none
+                SubModel = LoginModel m
+                Menu = { model.Menu with User = Some newUser }}, cmd
+        | _ ->
+            { model with
+                SubModel = LoginModel m
+                Menu = { model.Menu with User = None } }, cmd
 
-    | AppMsg.LoggedIn ->
+    | LoginMsg msg, _ -> model, Cmd.none
+
+    | WishListMsg msg, WishListModel m ->
+        let m,cmd = WishList.update msg m
+        let cmd = Cmd.map WishListMsg cmd
+        { model with
+            SubModel = WishListModel m }, cmd
+
+    | WishListMsg msg, _ -> model, Cmd.none
+
+    | AppMsg.LoggedIn, _ ->
         let nextPage = Page.WishList
         let m,cmd = urlUpdate (Some nextPage) model
         match m.Menu.User with
         | Some user ->
-            m, Cmd.batch [cmd; Navigation.modifyUrl (toHash nextPage) ]
+            m, Cmd.batch [cmd; Navigation.newUrl (toHash nextPage) ]
         | None ->
             m, Cmd.ofMsg Logout
 
-    | AppMsg.LoggedOut ->
+    | AppMsg.LoggedOut, _ ->
         { model with
             Page = Page.Home
             SubModel = NoSubModel
             Menu = { model.Menu with User = None } },
-        Navigation.modifyUrl (toHash Page.Home)
+        Navigation.newUrl (toHash Page.Home)
 
-    | AppMsg.Logout ->
+    | AppMsg.Logout, _ ->
         model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
 
 // VIEW

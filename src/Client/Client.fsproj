@@ -11,7 +11,8 @@
     <Compile Include="pages/WishList.fs" />
     <Compile Include="pages/Login.fs" />
     <Compile Include="App.fs" />
-    <DotNetCliToolReference Include="dotnet-fable" Version="1.0.4" />
+    <!--Keep this version synced with Fable.Core in paket.dependencies -->
+    <DotNetCliToolReference Include="dotnet-fable" Version="1.1.6" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

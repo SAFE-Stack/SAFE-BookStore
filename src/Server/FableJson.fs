@@ -1,4 +1,5 @@
-module ServerCode.JsonUtils
+/// Functions to serialize and deserialize JSON, with client side support.
+module ServerCode.FableJson
 
 open Newtonsoft.Json
 

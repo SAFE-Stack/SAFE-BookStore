@@ -1,16 +1,16 @@
 source https://nuget.org/api/v2
 
-nuget FSharp.Core prerelease redirects: force
+nuget FSharp.Core redirects: force
 nuget FSharp.NET.Sdk
-nuget Fable.JsonConverter prerelease
+nuget Fable.JsonConverter
 nuget Suave
 nuget Microsoft.Extensions.Logging.Console
 nuget System.Net.NetworkInformation
-nuget Newtonsoft.Json prerelease
+nuget Newtonsoft.Json
 nuget jose-jwt
 
 # Keep this version synced with dotnet-fable in .fsproj
-nuget Fable.Core 1.0.4
+nuget Fable.Core 1.1.6
 
 nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger

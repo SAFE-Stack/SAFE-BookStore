@@ -209,7 +209,7 @@ Target "PrepareRelease" (fun _ ->
     if result <> 0 then failwith "Docker tag failed"
 )
 
-Target "CreateDockerImage" (fun _ ->
+Target "Publish" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- dotnetExePath
@@ -229,7 +229,9 @@ Target "CreateDockerImage" (fun _ ->
     !! "src/Images/**/*.*" |> CopyFiles imageDir
 
     "src/Client/index.html" |> CopyFile clientDir
+)
 
+Target "CreateDockerImage" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
@@ -267,6 +269,7 @@ Target "All" DoNothing
   ==> "RenameDrivers"
   ==> "RunTests"
   ==> "All"
+  ==> "Publish"
   ==> "CreateDockerImage"
   ==> "PrepareRelease"
   ==> "Deploy"

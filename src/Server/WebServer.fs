@@ -1,4 +1,5 @@
-module ServerCode.Server
+/// Functions for managing the Suave web server.
+module ServerCode.WebServer
 
 open System.IO
 open Suave
@@ -8,24 +9,17 @@ open Suave.Filters
 open Suave.Operators
 open Suave.RequestErrors
 
-let startServer clientPath =
+// Fire up our web server!
+let start clientPath port =
     if not (Directory.Exists clientPath) then
         failwithf "Client-HomePath '%s' doesn't exist." clientPath
 
-    // let outPath = Path.Combine(clientPath,"public")
-    // if not (Directory.Exists outPath) then
-    //     failwithf "Out-HomePath '%s' doesn't exist." outPath
-
-    // if Directory.EnumerateFiles outPath |> Seq.isEmpty then
-    //     failwithf "Out-HomePath '%s' is empty." outPath
-
     let logger = Logging.Targets.create Logging.Info [| "Suave" |]
-
     let serverConfig =
         { defaultConfig with
             logger = Targets.create LogLevel.Debug [|"ServerCode"; "Server" |]
             homeFolder = Some clientPath
-            bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") 8085us] }
+            bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") port] }
 
     let app =
         choose [
