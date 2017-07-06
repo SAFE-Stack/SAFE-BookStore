@@ -1,6 +1,6 @@
 NUGET
   remote: https://www.nuget.org/api/v2
-    dotnet-fable (1.1.7)
+    dotnet-fable (1.1.7) - clitool: true
       Fable.Compiler (>= 1.1.7) - restriction: >= netcore1.0
       Fable.Core (>= 1.1.6) - restriction: >= netcore1.0
       FSharp.Core (>= 4.2.1) - restriction: >= netcore1.0

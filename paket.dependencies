@@ -9,10 +9,10 @@ nuget System.Net.NetworkInformation
 nuget Newtonsoft.Json
 nuget jose-jwt
 
-nuget dotnet-fable
 nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.React
+clitool dotnet-fable
 
 group Test
   source https://nuget.org/api/v2
