@@ -25,6 +25,8 @@ let clientPath = "./src/Client" |> FullName
 
 let serverPath = "./src/Server/" |> FullName
 
+let serverTestsPath = "./test/ServerTests" |> FullName
+
 let dotnetcliVersion = "1.0.4"
 
 let mutable dotnetExePath = "dotnet"
@@ -98,6 +100,14 @@ Target "BuildServer" (fun _ ->
     runDotnet serverPath "build"
 )
 
+Target "InstallServerTests" (fun _ ->
+    runDotnet serverTestsPath "restore"
+)
+
+Target "BuildServerTests" (fun _ ->
+    runDotnet serverPath "build"
+)
+
 Target "InstallClient" (fun _ ->
     printfn "Node version:"
     run nodeTool "--version" __SOURCE_DIRECTORY__
@@ -133,7 +143,11 @@ Target "RenameDrivers" (fun _ ->
     | exn -> failwithf "Could not rename chromedriver at test/UITests/bin/Release/chromedriver. Message: %s" exn.Message
 )
 
-Target "RunTests" (fun _ ->
+Target "RunServerTests" (fun _ ->
+    runDotnet serverTestsPath "run"
+)
+
+Target "RunExecutableTests" (fun _ ->
     ActivateFinalTarget "KillProcess"
 
     let serverProcess =
@@ -173,13 +187,22 @@ Target "Run" (fun _ ->
                 info.WorkingDirectory <- serverPath
                 info.Arguments <- "watch run") TimeSpan.MaxValue
         if result <> 0 then failwith "Website shut down." }
-
+    
+    let unitTestsWatch = async {
+        let result = 
+            ExecProcess (fun info ->
+                info.FileName <- dotnetExePath
+                info.WorkingDirectory <- serverTestsPath
+                info.Arguments <- "watch run") TimeSpan.MaxValue
+            
+        if result <> 0 then failwith "Website shut down." }
+   
     let fablewatch = async { runDotnet clientPath "fable webpack-dev-server" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
 
-    Async.Parallel [| dotnetwatch; fablewatch; openBrowser |]
+    Async.Parallel [| dotnetwatch; unitTestsWatch; fablewatch; openBrowser |]
     |> Async.RunSynchronously
     |> ignore
 )
@@ -262,12 +285,15 @@ Target "All" DoNothing
 "Clean"
   ==> "InstallDotNetCore"
   ==> "InstallServer"
+  ==> "InstallServerTests"
   ==> "InstallClient"
   ==> "BuildServer"
+  ==> "BuildServerTests"
+  ==> "RunServerTests"
   ==> "BuildClient"
   ==> "BuildTests"
   ==> "RenameDrivers"
-  ==> "RunTests"
+  ==> "RunExecutableTests"
   ==> "All"
   ==> "Publish"
   ==> "CreateDockerImage"
