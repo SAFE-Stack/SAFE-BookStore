@@ -8,7 +8,13 @@
     <Compile Include="Program.fs" />
     <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <Import Project="..\..\.paket\Paket.Restore.targets" /> 
+
+  <Target Name="TestAndRun">
+    <Exec Command="dotnet run" WorkingDirectory=".\" />
+    <Exec Command="dotnet run" WorkingDirectory="..\..\src\Server\" />
+  </Target>
+ 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Server\Server.fsproj" />
   </ItemGroup>
