@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Start",
+            "program": "${workspaceRoot}/src/Server/bin/Debug/netcoreapp1.1/Server.dll",
+            "args": ["${workspaceRoot}/src/Client"],
+            "cwd": "${workspaceRoot}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Debug Server Test",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build ServerTests",
+            "program": "${workspaceRoot}/test/ServerTests/bin/Debug/netcoreapp1.1/ServerTests.dll",
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ]
+
+}
