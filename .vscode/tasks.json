@@ -1,0 +1,74 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "taskName": "Build ServerTests",
+            "command": "npm",
+            "type": "shell",
+            "group": "build",
+            "args": [
+                "run",
+                "buildServerTest"
+            ],
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "taskName": "Build Server",
+            "command": "npm",
+            "type": "shell",
+            "group": "build",
+            "args": [
+                "run",
+                "buildServer"
+            ],
+            "presentation": {
+                "reveal": "silent"
+            }
+        },
+        {
+            "taskName": "Open Browser",
+            "type": "shell",
+            "dependsOn": "Build Server",
+
+            "windows": {
+                "command": "cmd.exe",
+                "args": [
+                    "/C",
+                    "start",
+                    "http://localhost:8080/"
+                ]
+            },
+            "osx": {
+                "command": "open",
+                "args": [
+                    "http://localhost:8080/"
+                ]
+            },
+            "linux": {
+                "command": "xdg-open",
+                "args": [
+                    "http://localhost:8080/"
+                ]
+            }
+        },
+        {
+            "taskName": "Start",
+            "command": "npm",
+            "type": "shell",
+            "dependsOn": "Open Browser",
+            "args": [
+                "run",
+                "startClient"
+            ],
+            "presentation": {
+                "reveal": "silent"
+            },
+            "isBackground": true
+
+        }
+    ]
+}
