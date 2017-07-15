@@ -12,7 +12,9 @@ nuget jose-jwt
 nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.React
+
 clitool dotnet-fable
+clitool Microsoft.DotNet.Watcher.Tools
 
 group Test
   source https://nuget.org/api/v2
