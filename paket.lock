@@ -211,6 +211,8 @@ NUGET
       System.Runtime.InteropServices (>= 4.3) - restriction: >= netstandard1.1
       System.Text.Encoding (>= 4.3) - restriction: >= netstandard1.1
       System.Threading (>= 4.3) - restriction: >= netstandard1.1
+    Microsoft.DotNet.Watcher.Tools (1.0.1) - clitool: true
+      Microsoft.NETCore.App (>= 1.0.5) - restriction: >= netcore1.0
     Microsoft.Extensions.Configuration.Abstractions (1.1.2) - restriction: || (>= net451) (>= netstandard1.3)
       Microsoft.Extensions.Primitives (>= 1.1.1) - restriction: >= netstandard1.0
       NETStandard.Library (>= 1.6.1) - restriction: >= netstandard1.0
