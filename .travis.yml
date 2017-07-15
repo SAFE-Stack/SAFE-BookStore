@@ -24,4 +24,5 @@ cache:
   - $HOME/.yarn-cache
 
 script:
+  - export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.5/
   - ./build.sh All
