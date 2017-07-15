@@ -21,6 +21,8 @@ fi
 run() {
   if [ "$OS" != "Windows_NT" ]
   then
+    # this should be set so that dotnet sdk builds of full-framework components work.
+    export FrameworkPathOverride=$(dirname $(which mono))/../lib/mono/4.5/
     mono "$@"
   else
     "$@"
