@@ -5,4 +5,3 @@ System.Net.NetworkInformation
 Newtonsoft.Json
 Fable.JsonConverter
 jose-jwt
-FSharp.NET.Sdk
