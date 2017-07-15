@@ -137,12 +137,12 @@ Target "RenameDrivers" (fun _ ->
     if not isWindows then
         run npmTool "install phantomjs" ""
     try
-        if isMacOS && not <| File.Exists "test/UITests/bin/Release/chromedriver" then
-            Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_macOS"
+        if isMacOS && not <| File.Exists "test/UITests/bin/Debug/net461/chromedriver" then
+            Fake.FileHelper.Rename "test/UITests/bin/Debug/net461/chromedriver" "test/UITests/bin/Debug/net461/chromedriver_macOS"
         elif isLinux then
-            Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_linux64"
+            Fake.FileHelper.Rename "test/UITests/bin/Debug/net461/chromedriver" "test/UITests/bin/Debug/net461/chromedriver_linux64"
     with
-    | exn -> failwithf "Could not rename chromedriver at test/UITests/bin/Release/chromedriver. Message: %s" exn.Message
+    | exn -> failwithf "Could not rename chromedriver at test/UITests/bin/Debug/net461/chromedriver. Message: %s" exn.Message
 )
 
 Target "RunServerTests" (fun _ ->
