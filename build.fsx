@@ -26,6 +26,7 @@ let clientPath = "./src/Client" |> FullName
 let serverPath = "./src/Server/" |> FullName
 
 let serverTestsPath = "./test/ServerTests" |> FullName
+let clientTestsPath = "./test/UITests" |> FullName
 
 let dotnetcliVersion = "1.0.4"
 
@@ -35,7 +36,7 @@ let deployDir = "./deploy"
 
 
 // Pattern specifying assemblies to be tested using expecto
-let testExecutables = "test/**/bin/Release/*Tests*.exe"
+let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.exe"
 
 let dockerUser = "forki"
 let dockerImageName = "fable-suave"
@@ -100,6 +101,14 @@ Target "BuildServer" (fun _ ->
     runDotnet serverPath "build"
 )
 
+Target "InstallClientTests" (fun _ ->
+    runDotnet clientTestsPath "restore"
+)
+
+Target "BuildClientTests" (fun _ ->
+    runDotnet clientTestsPath "build"
+)
+
 Target "InstallServerTests" (fun _ ->
     runDotnet serverTestsPath "restore"
 )
@@ -121,13 +130,6 @@ Target "BuildClient" (fun _ ->
     runDotnet clientPath "fable webpack -- -p"
 )
 
-
-Target "BuildTests" (fun _ ->
-    !! "./Tests.sln"
-    |> MSBuildReleaseExt "" [ ("Configuration", configuration); ("Platform", "Any CPU") ] "Rebuild"
-    |> ignore
-)
-
 // --------------------------------------------------------------------------------------
 // Rename driver for macOS or Linux
 
@@ -147,7 +149,7 @@ Target "RunServerTests" (fun _ ->
     runDotnet serverTestsPath "run"
 )
 
-Target "RunExecutableTests" (fun _ ->
+Target "RunClientTests" (fun _ ->
     ActivateFinalTarget "KillProcess"
 
     let serverProcess =
@@ -160,7 +162,7 @@ Target "RunExecutableTests" (fun _ ->
 
     System.Threading.Thread.Sleep 5000 |> ignore  // give server some time to start
 
-    !! testExecutables
+    !! clientTestExecutables
     |> Expecto (fun p -> { p with Parallel = false } )
     |> ignore
 
@@ -286,14 +288,15 @@ Target "All" DoNothing
   ==> "InstallDotNetCore"
   ==> "InstallServer"
   ==> "InstallServerTests"
+  ==> "InstallClientTests"
   ==> "InstallClient"
   ==> "BuildServer"
+  ==> "BuildClient"
   ==> "BuildServerTests"
   ==> "RunServerTests"
-  ==> "BuildClient"
-  ==> "BuildTests"
+  ==> "BuildClientTests"
   ==> "RenameDrivers"
-  ==> "RunExecutableTests"
+  ==> "RunClientTests"
   ==> "All"
   ==> "Publish"
   ==> "CreateDockerImage"
