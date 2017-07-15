@@ -45,6 +45,7 @@ let dockerImageName = "fable-suave"
 // END TODO: The rest of the file includes standard build steps
 // --------------------------------------------------------------------------------------
 
+
 let run' timeout cmd args dir =
     if execProcess (fun info ->
         info.FileName <- cmd
@@ -73,6 +74,14 @@ let platformTool tool winTool =
 let nodeTool = platformTool "node" "node.exe"
 let npmTool = platformTool "npm" "npm.cmd"
 let yarnTool = platformTool "yarn" "yarn.cmd"
+
+do if not isWindows then
+    // We have to set the FrameworkPathOverride so that dotnet sdk invocations know
+    // where to look for full-framework base class libraries
+    let mono = platformTool "mono" "mono"
+    let frameworkPath = IO.Path.GetDirectoryName(mono) </> ".." </> "lib" </> "mono" </> "4.5"
+    setEnvironVar "FrameworkPathOverride" frameworkPath
+
 
 // Read additional information from the release notes document
 let release = LoadReleaseNotes "RELEASE_NOTES.md"
@@ -189,16 +198,16 @@ Target "Run" (fun _ ->
                 info.WorkingDirectory <- serverPath
                 info.Arguments <- "watch run") TimeSpan.MaxValue
         if result <> 0 then failwith "Website shut down." }
-    
+
     let unitTestsWatch = async {
-        let result = 
+        let result =
             ExecProcess (fun info ->
                 info.FileName <- dotnetExePath
                 info.WorkingDirectory <- serverTestsPath
                 info.Arguments <- "watch run") TimeSpan.MaxValue
-            
+
         if result <> 0 then failwith "Website shut down." }
-   
+
     let fablewatch = async { runDotnet clientPath "fable webpack-dev-server" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
