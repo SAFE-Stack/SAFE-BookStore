@@ -191,21 +191,13 @@ FinalTarget "KillProcess" (fun _ ->
 
 
 Target "Run" (fun _ ->
-    let dotnetwatch = async {
-        let result =
-            ExecProcess (fun info ->
-                info.FileName <- dotnetExePath
-                info.WorkingDirectory <- serverPath
-                info.Arguments <- "watch run") TimeSpan.MaxValue
-        if result <> 0 then failwith "Website shut down." }
-
     let unitTestsWatch = async {
         let result =
             ExecProcess (fun info ->
                 info.FileName <- dotnetExePath
                 info.WorkingDirectory <- serverTestsPath
-                info.Arguments <- "watch run") TimeSpan.MaxValue
-
+                info.Arguments <- "watch msbuild /t:TestAndRun") TimeSpan.MaxValue
+            
         if result <> 0 then failwith "Website shut down." }
 
     let fablewatch = async { runDotnet clientPath "fable webpack-dev-server" }
@@ -213,7 +205,7 @@ Target "Run" (fun _ ->
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
 
-    Async.Parallel [| dotnetwatch; unitTestsWatch; fablewatch; openBrowser |]
+    Async.Parallel [| unitTestsWatch; fablewatch; openBrowser |]
     |> Async.RunSynchronously
     |> ignore
 )
