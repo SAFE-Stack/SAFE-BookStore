@@ -1,4 +1,5 @@
 FSharp.NET.Sdk
+Microsoft.DotNet.Watcher.Tools
 
 group Test
 FSharp.Core

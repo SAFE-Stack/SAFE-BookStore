@@ -26,6 +26,7 @@ let clientPath = "./src/Client" |> FullName
 let serverPath = "./src/Server/" |> FullName
 
 let serverTestsPath = "./test/ServerTests" |> FullName
+let clientTestsPath = "./test/UITests" |> FullName
 
 let dotnetcliVersion = "1.0.4"
 
@@ -35,7 +36,7 @@ let deployDir = "./deploy"
 
 
 // Pattern specifying assemblies to be tested using expecto
-let testExecutables = "test/**/bin/Release/*Tests*.exe"
+let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.exe"
 
 let dockerUser = "forki"
 let dockerImageName = "fable-suave"
@@ -43,6 +44,7 @@ let dockerImageName = "fable-suave"
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
 // --------------------------------------------------------------------------------------
+
 
 let run' timeout cmd args dir =
     if execProcess (fun info ->
@@ -73,6 +75,14 @@ let nodeTool = platformTool "node" "node.exe"
 let npmTool = platformTool "npm" "npm.cmd"
 let yarnTool = platformTool "yarn" "yarn.cmd"
 
+do if not isWindows then
+    // We have to set the FrameworkPathOverride so that dotnet sdk invocations know
+    // where to look for full-framework base class libraries
+    let mono = platformTool "mono" "mono"
+    let frameworkPath = IO.Path.GetDirectoryName(mono) </> ".." </> "lib" </> "mono" </> "4.5"
+    setEnvironVar "FrameworkPathOverride" frameworkPath
+
+
 // Read additional information from the release notes document
 let release = LoadReleaseNotes "RELEASE_NOTES.md"
 let packageVersion = SemVerHelper.parse release.NugetVersion
@@ -100,6 +110,14 @@ Target "BuildServer" (fun _ ->
     runDotnet serverPath "build"
 )
 
+Target "InstallClientTests" (fun _ ->
+    runDotnet clientTestsPath "restore"
+)
+
+Target "BuildClientTests" (fun _ ->
+    runDotnet clientTestsPath "build"
+)
+
 Target "InstallServerTests" (fun _ ->
     runDotnet serverTestsPath "restore"
 )
@@ -121,13 +139,6 @@ Target "BuildClient" (fun _ ->
     runDotnet clientPath "fable webpack -- -p"
 )
 
-
-Target "BuildTests" (fun _ ->
-    !! "./Tests.sln"
-    |> MSBuildReleaseExt "" [ ("Configuration", configuration); ("Platform", "Any CPU") ] "Rebuild"
-    |> ignore
-)
-
 // --------------------------------------------------------------------------------------
 // Rename driver for macOS or Linux
 
@@ -135,19 +146,19 @@ Target "RenameDrivers" (fun _ ->
     if not isWindows then
         run npmTool "install phantomjs" ""
     try
-        if isMacOS && not <| File.Exists "test/UITests/bin/Release/chromedriver" then
-            Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_macOS"
+        if isMacOS && not <| File.Exists "test/UITests/bin/Debug/net461/chromedriver" then
+            Fake.FileHelper.Rename "test/UITests/bin/Debug/net461/chromedriver" "test/UITests/bin/Debug/net461/chromedriver_macOS"
         elif isLinux then
-            Fake.FileHelper.Rename "test/UITests/bin/Release/chromedriver" "test/UITests/bin/Release/chromedriver_linux64"
+            Fake.FileHelper.Rename "test/UITests/bin/Debug/net461/chromedriver" "test/UITests/bin/Debug/net461/chromedriver_linux64"
     with
-    | exn -> failwithf "Could not rename chromedriver at test/UITests/bin/Release/chromedriver. Message: %s" exn.Message
+    | exn -> failwithf "Could not rename chromedriver at test/UITests/bin/Debug/net461/chromedriver. Message: %s" exn.Message
 )
 
 Target "RunServerTests" (fun _ ->
     runDotnet serverTestsPath "run"
 )
 
-Target "RunExecutableTests" (fun _ ->
+Target "RunClientTests" (fun _ ->
     ActivateFinalTarget "KillProcess"
 
     let serverProcess =
@@ -160,7 +171,7 @@ Target "RunExecutableTests" (fun _ ->
 
     System.Threading.Thread.Sleep 5000 |> ignore  // give server some time to start
 
-    !! testExecutables
+    !! clientTestExecutables
     |> Expecto (fun p -> { p with Parallel = false } )
     |> ignore
 
@@ -181,14 +192,14 @@ FinalTarget "KillProcess" (fun _ ->
 
 Target "Run" (fun _ ->
     let unitTestsWatch = async {
-        let result = 
+        let result =
             ExecProcess (fun info ->
                 info.FileName <- dotnetExePath
                 info.WorkingDirectory <- serverTestsPath
                 info.Arguments <- "watch msbuild /t:TestAndRun") TimeSpan.MaxValue
             
         if result <> 0 then failwith "Website shut down." }
-   
+
     let fablewatch = async { runDotnet clientPath "fable webpack-dev-server" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
@@ -278,14 +289,15 @@ Target "All" DoNothing
   ==> "InstallDotNetCore"
   ==> "InstallServer"
   ==> "InstallServerTests"
+  ==> "InstallClientTests"
   ==> "InstallClient"
   ==> "BuildServer"
+  ==> "BuildClient"
   ==> "BuildServerTests"
   ==> "RunServerTests"
-  ==> "BuildClient"
-  ==> "BuildTests"
+  ==> "BuildClientTests"
   ==> "RenameDrivers"
-  ==> "RunExecutableTests"
+  ==> "RunClientTests"
   ==> "All"
   ==> "Publish"
   ==> "CreateDockerImage"
