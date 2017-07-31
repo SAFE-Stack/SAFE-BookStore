@@ -8,14 +8,12 @@
     <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" /> 
-
   <Target Name="TestAndRun">
     <Exec Command="dotnet run" WorkingDirectory=".\" />
     <Exec Command="dotnet run" WorkingDirectory="..\..\src\Server\" />
   </Target>
- 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Server\Server.fsproj" />
   </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
