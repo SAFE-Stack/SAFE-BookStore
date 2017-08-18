@@ -4,10 +4,6 @@ module ServerCode.Auth
 open Suave
 open Suave.RequestErrors
 
-let unauthorized s = Suave.Response.response HTTP_401 s
-
-let UNAUTHORIZED s = unauthorized (UTF8.bytes s)
-
 /// Login web part that authenticates a user and returns a token in the HTTP body.
 let login (ctx: HttpContext) = async {
     let login = 
