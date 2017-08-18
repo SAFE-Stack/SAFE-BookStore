@@ -148,7 +148,7 @@ Target "RenameDrivers" (fun _ ->
     try
         if isMacOS && not <| File.Exists "test/UITests/bin/Debug/net461/chromedriver" then
             Fake.FileHelper.Rename "test/UITests/bin/Debug/net461/chromedriver" "test/UITests/bin/Debug/net461/chromedriver_macOS"
-        elif isLinux then
+        elif isLinux && not <| File.Exists "test/UITests/bin/Debug/net461/chromedriver" then
             Fake.FileHelper.Rename "test/UITests/bin/Debug/net461/chromedriver" "test/UITests/bin/Debug/net461/chromedriver_linux64"
     with
     | exn -> failwithf "Could not rename chromedriver at test/UITests/bin/Debug/net461/chromedriver. Message: %s" exn.Message
