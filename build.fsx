@@ -28,7 +28,7 @@ let serverPath = "./src/Server/" |> FullName
 let serverTestsPath = "./test/ServerTests" |> FullName
 let clientTestsPath = "./test/UITests" |> FullName
 
-let dotnetcliVersion = "1.0.4"
+let dotnetcliVersion = "2.0.0"
 
 let mutable dotnetExePath = "dotnet"
 
@@ -92,6 +92,9 @@ let packageVersion = SemVerHelper.parse release.NugetVersion
 // Clean build results
 
 Target "Clean" (fun _ ->
+    !!"src/**/bin" ++ "src/**/obj/"
+        ++ "test/**/bin" ++ "test/**/obj/"
+    |> CleanDirs
     CleanDirs ["bin"; "temp"; "docs/output"; deployDir; Path.Combine(clientPath,"public/bundle")]
 )
 
@@ -197,7 +200,7 @@ Target "Run" (fun _ ->
                 info.FileName <- dotnetExePath
                 info.WorkingDirectory <- serverTestsPath
                 info.Arguments <- "watch msbuild /t:TestAndRun") TimeSpan.MaxValue
-            
+
         if result <> 0 then failwith "Website shut down." }
 
     let fablewatch = async { runDotnet clientPath "fable webpack-dev-server" }
