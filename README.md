@@ -10,7 +10,7 @@ The following document describes the Fable + Suave sample project. You can see i
 
 > On OS X/macOS, make sure you have OpenSSL installed and symlinked correctly, as described here: [https://www.microsoft.com/net/core#macos](https://www.microsoft.com/net/core#macos).
 
-[dotnet SDK 1.0.4](https://www.microsoft.com/net/core) is required but it'll be downloaded automatically by the build script if not installed (see below). Other tools like Paket or FAKE will also be installed by the build script.
+[dotnet SDK 2.0.0](https://www.microsoft.com/net/core) is required but it'll be downloaded automatically by the build script if not installed (see below). Other tools like Paket or FAKE will also be installed by the build script.
 
 ## Development mode
 
@@ -26,7 +26,7 @@ This command will call in **build.fsx** the target "Run". It will start in paral
 - **dotnet watch msbuild /t:TestAndRun** in [test/serverTests](src/ServerTests) to run unit tests and then server (note: Suave is launched on port **8085**)
 
 Previously, the build script should download all dependencies like .NET Core SDK, Fable... If you have problems with the download of the .NET Core SDK via the `build.cmd` or `build.sh` script, please install the SDK manually from [here](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.0.4-download.md). Verify
-that you have at least SDK version 1.0.4 installed (`dotnet --version`) and then rerun the build script.
+that you have at least SDK version 2.0.0 installed (`dotnet --version`) and then rerun the build script.
 
 You can now edit files in `src/Server` or `src/Client` and recompile + browser refresh will be triggered automatically.
 
