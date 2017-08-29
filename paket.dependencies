@@ -1,3 +1,4 @@
+version 5.92.0-beta001
 source https://nuget.org/api/v2
 
 nuget FSharp.Core redirects: force
@@ -18,7 +19,7 @@ clitool Microsoft.DotNet.Watcher.Tools
 
 group Test
   source https://nuget.org/api/v2
-  framework >= net45
+  framework >= net45, >= netcoreapp20
   nuget FSharp.Core redirects: force
   nuget Canopy
   nuget Expecto
