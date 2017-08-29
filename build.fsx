@@ -92,9 +92,14 @@ let packageVersion = SemVerHelper.parse release.NugetVersion
 // Clean build results
 
 Target "Clean" (fun _ ->
-    !!"src/**/bin" ++ "src/**/obj/"
-        ++ "test/**/bin" ++ "test/**/obj/"
+    !!"src/**/bin"
+    ++ "test/**/bin"
     |> CleanDirs
+
+    !! "src/**/obj/*.nuspec"
+    ++ "test/**/obj/*.nuspec"
+    |> DeleteFiles
+
     CleanDirs ["bin"; "temp"; "docs/output"; deployDir; Path.Combine(clientPath,"public/bundle")]
 )
 
