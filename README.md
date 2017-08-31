@@ -4,7 +4,8 @@ The following document describes the Fable + Suave sample project. You can see i
 
 ## Requirements
 
-- [Mono](http://www.mono-project.com/) on MacOS/Linux (on Windows .NET Framework is installed by default)
+- [Mono](http://www.mono-project.com/) on MacOS/Linux
+- [.NET Framework 4.6.2](https://support.microsoft.com/en-us/help/3151800/the--net-framework-4-6-2-offline-installer-for-windows) on Windows
 - [node.js](https://nodejs.org/) - JavaScript runtime
 - [yarn](https://yarnpkg.com/) - Package manager for npm modules
 
