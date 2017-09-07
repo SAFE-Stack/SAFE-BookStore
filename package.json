@@ -20,10 +20,8 @@
   "scripts": {
     "prebuildServer": "dotnet restore src/Server/Server.fsproj",
     "buildServer": "dotnet build src/Server/Server.fsproj",
-
     "prebuildServerTest": "dotnet restore test/ServerTests/ServerTests.fsproj",
     "buildServerTest": "dotnet build test/ServerTests/ServerTests.fsproj",
-
     "restoreClient": "cd src/Client && yarn install",
     "restoreNetClient": "dotnet restore src/Client/Client.fsproj",
     "prestartClient": "concurrently \"npm run restoreClient\" \"npm run restoreNetClient\" ",
