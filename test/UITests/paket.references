@@ -1,4 +1,4 @@
-group Test
+group UITests
 Canopy
 Expecto
 FSharp.Core

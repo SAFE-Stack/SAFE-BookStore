@@ -24,15 +24,15 @@ let isWindows =
     | PlatformID.WinCE -> true
     | _ -> false
 
-let startBrowser() = 
+let startBrowser() =
     canopy.configuration.chromeDir <- executingDir()
     if isWindows then
-        canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"packages/test/PhantomJS/tools/phantomjs")
+        canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"packages/uitests/PhantomJS/tools/phantomjs")
     else
         canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"node_modules/phantomjs/bin")
 
-    
-    start phantomJS 
+
+    start phantomJS
     resize (1280, 960)
 
 [<EntryPoint>]

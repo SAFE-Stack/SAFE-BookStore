@@ -1297,6 +1297,10 @@ fable-utils@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fable-utils/-/fable-utils-1.0.0.tgz#3e746283010d775f3b95208805c71c7f75143011"
 
+fable-utils@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/fable-utils/-/fable-utils-1.0.4.tgz#3361d044e199d73dc10d5eec7cf6ac7b318c9d13"
+
 faye-websocket@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/faye-websocket/-/faye-websocket-0.10.0.tgz#4e492f8d04dfb6f89003507f6edbf2d501e7c6f4"
