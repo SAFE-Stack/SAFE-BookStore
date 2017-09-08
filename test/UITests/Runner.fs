@@ -32,7 +32,7 @@ let startBrowser() =
         canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"node_modules/phantomjs/bin")
 
 
-    start phantomJS
+    start phantomJS //Use 'start chrome' if you want to see your tests in the browser
     resize (1280, 960)
 
 [<EntryPoint>]
