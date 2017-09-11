@@ -37,7 +37,7 @@ Usually you can just keep this mode running and running. Just edit files, see th
 
 ## Getting started
 ### Create a new page
-This topic will guide you throw creating a new page. After every section you should check whether you can see the changes in your browser.
+This topic will guide you through creating a new page. After every section you should check whether you can see the changes in your browser.
 #### Minimal setup
 Let's say we want to call our new page *Tomato*
 
