@@ -177,7 +177,7 @@ Target "RunClientTests" (fun _ ->
         info.UseShellExecute <- false
         System.Diagnostics.Process.Start info
 
-    System.Threading.Thread.Sleep 5000 |> ignore  // give server some time to start
+    System.Threading.Thread.Sleep 15000 |> ignore  // give server some time to start
 
     !! clientTestExecutables
     |> Expecto (fun p -> { p with Parallel = false } )
