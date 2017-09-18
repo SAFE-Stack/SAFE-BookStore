@@ -113,7 +113,7 @@ let view model (dispatch: AppMsg -> unit) =
                     HTMLAttr.Type "text"
                     ClassName "form-control input-lg"
                     Placeholder "Username"
-                    DefaultValue (U2.Case1 model.Login.UserName)
+                    DefaultValue model.Login.UserName
                     OnChange (fun ev -> dispatch (LoginMsg (SetUserName !!ev.target?value)))
                     AutoFocus true ]
           ]
@@ -127,7 +127,7 @@ let view model (dispatch: AppMsg -> unit) =
                         HTMLAttr.Type "password"
                         ClassName "form-control input-lg"
                         Placeholder "Password"
-                        DefaultValue (U2.Case1 model.Login.Password)
+                        DefaultValue model.Login.Password
                         OnChange (fun ev -> dispatch (LoginMsg (SetPassword !!ev.target?value)))
                         onEnter (LoginMsg ClickLogIn) dispatch  ]
             ]    
