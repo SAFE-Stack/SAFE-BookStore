@@ -119,7 +119,7 @@ let newBookForm (model:Model) dispatch =
                                      Key ("Title_" + model.NewBookId.ToString())
                                      HTMLAttr.Type "text"
                                      Name "Title"
-                                     DefaultValue (U2.Case1 model.NewBook.Title)
+                                     DefaultValue model.NewBook.Title
                                      ClassName "form-control"
                                      Placeholder "Please insert book title"
                                      Required true
@@ -139,7 +139,7 @@ let newBookForm (model:Model) dispatch =
                                      Key ("Author_" + model.NewBookId.ToString())
                                      HTMLAttr.Type "text"
                                      Name "Author"
-                                     DefaultValue (U2.Case1 model.NewBook.Authors)
+                                     DefaultValue model.NewBook.Authors
                                      ClassName "form-control"
                                      Placeholder "Please insert authors"
                                      Required true
@@ -159,7 +159,7 @@ let newBookForm (model:Model) dispatch =
                                     Key ("Link_" + model.NewBookId.ToString())
                                     HTMLAttr.Type "text"
                                     Name "Link"
-                                    DefaultValue (U2.Case1 model.NewBook.Link)
+                                    DefaultValue model.NewBook.Link
                                     ClassName "form-control"
                                     Placeholder "Please insert link"
                                     Required true
