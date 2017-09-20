@@ -27,7 +27,7 @@ let view (model:Model) dispatch =
           if model.User <> None then 
               yield viewLink Page.WishList "Wishlist"
           if model.User = None then 
-              yield viewLink (Login) "Login" 
+              yield viewLink Login "Login" 
           else 
               yield buttonLink "logout" (fun _ -> dispatch Logout) [ str "Logout" ]
         ]
