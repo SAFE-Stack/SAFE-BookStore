@@ -2,6 +2,8 @@
 
 The following document describes the [SAFE-Stack](https://safe-stack.github.io/) sample project. SAFE is a technology stack that brings together several technologies into a single, coherent stack for typesafe, flexible end-to-end web-enabled applications that are written entirely in F#.
 
+![SAFE-Stack](src/Client/images/safe_logo.png "SAFE-Stack")
+
 You can see it running on azure at http://fable-suave.azurewebsites.net.
 
 ## Requirements
