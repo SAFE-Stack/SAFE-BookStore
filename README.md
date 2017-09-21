@@ -201,7 +201,7 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
         |> Program.withDebugger
         #endif
 
-- Or install the Redux DevTools as a Chrome Extensions (recommanded)
+- Or install the Redux DevTools as a Chrome Extensions (recommended)
 Only one error remains, when visiting the WebApp the first time.
 
 ### Getting FSharp.Data in the backend
