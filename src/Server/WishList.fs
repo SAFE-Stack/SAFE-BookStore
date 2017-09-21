@@ -24,9 +24,9 @@ let defaultWishList userName : WishList =
             [{ Title = "Mastering F#"
                Authors = "Alfonso Garcia-Caro Nunez"
                Link = "https://www.amazon.com/Mastering-F-Alfonso-Garcia-Caro-Nunez-ebook/dp/B01M112LR9" }
-             { Title = "Learn F#"
+             { Title = "Get Programming with F#"
                Authors = "Isaac Abraham"
-               Link = "https://www.manning.com/books/learn-fsharp" }]
+               Link = "https://www.manning.com/books/get-programming-with-f-sharp" }]
     }
 
 /// Get the file name used to store the data for a specific user
