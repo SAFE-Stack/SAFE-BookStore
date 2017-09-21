@@ -134,8 +134,17 @@ open Client.Style
 let viewPage model dispatch =
     match model.Page with
     | Page.Home ->
-        [ words 60 "Welcome!"
-          a [ Href "http://fable.io" ] [ words 20 "Learn Fable at fable.io" ] ]
+        [ viewLink Login "Please login into the SAFE-Stack sample app"
+          br []
+          br []
+          br []
+          br []
+          br []
+          br []
+          br []
+          words 20 "Made with"
+          a [ Href "https://safe-stack.github.io/" ] [ img [ Src "/images/safe_logo.png" ] ]
+          words 15 "An end-to-end, functional-first stack for cloud-ready web development that emphasises type-safe programming." ]
 
     | Page.Login ->
         match model.SubModel with

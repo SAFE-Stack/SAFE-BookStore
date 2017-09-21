@@ -1,6 +1,10 @@
-# A web stack designed for developer happiness
+# SAFE - A web stack designed for developer happiness
 
-The following document describes the Fable + Suave sample project. You can see it running on azure at http://fable-suave.azurewebsites.net.
+The following document describes the [SAFE-Stack](https://safe-stack.github.io/) sample project. SAFE is a technology stack that brings together several technologies into a single, coherent stack for typesafe, flexible end-to-end web-enabled applications that are written entirely in F#.
+
+![SAFE-Stack](src/Client/images/safe_logo.png "SAFE-Stack")
+
+You can see it running on azure at http://fable-suave.azurewebsites.net.
 
 ## Requirements
 
@@ -11,7 +15,7 @@ The following document describes the Fable + Suave sample project. You can see i
 
 > On OS X/macOS, make sure you have OpenSSL installed and symlinked correctly, as described here: [https://www.microsoft.com/net/core#macos](https://www.microsoft.com/net/core#macos).
 
-[dotnet SDK 2.0.0](https://www.microsoft.com/net/core) is required but it'll be downloaded automatically by the build script if not installed (see below). Other tools like Paket or FAKE will also be installed by the build script.
+[dotnet SDK 2.0.0](https://www.microsoft.com/net/core) is required but it will be downloaded automatically by the build script if not installed (see below). Other tools like [Paket](https://fsprojects.github.io/Paket/) or [FAKE](https://fake.build/) will also be installed by the build script.
 
 ## Development mode
 
@@ -197,7 +201,7 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
         |> Program.withDebugger
         #endif
 
-- Or install the Redux DevTools as a Chrome Extensions (recommanded)
+- Or install the Redux DevTools as a Chrome Extensions (recommended)
 Only one error remains, when visiting the WebApp the first time.
 
 ### Getting FSharp.Data in the backend
@@ -227,7 +231,7 @@ In development mode the server is automatically restarted whenever a file in `sr
 
 ### React/Elmish client
 
-The client is [React](https://facebook.github.io/react/) single page application that uses [fable-elmish](https://github.com/fable-compiler/fable-elmish) to provide a scaffold for the code.
+The client is [React](https://facebook.github.io/react/) single page application that uses [fable-elmish](https://github.com/fable-compiler/fable-elmish).
 
 The communication to the server is done via HTTPS calls to `/api/*`. If a user is logged in then a [JSON Web Token](https://jwt.io/) is sent to the server with every request.
 

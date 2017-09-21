@@ -110,24 +110,13 @@ Target "InstallDotNetCore" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
-Target "InstallServer" (fun _ ->
-    runDotnet serverPath "restore"
-)
 
 Target "BuildServer" (fun _ ->
     runDotnet serverPath "build"
 )
 
-Target "InstallClientTests" (fun _ ->
-    runDotnet clientTestsPath "restore"
-)
-
 Target "BuildClientTests" (fun _ ->
     runDotnet clientTestsPath "build"
-)
-
-Target "InstallServerTests" (fun _ ->
-    runDotnet serverTestsPath "restore"
 )
 
 Target "BuildServerTests" (fun _ ->
@@ -140,10 +129,10 @@ Target "InstallClient" (fun _ ->
     printfn "Yarn version:"
     run yarnTool "--version" __SOURCE_DIRECTORY__
     run yarnTool "install" __SOURCE_DIRECTORY__
-    runDotnet clientPath "restore"
 )
 
 Target "BuildClient" (fun _ ->
+    runDotnet clientPath "restore"
     runDotnet clientPath "fable webpack -- -p"
 )
 
@@ -199,6 +188,9 @@ FinalTarget "KillProcess" (fun _ ->
 
 
 Target "Run" (fun _ ->
+    runDotnet clientPath "restore"
+    runDotnet serverTestsPath "restore"
+
     let unitTestsWatch = async {
         let result =
             ExecProcess (fun info ->
@@ -295,9 +287,6 @@ Target "All" DoNothing
 
 "Clean"
   ==> "InstallDotNetCore"
-  ==> "InstallServer"
-  ==> "InstallServerTests"
-  ==> "InstallClientTests"
   ==> "InstallClient"
   ==> "BuildServer"
   ==> "BuildClient"
