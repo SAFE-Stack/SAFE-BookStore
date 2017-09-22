@@ -9,7 +9,8 @@ type JWT = string
 // Login credentials.
 type Login = 
     { UserName : string
-      Password : string }
+      Password : string
+      PasswordId : Guid }
 
 /// The data for each book in /api/wishlist
 type Book = 
