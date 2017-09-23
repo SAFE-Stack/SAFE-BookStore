@@ -300,7 +300,7 @@ To execute the deploy you need a Google Cloud account and project configured as 
 
     gcloud app deploy -q <--version=main> <--verbosity=debug>
 
-The `version` and `verbosity` flag isn't need, but it is recommended to use the `version` flag so you don't up with to many versions of your application without removing previous ones. Use `verbosity=debug` if you are having some problems.
+The `version` and `verbosity` flag isn't need, but it is recommended to use the `version` flag so you don't end up with too many versions of your application without removing previous ones. Use `verbosity=debug` if you are having some problems.
 
 Deploy to the flex environment with a custom runtime like this is might take some time, but the instructions here should work.
 
