@@ -49,6 +49,13 @@ module Validation =
         if String.IsNullOrWhiteSpace link then Some "No link was entered" else
         None
 
+    let verifyBookisNotADuplicate (wishList:WishList) book =
+        // only compare author and title; ignore url because it is not directly user-visible
+        if wishList.Books |> Seq.exists (fun b -> (b.Authors,b.Title) = (book.Authors,book.Title)) then
+            Some "Your wishlist contains this book already."
+        else
+            None
+
     let verifyBook book =
         verifyBookTitle book.Title = None &&
         verifyBookAuthors book.Authors = None &&
