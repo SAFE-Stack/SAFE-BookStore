@@ -55,20 +55,20 @@ let authUserCmd login apiUrl =
 let init (user:UserData option) = 
     match user with
     | None ->
-        { Login = { UserName = ""; Password = ""}
+        { Login = { UserName = ""; Password = ""; PasswordId = Guid.NewGuid() }
           State = LoggedOut
           ErrorMsg = "" }, Cmd.none
     | Some user ->
-        { Login = { UserName = user.UserName; Password = ""}
+        { Login = { UserName = user.UserName; Password = ""; PasswordId = Guid.NewGuid() }
           State = LoggedIn user.Token
           ErrorMsg = "" }, Cmd.none
 
 let update (msg:LoginMsg) model : Model*Cmd<LoginMsg> = 
     match msg with
     | LoginMsg.GetTokenSuccess token ->
-        { model with State = LoggedIn token;  Login = { model.Login with Password = "" } }, []
+        { model with State = LoggedIn token;  Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid()  } }, []
     | LoginMsg.SetUserName name ->
-        { model with Login = { model.Login with UserName = name; Password = "" }}, []
+        { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, []
     | LoginMsg.SetPassword pw ->
         { model with Login = { model.Login with Password = pw }}, []
     | LoginMsg.ClickLogIn ->
@@ -124,6 +124,7 @@ let view model (dispatch: AppMsg -> unit) =
                 ]
                 input [ 
                         Id "password"
+                        Key ("password_" + model.Login.PasswordId.ToString())
                         HTMLAttr.Type "password"
                         ClassName "form-control input-lg"
                         Placeholder "Password"
