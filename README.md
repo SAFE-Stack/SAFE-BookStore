@@ -46,58 +46,59 @@ This topic will guide you through creating a new page. After every section you s
 Let's say we want to call our new page *Tomato*
 
 1. Adjust the `Messages.fs` and register our Tomato page as a page and define the corresponding hash value.
+    ```fsharp
+    type Page = 
+        | Home 
+        | Login
+        | WishList
+        | Tomato // <- our page
 
-        type Page = 
-            | Home 
-            | Login
-            | WishList
-            | Tomato // <- our page
-
-        let toHash =
-            function
-            | Home -> "#home"
-            | Login -> "#login"
-            | WishList -> "#wishlist"
-            | Tomato -> "#tomato" // <- our page
-
+    let toHash =
+        function
+        | Home -> "#home"
+        | Login -> "#login"
+        | WishList -> "#wishlist"
+        | Tomato -> "#tomato" // <- our page
+    ```
 2. Adjust the following functions inside the `App.fs`:
 
     - pageParser function
-
-            let pageParser : Parser<Page->_,_> =
-                oneOf
-                    [ map Home (s "home")
-                    map Page.Login (s "login")                   
-                    map WishList (s "wishlist")
-                    map Page.Tomato (s "tomato") ]
-
+        ```fsharp
+        let pageParser : Parser<Page->_,_> =
+            oneOf
+                [ map Home (s "home")
+                map Page.Login (s "login")                   
+                map WishList (s "wishlist")
+                map Page.Tomato (s "tomato") ]
+        ```
     - urlUpdate function
-
-            let urlUpdate (result:Page option) model =
-                match result with
-                // ...
-                | Some (Tomato as page) ->
-                    { model with Page = page }, []
-
+        ```fsharp
+        let urlUpdate (result:Page option) model =
+            match result with
+            // ...
+            | Some (Tomato as page) ->
+                { model with Page = page }, []
+        ```
     - viewPage function
-
-            let viewPage model dispatch =
-                match model.Page with
-                //...
-                | Page.Tomato ->
-                    [ words 60 "Tomatoes taste good!"]
-                // ...
+        ```fsharp
+        let viewPage model dispatch =
+            match model.Page with
+            //...
+            | Page.Tomato ->
+                [ words 60 "Tomatoes taste good!"]
+            // ...
+        ```
 3. Try it out by navigating to `http://localhost:8080/#tomato`
 You should see `Tomatoes taste good!`
 #### Adding the page to the menu
 Inside `src/Client/pages/Menu.fs`
-
-        let view (model:Model) dispatch =
-            div [ centerStyle "row" ] [ 
-                // ...
-                yield viewLink Page.Tomato "Tomato"
-                // ..
-
+```fsharp
+let view (model:Model) dispatch =
+    div [ centerStyle "row" ] [ 
+        // ...
+        yield viewLink Page.Tomato "Tomato"
+        // ..
+```
 #### Move code to separate Tomato.fs files
 1. Add a new .fs file to the pages folder: `src/Client/pages/Tomato.fs`. 
 Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
@@ -106,100 +107,108 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
         <Compile Include="App.fs" />
 
 2. Place following code in the `Tomato.fs`     
-
-            module Client.Tomato
-            open Style
-            let view() = 
-                [ words 60 "Tomatoes taste VERY good!"]
+    ```fsharp
+    module Client.Tomato
+    open Style
+    let view() = 
+        [ words 60 "Tomatoes taste VERY good!"]
+    ```
 
 3. remove old 'view' code from the  viewPage function in `App.fs` and replace it 
     with:
-
-            | Page.Tomato ->
-                Tomato.view()
-
+    ```fsharp
+    | Page.Tomato ->
+        Tomato.view()
+    ```
 
 #### Define a model for the page that holds the state
 1. Replace the code in `Tomato.fs` with
+    ```fsharp
+    module Client.Tomato
+    open Style
 
-            module Client.Tomato
-            open Style
-
-            type Model = {
-                Color:string
-            }
-            let init() = 
-                { Color = "red" }
-            let view model = 
-                [ 
-                    words 60 "Tomatoes taste VERY good!"
-                    words 20 (sprintf "The color of a tomato is %s"  model.Color)
-                ]
+    type Model = {
+        Color:string
+    }
+    let init() = 
+        { Color = "red" }
+    let view model = 
+        [ 
+            words 60 "Tomatoes taste VERY good!"
+            words 20 (sprintf "The color of a tomato is %s"  model.Color)
+        ]
+    ```
 
 2. Adjust the SubModel DU
-
-        type SubModel =
-            | NoSubModel
-            | LoginModel of Login.Model
-            | WishListModel of WishList.Model
-            | TomatoModel of Tomato.Model
-
+    ```fsharp
+    type SubModel =
+        | NoSubModel
+        | LoginModel of Login.Model
+        | WishListModel of WishList.Model
+        | TomatoModel of Tomato.Model
+    ```
 
 3. updateUrl should now call the init function and place the Tomato.Model as SubModel
-            
-            | Some (Tomato as page) ->
-                let m = Tomato.init()
-                { model with Page = page; SubModel = TomatoModel m }, []
+    ```fsharp
+    | Some (Tomato as page) ->
+        let m = Tomato.init()
+        { model with Page = page; SubModel = TomatoModel m }, []
+    ```
 
 
 4. viewPage function should call the view function of the the Tomato module and pass in the submodel if it is a TomatoModel
-
-                | Page.Tomato ->
-                    match model.SubModel with
-                    | TomatoModel m -> Tomato.view m
-                    | _ -> [ ]
+    ```fsharp
+    | Page.Tomato ->
+        match model.SubModel with
+        | TomatoModel m -> Tomato.view m
+        | _ -> [ ]
+    ```
 #### Make it interactive (update the state)
 1. add new message DU in `Messages.fs`
-
-            type TomatoMsg =
-                | ChangeColor of string
+    ```fsharp
+    type TomatoMsg =
+        | ChangeColor of string
+    ```
 
 2. add message to AppMsg DU in `Messages.fs`
-
-            type AppMsg = 
-            // ..
-                | TomatoMsg of TomatoMsg
-            // ..
+    ```fsharp
+    type AppMsg = 
+    // ..
+        | TomatoMsg of TomatoMsg
+    // ..
+    ```
 
 3. adjust the match pattern in the update function of `App.fs`
+    ```fsharp
+    | AppMsg.TomatoMsg msg, TomatoModel tm ->
+        let color = match msg with ChangeColor c -> c
+        let tm = { tm with Color = color }
+        { model with SubModel = TomatoModel tm }, []
 
-            | AppMsg.TomatoMsg msg, TomatoModel tm ->
-                let color = match msg with ChangeColor c -> c
-                let tm = { tm with Color = color }
-                { model with SubModel = TomatoModel tm }, []
-            
-            | AppMsg.TomatoMsg msg, _ -> model, [] // just to make the compiler happy
+    | AppMsg.TomatoMsg msg, _ -> model, [] // just to make the compiler happy
+    ```
 
 4. Change the `Tomato.view` function to:
-
-            let view model dispatch = 
-                [ 
-                    words 60 "Tomatoes taste VERY good!"
-                    words 20 (sprintf "The color of a tomato is %s" model.Color)
-                    br []
-                    button [
-                        ClassName ("btn btn-primary") 
-                        OnClick (fun _ -> dispatch (TomatoMsg (TomatoMsg.ChangeColor "green")))] 
-                        [ str "No, my tomatoes are green!" ]
-                ]
-
+    ```fsharp
+    let view model dispatch = 
+        [ 
+            words 60 "Tomatoes taste VERY good!"
+            words 20 (sprintf "The color of a tomato is %s" model.Color)
+            br []
+            button [
+                ClassName ("btn btn-primary") 
+                OnClick (fun _ -> dispatch (TomatoMsg (TomatoMsg.ChangeColor "green")))] 
+                [ str "No, my tomatoes are green!" ]
+        ]
+    ```
 
 ### Getting rid of erros in chrome
 - Either comment out the lines in `App.fs` 
-
-        #if DEBUG
-        |> Program.withDebugger
-        #endif
+```fsharp
+#if DEBUG
+|> Program.withDebugger
+#endif
+```
 
 - Or install the Redux DevTools as a Chrome Extensions (recommended)
 Only one error remains, when visiting the WebApp the first time.
@@ -262,20 +271,20 @@ If you are in [development mode](#development-mode) then you can use Expecto's f
 ### Canopy
 
 [canopy](https://github.com/lefthandedgoat/canopy) is a F# web automation and testing library, built on top of Selenium. In our expecto suite it looks like the following:
+```fsharp
+testCase "login with test user" <| fun () ->
+    url serverUrl
+    waitForElement ".elmish-app"
 
-        testCase "login with test user" <| fun () ->
-            url serverUrl
-            waitForElement ".elmish-app"
+    click "Login"
 
-            click "Login"
+    "#username" << "test"
+    "#password" << "test"
 
-            "#username" << "test"
-            "#password" << "test"
+    click "Log In"
 
-            click "Log In"
-
-            waitForElement "Isaac Abraham"
-
+    waitForElement "Isaac Abraham"
+```
 ![Canopy in action](https://cloud.githubusercontent.com/assets/57396/23131425/38d06e8c-f78a-11e6-9ebc-8442b0abf752.gif)
 
 ## Additional tools
