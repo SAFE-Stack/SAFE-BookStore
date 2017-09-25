@@ -252,7 +252,7 @@ Target "Publish" (fun _ ->
     !! "src/Client/public/**/*.*" |> CopyFiles publicDir
     !! "src/Client/js/**/*.*" |> CopyFiles jsDir
     !! "src/Client/css/**/*.*" |> CopyFiles cssDir
-    !! "src/Images/**/*.*" |> CopyFiles imageDir
+    !! "src/Client/Images/**/*.*" |> CopyFiles imageDir
 
     "src/Client/index.html" |> CopyFile clientDir
 )
