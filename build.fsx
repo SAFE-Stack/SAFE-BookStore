@@ -232,7 +232,7 @@ Target "PrepareRelease" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
-            info.Arguments <- sprintf "tag %s/%s %s/%s:%s" dockerUser dockerImageName dockerUser dockerImageName release.NugetVersion) TimeSpan.MaxValue
+            info.Arguments <- sprintf "tag %s/%s %s/%s:%s" dockerLoginServer dockerImageName dockerLoginServer dockerImageName release.NugetVersion) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker tag failed"
 )
 
@@ -262,7 +262,7 @@ Target "CreateDockerImage" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
-            info.Arguments <- sprintf "build -t %s/%s ." dockerUser dockerImageName) TimeSpan.MaxValue
+            info.Arguments <- sprintf "build -t %s/%s ." dockerLoginServer dockerImageName) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker build failed"
 )
 
@@ -278,7 +278,7 @@ Target "Deploy" (fun _ ->
         ExecProcess (fun info ->
             info.FileName <- "docker"
             info.WorkingDirectory <- deployDir
-            info.Arguments <- sprintf "push %s/%s:%s" dockerUser dockerImageName release.NugetVersion) TimeSpan.MaxValue
+            info.Arguments <- sprintf "push %s/%s:%s" dockerLoginServer dockerImageName release.NugetVersion) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker push failed"
 )
 
