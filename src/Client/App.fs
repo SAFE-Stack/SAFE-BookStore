@@ -143,7 +143,7 @@ let viewPage model dispatch =
           br []
           br []
           words 20 "Made with"
-          a [ Href "https://safe-stack.github.io/" ] [ img [ Src "/images/safe_logo.png" ] ]
+          a [ Href "https://safe-stack.github.io/" ] [ img [ Src "/Images/safe_logo.png" ] ]
           words 15 "An end-to-end, functional-first stack for cloud-ready web development that emphasises type-safe programming." ]
 
     | Page.Login ->
