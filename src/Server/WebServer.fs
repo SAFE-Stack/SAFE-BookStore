@@ -25,7 +25,7 @@ let start clientPath port =
         choose [
             GET >=> choose [
                 path "/" >=> Files.browseFileHome "index.html"
-                pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
+                pathRegex @"/(public|js|css|Images|images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
 
                 path "/api/wishlist/" >=> WishList.getWishList ]
 
