@@ -144,7 +144,12 @@ let viewPage model dispatch =
           br []
           words 20 "Made with"
           a [ Href "https://safe-stack.github.io/" ] [ img [ Src "/Images/safe_logo.png" ] ]
-          words 15 "An end-to-end, functional-first stack for cloud-ready web development that emphasises type-safe programming." ]
+          words 15 "An end-to-end, functional-first stack for cloud-ready web development that emphasises type-safe programming."
+          br []
+          br []
+          br []
+          br []
+          words 20 "v.0.3.0" ]
 
     | Page.Login ->
         match model.SubModel with
