@@ -39,6 +39,7 @@ let deployDir = "./deploy"
 let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.exe"
 
 let dockerUser = "forki"
+let dockerLoginServer = "forki.azurecr.io"
 let dockerImageName = "fable-suave"
 
 // --------------------------------------------------------------------------------------
@@ -270,14 +271,14 @@ Target "Deploy" (fun _ ->
         ExecProcess (fun info ->
             info.FileName <- "docker"
             info.WorkingDirectory <- deployDir
-            info.Arguments <- sprintf "login --username \"%s\" --password \"%s\"" dockerUser (getBuildParam "DockerPassword")) TimeSpan.MaxValue
+            info.Arguments <- sprintf "login %s --username \"%s\" --password \"%s\"" dockerLoginServer dockerUser (getBuildParam "DockerPassword")) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker login failed"
 
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
             info.WorkingDirectory <- deployDir
-            info.Arguments <- sprintf "push %s/%s:%s" dockerUser dockerImageName release.NugetVersion) TimeSpan.MaxValue
+            info.Arguments <- sprintf "push %s/%s:%s" dockerLoginServer dockerImageName release.NugetVersion) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker push failed"
 )
 
