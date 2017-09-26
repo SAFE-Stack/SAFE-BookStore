@@ -85,7 +85,14 @@ do if not isWindows then
 
 
 // Read additional information from the release notes document
-let release = LoadReleaseNotes "RELEASE_NOTES.md"
+let releaseNotes = File.ReadAllLines "RELEASE_NOTES.md"
+
+let releaseNotesData =
+    releaseNotes
+    |> parseAllReleaseNotes
+
+let release = List.head releaseNotesData
+
 let packageVersion = SemVerHelper.parse release.NugetVersion
 
 
@@ -216,6 +223,18 @@ Target "Run" (fun _ ->
 // Release Scripts
 
 
+Target "SetReleaseNotes" (fun _ ->
+    let lines = [
+            "module internal ReleaseNotes"
+            ""
+            (sprintf "let Version = \"%s\"" release.NugetVersion)
+            ""
+            (sprintf "let IsPrerelease = %b" (release.SemVer.PreRelease <> None))
+            ""
+            "let Notes = \"\"\""] @ Array.toList releaseNotes @ ["\"\"\""]
+    File.WriteAllLines("src/Client/ReleaseNotes.fs",lines)
+)
+
 Target "PrepareRelease" (fun _ ->
     Git.Branches.checkout "" false "master"
     Git.CommandHelper.directRunGitCommand "" "fetch origin" |> ignore
@@ -289,6 +308,7 @@ Target "All" DoNothing
 "Clean"
   ==> "InstallDotNetCore"
   ==> "InstallClient"
+  ==> "SetReleaseNotes"
   ==> "BuildServer"
   ==> "BuildClient"
   ==> "BuildServerTests"
