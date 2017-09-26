@@ -311,12 +311,8 @@ The deployment for this repo works via [docker](https://www.docker.com/) and the
 
 Create a new [Docker Hub](https://hub.docker.com) account and a new public repository on Docker Hub.
 
-#### Azure Portal
 
-Go to the [Azure Portal](https://portal.azure.com) and create a new "Web App for Containers". Configure the Web App to point to the docker repo. 
-Also look for the "WebHook Url" on the portal, copy that url and set it as new trigger in your Docker Hub repo.
-
-#### Release workflow
+#### Release script
 
 Create a file called `release.cmd` with the following content and configure your DockerHub credentials:
 
@@ -331,6 +327,15 @@ Create a file called `release.cmd` with the following content and configure your
     packages\build\FAKE\tools\FAKE.exe build.fsx Deploy "DockerLoginServer=docker.io" "DockerImageName=****" "DockerUser=****" "DockerPassword=***" %*
 
 Don't worry the file is already in `.gitignore` so your password will not be commited.
+
+#### Release workflow
+
+In order to release a container you need to create a new entry in [RELEASE_NOTES.md] and run `release.cmd`.
+
+#### Azure Portal
+
+Go to the [Azure Portal](https://portal.azure.com) and create a new "Web App for Containers". Configure the Web App to point to the docker repo. 
+Also look for the "WebHook Url" on the portal, copy that url and set it as new trigger in your Docker Hub repo.
 
 ### Google Cloud AppEngine
 
