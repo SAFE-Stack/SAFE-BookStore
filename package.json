@@ -2,9 +2,9 @@
   "private": true,
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "react": "^15.6.1",
+    "react": "^15.6.2",
     "react-bootstrap": "^0.31.3",
-    "react-dom": "^15.6.1",
+    "react-dom": "^15.6.2",
     "remotedev": "^0.2.7"
   },
   "devDependencies": {
