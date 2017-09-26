@@ -1,11 +1,11 @@
 module internal ReleaseNotes
 
-let Version = "0.5.2"
+let Version = "0.5.3"
 
 let IsPrerelease = false
 
 let Notes = """
-### 0.5.2 - 2017-09-26
+### 0.5.3 - 2017-09-26
 * Automatic deploy and push to azure
 
 ### 0.4.0 - 2017-09-26
