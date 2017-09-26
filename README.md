@@ -307,10 +307,13 @@ The deployment for this repo works via [docker](https://www.docker.com/) and the
 
 ### Microsoft Azure
 
+The following part shows how to set up automatic deployment to [Microsoft Azure](https://azure.microsoft.com).
+
+![Auto Deployment to Azure](https://user-images.githubusercontent.com/57396/30860733-740e509c-a2c8-11e7-88c6-0341c4beab38.gif)
+
 #### Docker Hub
 
 Create a new [Docker Hub](https://hub.docker.com) account and a new public repository on Docker Hub.
-
 
 #### Release script
 
