@@ -205,7 +205,8 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
         ]
     ```
 
-### Getting rid of erros in chrome
+### Getting rid of errors in chrome
+
 - Either comment out the lines in `App.fs` 
 ```fsharp
 #if DEBUG
@@ -213,7 +214,7 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
 #endif
 ```
 
-- Or install the Redux DevTools as a Chrome Extensions (recommended)
+- Or install the [Redux DevTools](http://extension.remotedev.io/) as a Chrome Extensions (recommended)
 Only one error remains, when visiting the WebApp the first time.
 
 ### Getting FSharp.Data in the backend
