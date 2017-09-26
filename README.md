@@ -330,12 +330,15 @@ Don't worry the file is already in `.gitignore` so your password will not be com
 
 #### Release workflow
 
-In order to release a container you need to create a new entry in [RELEASE_NOTES.md] and run `release.cmd`.
+In order to release a container you need to create a new entry in [RELEASE_NOTES.md] and run `release.cmd`. 
+This will build the server and client, run all test, put the app into a docker container and push it to your docker hub repro.
 
 #### Azure Portal
 
-Go to the [Azure Portal](https://portal.azure.com) and create a new "Web App for Containers". Configure the Web App to point to the docker repo. 
+Go to the [Azure Portal](https://portal.azure.com) and create a new "Web App for Containers". 
+Configure the Web App to point to the docker repo and select `latest` channel of the container.
 Also look for the "WebHook Url" on the portal, copy that url and set it as new trigger in your Docker Hub repo.
+
 
 ### Google Cloud AppEngine
 
