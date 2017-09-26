@@ -41,6 +41,7 @@ let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.exe"
 let dockerUser = lazy(getBuildParam "DockerUser")
 let dockerPassword = lazy(getBuildParam "DockerPassword")
 let dockerLoginServer = lazy(getBuildParam "DockerLoginServer")
+let dockerRepo = lazy(getBuildParam "DockerRepo")
 let dockerImageName = "fable-suave"
 
 // --------------------------------------------------------------------------------------
@@ -252,7 +253,7 @@ Target "PrepareRelease" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
-            info.Arguments <- sprintf "tag %s/%s %s/%s:%s" (dockerLoginServer.Force()) dockerImageName (dockerLoginServer.Force()) dockerImageName release.NugetVersion) TimeSpan.MaxValue
+            info.Arguments <- sprintf "tag %s/%s %s/%s:%s" (dockerRepo.Force()) dockerImageName (dockerRepo.Force()) dockerImageName release.NugetVersion) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker tag failed"
 )
 
@@ -282,7 +283,7 @@ Target "CreateDockerImage" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
-            info.Arguments <- sprintf "build -t %s/%s ." (dockerLoginServer.Force()) dockerImageName) TimeSpan.MaxValue
+            info.Arguments <- sprintf "build -t %s/%s ." (dockerRepo.Force()) dockerImageName) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker build failed"
 )
 
@@ -298,7 +299,7 @@ Target "Deploy" (fun _ ->
         ExecProcess (fun info ->
             info.FileName <- "docker"
             info.WorkingDirectory <- deployDir
-            info.Arguments <- sprintf "push %s/%s" (dockerLoginServer.Force()) dockerImageName) TimeSpan.MaxValue
+            info.Arguments <- sprintf "push %s/%s" (dockerRepo.Force()) dockerImageName) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker push failed"
 )
 
