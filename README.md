@@ -15,7 +15,10 @@ You can see it running on azure at http://fable-suave.azurewebsites.net.
 
 > On OS X/macOS, make sure you have OpenSSL installed and symlinked correctly, as described here: [https://www.microsoft.com/net/core#macos](https://www.microsoft.com/net/core#macos).
 
-[dotnet SDK 2.0.0](https://www.microsoft.com/net/core) is required but it will be downloaded automatically by the build script if not installed (see below). Other tools like [Paket](https://fsprojects.github.io/Paket/) or [FAKE](https://fake.build/) will also be installed by the build script.
+[dotnet SDK 2.0.0](https://www.microsoft.com/net/core) is required but it will be downloaded automatically by the build script if not installed (see below). 
+Other tools like [Paket](https://fsprojects.github.io/Paket/) or [FAKE](https://fake.build/) will also be installed by the build script.
+
+For [deployment](#deployment) you need to have [docker](https://www.docker.com/) installed.
 
 ## Development mode
 
@@ -299,6 +302,7 @@ testCase "login with test user" <| fun () ->
 
 ## Deployment
 
+The deployment for this repo works via [docker](https://www.docker.com/) and therefore you need docker installed on your machine.
 
 ### Microsoft Azure
 
