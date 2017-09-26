@@ -149,7 +149,7 @@ let viewPage model dispatch =
           br []
           br []
           br []
-          words 20 "v.0.3.0" ]
+          words 20 "v.0.3.1" ]
 
     | Page.Login ->
         match model.SubModel with
