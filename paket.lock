@@ -1600,4 +1600,4 @@ NUGET
     FSharp.Core (4.2.3) - redirects: force
     Mono.Cecil (0.10.0-beta6)
     PhantomJS (2.1.1)
-    Selenium.WebDriver (3.5.2)
+    Selenium.WebDriver (3.6)
