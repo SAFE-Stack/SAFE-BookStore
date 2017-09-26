@@ -38,8 +38,9 @@ let deployDir = "./deploy"
 // Pattern specifying assemblies to be tested using expecto
 let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.exe"
 
-let dockerUser = "forki"
-let dockerLoginServer = "forki.azurecr.io"
+let dockerUser = lazy(getBuildParam "DockerUser")
+let dockerPassword = lazy(getBuildParam "DockerPassword")
+let dockerLoginServer = lazy(getBuildParam "DockerLoginServer")
 let dockerImageName = "fable-suave"
 
 // --------------------------------------------------------------------------------------
@@ -251,7 +252,7 @@ Target "PrepareRelease" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
-            info.Arguments <- sprintf "tag %s/%s %s/%s:%s" dockerLoginServer dockerImageName dockerLoginServer dockerImageName release.NugetVersion) TimeSpan.MaxValue
+            info.Arguments <- sprintf "tag %s/%s %s/%s:%s" (dockerLoginServer.Force()) dockerImageName (dockerLoginServer.Force()) dockerImageName release.NugetVersion) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker tag failed"
 )
 
@@ -281,7 +282,7 @@ Target "CreateDockerImage" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
-            info.Arguments <- sprintf "build -t %s/%s ." dockerLoginServer dockerImageName) TimeSpan.MaxValue
+            info.Arguments <- sprintf "build -t %s/%s ." (dockerLoginServer.Force()) dockerImageName) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker build failed"
 )
 
@@ -290,14 +291,14 @@ Target "Deploy" (fun _ ->
         ExecProcess (fun info ->
             info.FileName <- "docker"
             info.WorkingDirectory <- deployDir
-            info.Arguments <- sprintf "login %s --username \"%s\" --password \"%s\"" dockerLoginServer dockerUser (getBuildParam "DockerPassword")) TimeSpan.MaxValue
+            info.Arguments <- sprintf "login %s --username \"%s\" --password \"%s\"" (dockerLoginServer.Force()) (dockerUser.Force()) (dockerPassword.Force())) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker login failed"
 
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
             info.WorkingDirectory <- deployDir
-            info.Arguments <- sprintf "push %s/%s" dockerLoginServer dockerImageName) TimeSpan.MaxValue
+            info.Arguments <- sprintf "push %s/%s" (dockerLoginServer.Force()) dockerImageName) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker push failed"
 )
 
