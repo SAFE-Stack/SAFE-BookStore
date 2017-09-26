@@ -8,6 +8,9 @@ flexible end-to-end web-enabled applications that are written entirely in F#.
 
 You can see it running on Microsoft Azure at http://fable-suave.azurewebsites.net.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/ak9gjjjp32ens0e2?svg=true)](https://ci.appveyor.com/project/isaacabraham/safe-bookstore)
+[![Build Status](https://travis-ci.org/SAFE-Stack/SAFE-BookStore.svg?branch=master)](https://travis-ci.org/SAFE-Stack/SAFE-BookStore)
+
 ## Requirements
 
 - [Mono](http://www.mono-project.com/) on MacOS/Linux
