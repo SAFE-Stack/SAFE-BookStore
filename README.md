@@ -6,6 +6,8 @@ The following document describes the [SAFE-Stack](https://safe-stack.github.io/)
 
 You can see it running on azure at http://fable-suave.azurewebsites.net.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/ak9gjjjp32ens0e2?svg=true)](https://ci.appveyor.com/project/isaacabraham/safe-bookstore)
+
 ## Requirements
 
 - [Mono](http://www.mono-project.com/) on MacOS/Linux
