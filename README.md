@@ -301,22 +301,19 @@ testCase "login with test user" <| fun () ->
 
 ### Microsoft Azure
 
-    ```cmd
+Create a file called `release.cmd` with the following content and configure your DockerHub credentials:
+
     @echo off
     cls
 
     .paket\paket.exe restore
     if errorlevel 1 (
-    exit /b %errorlevel%
+      exit /b %errorlevel%
     )
 
-    IF NOT EXIST build.fsx (
-    .paket\paket.exe update
-    packages\build\FAKE\tools\FAKE.exe init.fsx
-    )
     packages\build\FAKE\tools\FAKE.exe build.fsx Deploy "DockerLoginServer=docker.io" "DockerImageName=****" "DockerUser=****" "DockerPassword=***" %*
-    ```
 
+Don't worry the file is already in `.gitignore` so your password will not be commited.
 
 ### Google Cloud AppEngine
 
