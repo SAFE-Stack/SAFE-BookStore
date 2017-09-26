@@ -297,7 +297,26 @@ testCase "login with test user" <| fun () ->
 
 [Paket](https://fsprojects.github.io/Paket/) is a dependency manager and allows easier management of the NuGet packages.
 
-## Deployment alternatives
+## Deployment
+
+### Microsoft Azure
+
+    ```cmd
+    @echo off
+    cls
+
+    .paket\paket.exe restore
+    if errorlevel 1 (
+    exit /b %errorlevel%
+    )
+
+    IF NOT EXIST build.fsx (
+    .paket\paket.exe update
+    packages\build\FAKE\tools\FAKE.exe init.fsx
+    )
+    packages\build\FAKE\tools\FAKE.exe build.fsx Deploy "DockerLoginServer=docker.io" "DockerImageName=****" "DockerUser=****" "DockerPassword=***" %*
+    ```
+
 
 ### Google Cloud AppEngine
 
