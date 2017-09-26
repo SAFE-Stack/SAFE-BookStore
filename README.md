@@ -210,26 +210,6 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
         ]
     ```
 
-### Getting rid of errors in chrome
-
-- Either comment out the lines in `App.fs` 
-```fsharp
-#if DEBUG
-|> Program.withDebugger
-#endif
-```
-
-- Or install the [Redux DevTools](http://extension.remotedev.io/) as a Chrome Extensions (recommended)
-Only one error remains, when visiting the WebApp the first time.
-
-### Getting FSharp.Data in the backend
-Sadly, DotnetCore 2.0 currently does not support Type Providers, so you can not just add the nuget packages of FSharp.Data to your backend project.
-- Solution clone repo and only reference some files that you need and doesn't contain any Type Providers
-### Additional notes
-- you can not call the functions of Fable inside the F# interactive.
-
-
-
 ## Debugging
 
 The server side of the application can be debugged using Ionide.
@@ -366,6 +346,29 @@ To execute the deploy you need a Google Cloud account and project configured as 
 The `version` and `verbosity` flag isn't need, but it is recommended to use the `version` flag so you don't end up with too many versions of your application without removing previous ones. Use `verbosity=debug` if you are having some problems.
 
 Deploy to the flex environment with a custom runtime like this is might take some time, but the instructions here should work.
+
+## Known Issues
+
+### Getting rid of errors in chrome
+
+- Either comment out the lines in `App.fs`:
+
+```fsharp
+#if DEBUG
+|> Program.withDebugger
+#endif
+```
+
+- Or install the [Redux DevTools](http://extension.remotedev.io/) as a Chrome Extensions (recommended)
+Only one error remains, when visiting the WebApp the first time.
+
+### TypeProviders in the backend
+
+Sadly, .NET Core 2.0 currently does not support Type Providers, so you can not just add the NuGet packages like FSharp.Data to your backend project.
+
+### Additional Notes
+
+- You can not call the functions of Fable inside the F# interactive.
 
 ## Maintainer(s)
 
