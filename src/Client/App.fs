@@ -12,7 +12,7 @@ open Fable.PowerPack
 open Elmish.Browser.Navigation
 open Client.Messages
 open Elmish.Browser.UrlParser
-open Hmr
+open Elmish.HMR
 
 // Model
 
