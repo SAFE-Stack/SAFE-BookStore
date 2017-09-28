@@ -19,7 +19,7 @@ module.exports = {
   devtool: "source-map",
   entry: resolve('./Client.fsproj'),
   output: {
-    path: resolve('./public'),
+    path: resolve('/public'),
     publicPath: "/public",
     filename: "bundle.js"
   },
@@ -30,7 +30,8 @@ module.exports = {
     proxy: {
       '/api/*': {
         target: 'http://localhost:' + port,
-        changeOrigin: true
+        changeOrigin: true,
+        hot: true
       }
     }
   },

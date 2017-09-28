@@ -12,6 +12,7 @@ open Fable.PowerPack
 open Elmish.Browser.Navigation
 open Client.Messages
 open Elmish.Browser.UrlParser
+open Hmr
 
 // Model
 
@@ -181,9 +182,10 @@ open Elmish.Debug
 // App
 Program.mkProgram init update view
 |> Program.toNavigable (parseHash pageParser) urlUpdate
-|> Program.withConsoleTrace
-|> Program.withReact "elmish-app"
 #if DEBUG
+|> Program.withConsoleTrace
 |> Program.withDebugger
+|> Program.withHMR
 #endif
+|> Program.withReact "elmish-app"
 |> Program.run
