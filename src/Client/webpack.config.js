@@ -30,10 +30,10 @@ module.exports = {
     proxy: {
       '/api/*': {
         target: 'http://localhost:' + port,
-        changeOrigin: true,
-        hot: true
+        changeOrigin: true
       }
-    }
+    },
+    hot: true
   },
   module: {
     rules: [
