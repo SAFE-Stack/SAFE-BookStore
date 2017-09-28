@@ -19,7 +19,7 @@ module.exports = {
   devtool: "source-map",
   entry: resolve('./Client.fsproj'),
   output: {
-    path: resolve('/public'),
+    path: resolve('./public'),
     publicPath: "/public",
     filename: "bundle.js"
   },
@@ -33,7 +33,8 @@ module.exports = {
         changeOrigin: true
       }
     },
-    hot: true
+    hot: true,
+    inline: true
   },
   module: {
     rules: [
@@ -56,5 +57,9 @@ module.exports = {
         },
       }
     ]
-  }
+  },
+  plugins : isProduction ? [] : [
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.NamedModulesPlugin()
+  ]
 };
