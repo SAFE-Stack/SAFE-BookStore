@@ -36,7 +36,7 @@ let pageParser : Parser<Page->_,_> =
 let urlUpdate (result:Page option) model =
     match result with
     | None ->
-        Browser.console.error("Error parsing url")
+        Browser.console.error("Error parsing url: " + Browser.window.location.href)
         ( model, Navigation.modifyUrl (toHash model.Page) )
 
     | Some (Page.Login as page) ->
@@ -47,12 +47,16 @@ let urlUpdate (result:Page option) model =
         match model.Menu.User with
         | Some user ->
             let m,cmd = WishList.init user
-            { model with Page = page; SubModel = WishListModel m }, Cmd.map WishListMsg cmd
+            { model with 
+                Page = page
+                SubModel = WishListModel m }, Cmd.map WishListMsg cmd
         | None ->
             model, Cmd.ofMsg Logout
 
     | Some (Home as page) ->
-        { model with Page = page; Menu = { model.Menu with query = "" } }, []
+        { model with 
+            Page = page
+            Menu = { model.Menu with query = "" } }, Cmd.none
 
 let init result =
     let menu,menuCmd = Menu.init()
