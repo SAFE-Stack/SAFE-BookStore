@@ -68,22 +68,39 @@ let init (user:UserData) =
 let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> = 
     match msg with
     | WishListMsg.LoadForUser user ->
-        model, []
+        model, Cmd.none
+
     | FetchedWishList wishList ->
         let wishList = { wishList with Books = wishList.Books |> List.sortBy (fun b -> b.Title) }
         { model with WishList = wishList }, Cmd.none
+
     | TitleChanged title ->
         let newBook = { model.NewBook with Title = title }
-        { model with NewBook = newBook; TitleErrorText = Validation.verifyBookTitle title; ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
+        { model with
+            NewBook = newBook
+            TitleErrorText = Validation.verifyBookTitle title
+            ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
+
     | AuthorsChanged authors ->
         let newBook = { model.NewBook with Authors = authors }
-        { model with NewBook = newBook; AuthorsErrorText = Validation.verifyBookAuthors authors; ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
+        { model with 
+            NewBook = newBook
+            AuthorsErrorText = Validation.verifyBookAuthors authors
+            ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
+
     | LinkChanged link ->
         let newBook = { model.NewBook with Link = link }
-        { model with NewBook = newBook; LinkErrorText = Validation.verifyBookLink link; ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
+        { model with 
+            NewBook = newBook
+            LinkErrorText = Validation.verifyBookLink link
+            ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
+
     | RemoveBook book -> 
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
-        { model with WishList = wishList; ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBook }, postWishListCmd(model.Token,wishList)
+        { model with
+            WishList = wishList
+            ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBook }, postWishListCmd(model.Token,wishList)
+
     | AddBook ->
         if Validation.verifyBook model.NewBook then
             match Validation.verifyBookisNotADuplicate model.WishList model.NewBook with
@@ -98,16 +115,18 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
                 AuthorsErrorText = Validation.verifyBookAuthors model.NewBook.Authors
                 LinkErrorText = Validation.verifyBookLink model.NewBook.Link
                 ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList model.NewBook }, Cmd.none
+
     | FetchError e ->
         { model with ErrorMsg = Some e.Message }, Cmd.none
 
 let newBookForm (model:Model) dispatch =
-    let buttonActive = if String.IsNullOrEmpty model.NewBook.Title ||
-                          String.IsNullOrEmpty model.NewBook.Authors ||
-                          String.IsNullOrEmpty model.NewBook.Link ||
-                          model.ErrorMsg <> None
-                        then "btn-disabled"
-                        else "btn-primary"
+    let buttonActive = 
+        if String.IsNullOrEmpty model.NewBook.Title ||
+           String.IsNullOrEmpty model.NewBook.Authors ||
+           String.IsNullOrEmpty model.NewBook.Link ||
+           model.ErrorMsg <> None
+        then "btn-disabled"
+        else "btn-primary"
     
     let titleStatus = if String.IsNullOrEmpty model.NewBook.Title then "" else "has-success"
 
