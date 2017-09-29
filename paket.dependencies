@@ -9,13 +9,14 @@ nuget System.Net.NetworkInformation
 nuget Newtonsoft.Json
 nuget jose-jwt
 
-nuget Fable.Core
-nuget Fable.Elmish.Browser
-nuget Fable.Elmish.Debugger
-nuget Fable.Elmish.React
-nuget Fable.Elmish.HMR
+nuget Fable.Core prerelease
+nuget Fable.Compiler prerelease
+nuget Fable.Elmish.Browser  prerelease
+nuget Fable.Elmish.Debugger prerelease
+nuget Fable.Elmish.React prerelease
+nuget Fable.Elmish.HMR prerelease
 
-clitool dotnet-fable
+clitool dotnet-fable prerelease
 clitool Microsoft.DotNet.Watcher.Tools
 
 group ServerTests
