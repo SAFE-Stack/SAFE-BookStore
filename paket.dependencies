@@ -21,6 +21,7 @@ clitool Microsoft.DotNet.Watcher.Tools
 group ServerTests
   source https://nuget.org/api/v2
   storage:none
+  clitool Microsoft.DotNet.Watcher.Tools
   nuget FSharp.Core redirects: force
   nuget Expecto
 

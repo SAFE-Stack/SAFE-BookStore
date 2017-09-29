@@ -1,4 +1,4 @@
-Microsoft.DotNet.Watcher.Tools
 group ServerTests
+Microsoft.DotNet.Watcher.Tools
 FSharp.Core
 Expecto

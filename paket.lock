@@ -1007,6 +1007,17 @@ NUGET
       System.Threading.Thread (>= 4.0) - restriction: >= netstandard1.6
       System.Threading.ThreadPool (>= 4.0.10) - restriction: >= netstandard1.6
       System.Threading.Timer (>= 4.0.1) - restriction: >= netstandard1.6
+    Microsoft.DotNet.Watcher.Tools (2.0) - clitool: true
+      Microsoft.NETCore.App (>= 2.0) - restriction: >= netcoreapp2.0
+    Microsoft.NETCore.App (2.0) - restriction: >= netcoreapp2.0
+      Microsoft.NETCore.DotNetHostPolicy (>= 2.0) - restriction: >= netcoreapp2.0
+      Microsoft.NETCore.Platforms (>= 2.0) - restriction: >= netcoreapp2.0
+      NETStandard.Library (>= 2.0) - restriction: >= netcoreapp2.0
+    Microsoft.NETCore.DotNetAppHost (2.0) - restriction: >= netcoreapp2.0
+    Microsoft.NETCore.DotNetHostPolicy (2.0) - restriction: >= netcoreapp2.0
+      Microsoft.NETCore.DotNetHostResolver (>= 2.0)
+    Microsoft.NETCore.DotNetHostResolver (2.0) - restriction: >= netcoreapp2.0
+      Microsoft.NETCore.DotNetAppHost (>= 2.0)
     Microsoft.NETCore.Platforms (2.0) - restriction: || (&& (< net35) (>= net463)) (&& (< net35) (< netstandard1.2) (>= netstandard1.3) (< monoandroid) (< win8)) (&& (< net35) (>= netstandard1.3) (< netstandard1.5) (< monoandroid) (< win8) (< wpa81)) (&& (< net35) (>= netstandard1.3) (< monotouch) (< xamarintvos) (< xamarinwatchos) (< xamarinios) (< xamarinmac)) (&& (< net35) (>= netstandard1.5) (< monotouch) (< xamarintvos) (< xamarinwatchos) (< xamarinios) (< xamarinmac)) (&& (>= uap10.0) (>= netcoreapp1.1)) (&& (>= dnxcore50) (>= netstandard1.3)) (&& (>= dnxcore50) (>= netstandard1.5)) (&& (< netstandard1.3) (>= netcoreapp1.1)) (&& (< netstandard1.4) (>= netcoreapp1.1)) (&& (< netstandard1.5) (>= netcoreapp1.1)) (>= netstandard1.6) (&& (< netstandard2.0) (>= netcoreapp1.1)) (&& (>= netcoreapp1.1) (< portable-net451+win81+wpa81))
     Microsoft.NETCore.Targets (2.0) - redirects: force, restriction: || (&& (< net35) (< netstandard1.2) (>= netstandard1.3) (< monoandroid) (< win8)) (&& (< net35) (>= netstandard1.3) (< netstandard1.5) (< monoandroid) (< win8) (< wpa81)) (&& (< net35) (>= netstandard1.3) (< monotouch) (< xamarintvos) (< xamarinwatchos) (< xamarinios) (< xamarinmac)) (&& (< net35) (>= netstandard1.5) (< monotouch) (< xamarintvos) (< xamarinwatchos) (< xamarinios) (< xamarinmac)) (&& (>= net46) (< netstandard1.2) (>= netstandard1.6)) (&& (>= net46) (< netstandard1.3) (>= netstandard1.6)) (&& (>= net46) (< netstandard1.4) (>= netstandard1.6)) (&& (>= uap10.0) (>= netstandard1.6)) (&& (>= dnxcore50) (>= netstandard1.3)) (&& (>= dnxcore50) (>= netstandard1.5)) (&& (>= dnxcore50) (>= netstandard1.6)) (&& (< netstandard1.1) (>= netstandard1.6) (< monoandroid)) (&& (< netstandard1.2) (>= netstandard1.6) (< monoandroid)) (&& (< netstandard1.3) (>= netstandard1.6) (< monoandroid)) (&& (< netstandard1.4) (>= netstandard1.6) (< monoandroid)) (&& (< netstandard1.5) (>= netstandard1.6) (< monoandroid)) (&& (>= netstandard1.6) (< monotouch) (< xamarintvos) (< xamarinwatchos) (< xamarinios) (< xamarinmac)) (&& (>= netstandard1.6) (< portable-net45+win8+wpa81)) (&& (>= netstandard1.6) (< portable-net451+win81+wpa81)) (>= netcoreapp1.1)
     Microsoft.Win32.Primitives (4.3) - restriction: || (&& (>= net46) (< netstandard1.4) (>= netstandard1.6)) (&& (>= uap10.0) (>= netstandard1.6)) (&& (< netstandard1.4) (>= netstandard1.6) (< monoandroid)) (&& (< netstandard1.5) (>= netstandard1.6) (< monoandroid)) (&& (>= netstandard1.6) (< netstandard2.0) (< monotouch) (< xamarintvos) (< xamarinwatchos) (< xamarinios) (< xamarinmac))
