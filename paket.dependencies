@@ -13,7 +13,7 @@ nuget Fable.Core
 nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.React
-nuget Fable.Elmish.HMR prerelease
+nuget Fable.Elmish.HMR
 
 clitool dotnet-fable
 clitool Microsoft.DotNet.Watcher.Tools
@@ -26,7 +26,7 @@ group ServerTests
 
 group UITests
   source https://nuget.org/api/v2
-  framework >= net45
+  framework >= net461
   nuget FSharp.Core redirects: force
   nuget Canopy
   nuget Expecto
@@ -34,5 +34,4 @@ group UITests
 
 group Build
   source https://nuget.org/api/v2
-  framework >= net45
   nuget FAKE
