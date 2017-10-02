@@ -15,6 +15,7 @@ open Elmish.Browser.UrlParser
 open Elmish.HMR
 
 JsInterop.importSideEffects "whatwg-fetch"
+JsInterop.importSideEffects "babel-polyfill"
 
 // Model
 
@@ -50,14 +51,14 @@ let urlUpdate (result:Page option) model =
         match model.Menu.User with
         | Some user ->
             let m,cmd = WishList.init user
-            { model with 
+            { model with
                 Page = page
                 SubModel = WishListModel m }, Cmd.map WishListMsg cmd
         | None ->
             model, Cmd.ofMsg Logout
 
     | Some (Home as page) ->
-        { model with 
+        { model with
             Page = page
             Menu = { model.Menu with query = "" } }, Cmd.none
 
