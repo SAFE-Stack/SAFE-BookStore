@@ -14,6 +14,8 @@ open Client.Messages
 open Elmish.Browser.UrlParser
 open Elmish.HMR
 
+JsInterop.importAll "whatwg-fetch"
+
 // Model
 
 type SubModel =
