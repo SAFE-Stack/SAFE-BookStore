@@ -7,9 +7,17 @@ function resolve(filePath) {
 }
 
 var babelOptions = fableUtils.resolveBabelOptions({
-  presets: [["es2015", {"modules": false}]],
+  presets: [
+    ["env", {
+      "targets": {
+        "browsers": ["last 2 versions"]
+      },
+      "modules": false
+    }]
+  ],
   plugins: ["transform-runtime"]
 });
+
 
 var isProduction = process.argv.indexOf("-p") >= 0;
 var port = process.env.SUAVE_FABLE_PORT || "8085";
