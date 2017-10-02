@@ -43,7 +43,7 @@ that you have at least SDK version 2.0.0 installed (`dotnet --version`) and then
 
 You can now edit files in `src/Server` or `src/Client` and recompile + browser refresh will be triggered automatically.
 
-![Development mode](https://cloud.githubusercontent.com/assets/57396/23174149/af93da32-f85b-11e6-8de2-01c274f54a27.gif)
+![Development mode](https://user-images.githubusercontent.com/57396/31067904-bec572e6-a755-11e7-967d-c169724006f2.gif)
 
 Usually you can just keep this mode running and running. Just edit files, see the browser refreshing and commit + push with git.
 
