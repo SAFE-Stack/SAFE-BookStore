@@ -34,12 +34,9 @@ Start the development mode with:
     > build.cmd run // on windows
     $ ./build.sh run // on unix
 
-This command will call in **build.fsx** the target "Run". It will start in parallel:
+This command will call the target "Run" in **build.fsx**. This will start in parallel:
 - **dotnet fable webpack-dev-server** in [src/Client](src/Client) (note: the Webpack development server will serve files on http://localhost:8080)
 - **dotnet watch msbuild /t:TestAndRun** in [test/serverTests](src/ServerTests) to run unit tests and then server (note: Suave is launched on port **8085**)
-
-Previously, the build script should download all dependencies like .NET Core SDK, Fable... If you have problems with the download of the .NET Core SDK via the `build.cmd` or `build.sh` script, please install the SDK manually from [here](https://github.com/dotnet/core/blob/master/release-notes/download-archives/1.0.4-download.md). Verify
-that you have at least SDK version 2.0.0 installed (`dotnet --version`) and then rerun the build script.
 
 You can now edit files in `src/Server` or `src/Client` and recompile + browser refresh will be triggered automatically.
 
