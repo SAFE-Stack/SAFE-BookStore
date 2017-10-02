@@ -324,7 +324,7 @@ Go to the [Azure Portal](https://portal.azure.com) and create a new "Web App for
 Configure the Web App to point to the docker repo and select `latest` channel of the container.
 Also look for the "WebHook Url" on the portal, copy that url and set it as new trigger in your Docker Hub repo.
 
-Now you should be able to reach the website ony your `.azurewebsites.net` url.
+Now you should be able to reach the website on your `.azurewebsites.net` url.
 
 #### Further releases
 
