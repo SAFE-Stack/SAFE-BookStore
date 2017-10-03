@@ -40,9 +40,7 @@ module.exports = {
         target: 'http://localhost:' + port,
         changeOrigin: true
       }
-    },
-    hot: true,
-    inline: true
+    }
   },
   module: {
     rules: [
@@ -67,7 +65,6 @@ module.exports = {
     ]
   },
   plugins : isProduction ? [] : [
-      new webpack.HotModuleReplacementPlugin(),
       new webpack.NamedModulesPlugin()
   ]
 };
