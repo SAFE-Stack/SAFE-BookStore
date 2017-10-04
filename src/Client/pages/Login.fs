@@ -12,7 +12,6 @@ open System
 open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
-
     
 type LoginState =
 | LoggedOut
