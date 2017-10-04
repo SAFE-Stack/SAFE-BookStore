@@ -5,3 +5,4 @@ System.Net.NetworkInformation
 Newtonsoft.Json
 Fable.JsonConverter
 jose-jwt
+WindowsAzure.Storage
