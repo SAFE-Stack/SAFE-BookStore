@@ -187,8 +187,10 @@ Program.mkProgram init update view
 |> Program.toNavigable (parseHash pageParser) urlUpdate
 #if DEBUG
 |> Program.withConsoleTrace
-|> Program.withDebugger
 |> Program.withHMR
 #endif
 |> Program.withReact "elmish-app"
+#if DEBUG
+|> Program.withDebugger
+#endif
 |> Program.run
