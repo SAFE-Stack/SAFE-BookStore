@@ -318,6 +318,9 @@ This will build the server and client, run all test, put the app into a docker c
 
 Go to the [Azure Portal](https://portal.azure.com) and create a new "Web App for Containers". 
 Configure the Web App to point to the docker repo and select `latest` channel of the container.
+
+![Docker setup](https://user-images.githubusercontent.com/57396/31279587-e06001d0-aaa9-11e7-9b4b-a3e8278a6419.png)
+
 Also look for the "WebHook Url" on the portal, copy that url and set it as new trigger in your Docker Hub repo.
 
 Now you should be able to reach the website on your `.azurewebsites.net` url.
@@ -325,6 +328,12 @@ Now you should be able to reach the website on your `.azurewebsites.net` url.
 #### Further releases
 
 Now everything is set up. By creating new entries in [RELEASE_NOTES.md] and a new run of `release.cmd` the website should update automatically.
+
+#### Azure Storage
+
+With the steps above the website is only using local file storage. If you want to use it together with Azure Storage, then go back to the [Azure Portal](https://portal.azure.com) and create a new "Storage account". Copy the Connection String from "Access keys" tab and move over to your Azure app service.
+
+![Storage Account](https://user-images.githubusercontent.com/57396/31279525-a15fe1f8-aaa9-11e7-9639-f04021a1ab49.png)
 
 ### Google Cloud AppEngine
 
