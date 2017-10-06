@@ -30,8 +30,14 @@ let main args =
                     else @"./client"
             |> Path.GetFullPath
 
+        let database =
+            args
+            |> Array.tryFind(fun arg -> arg.StartsWith "AzureConnection=")
+            |> Option.map(fun arg -> WebServer.Azure (arg.Substring "AzureConnection=".Length))
+            |> Option.defaultValue WebServer.FileSystem
+
         let port = getPortsOrDefault 8085us
-        WebServer.start clientPath port
+        WebServer.start database clientPath port
         0
     with
     | exn ->
