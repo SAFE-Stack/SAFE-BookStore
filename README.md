@@ -35,6 +35,7 @@ This command will call the target "Run" in **build.fsx**. This will start in par
 - **dotnet watch msbuild /t:TestAndRun** in [test/serverTests](src/ServerTests) to run unit tests and then server (note: Suave is launched on port **8085**)
 
 You can now edit files in `src/Server` or `src/Client` and recompile + browser refresh will be triggered automatically.
+For the case of the client ["Hot Module Replacement"](https://webpack.js.org/concepts/hot-module-replacement/) is supported, which means your app state is kept over recompile.
 
 ![Development mode](https://user-images.githubusercontent.com/57396/31067904-bec572e6-a755-11e7-967d-c169724006f2.gif)
 
