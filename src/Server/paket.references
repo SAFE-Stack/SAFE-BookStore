@@ -6,3 +6,4 @@ Newtonsoft.Json
 Fable.JsonConverter
 jose-jwt
 WindowsAzure.Storage
+Microsoft.DotNet.Watcher.Tools
