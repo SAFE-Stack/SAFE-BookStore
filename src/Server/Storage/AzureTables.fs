@@ -2,6 +2,7 @@ module ServerCode.Storage.AzureTable
 
 open Microsoft.WindowsAzure.Storage
 open Microsoft.WindowsAzure.Storage.Table
+open Microsoft.WindowsAzure.Storage.Blob
 open ServerCode.Domain
 
 let getBooksTable connectionString = async {
@@ -55,8 +56,27 @@ let resetWishList connectionString userName = async {
     do! table.DeleteIfExistsAsync() |> Async.AwaitTask |> Async.Ignore
     do! saveWishListToDB connectionString (Defaults.defaultWishList userName) }
 
+module private StateManagement =
+    let getStateBlob connectionString name = async {
+        let client = (CloudStorageAccount.Parse connectionString).CreateCloudBlobClient()
+        let state = client.GetContainerReference "state"
+        do! state.CreateIfNotExistsAsync() |> Async.AwaitTask |> Async.Ignore
+        return state.GetBlockBlobReference name }
+
+    let storeResetTime connectionString = async {
+        let! blob = getStateBlob connectionString "resetTime"    
+        do! blob.UploadTextAsync "" |> Async.AwaitTask |> Async.Ignore }
+
+let getLastResetTime connectionString =
+    fun () ->
+    async {
+        let! blob = StateManagement.getStateBlob connectionString "resetTime"
+        do! blob.FetchAttributesAsync() |> Async.AwaitTask
+        return blob.Properties.LastModified |> Option.ofNullable |> Option.map(fun d -> d.UtcDateTime) }
+
 let startTableHousekeeping (every:System.TimeSpan) connectionString userName = async {
     while true do
         do! resetWishList connectionString userName
+        do! StateManagement.storeResetTime connectionString
         do! Async.Sleep (int every.TotalMilliseconds)
     }

@@ -23,20 +23,23 @@ let start databaseType clientPath port =
             homeFolder = Some clientPath
             bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") port] }
 
-    let loadFromDb, saveToDb =
+    let loadFromDb, saveToDb, getLastResetTime =
         logger.logSimple (Message.event LogLevel.Info (sprintf "Using database %O" databaseType))
         match databaseType with
         | Azure connection ->
             Storage.AzureTable.startTableHousekeeping (System.TimeSpan.FromHours 1.) connection "test" |> Async.Start
-            Storage.AzureTable.getWishListFromDB connection, Storage.AzureTable.saveWishListToDB connection
-        | FileSystem -> Storage.FileSystem.getWishListFromDB >> async.Return, Storage.FileSystem.saveWishListToDB >> async.Return
+            Storage.AzureTable.getWishListFromDB connection, Storage.AzureTable.saveWishListToDB connection, Storage.AzureTable.getLastResetTime connection
+        | FileSystem ->
+            let startupTime = Some System.DateTime.UtcNow
+            Storage.FileSystem.getWishListFromDB >> async.Return, Storage.FileSystem.saveWishListToDB >> async.Return, fun _ -> async.Return startupTime
 
     let app =
         choose [
             GET >=> choose [
                 path "/" >=> Files.browseFileHome "index.html"
                 pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
-                path "/api/wishlist/" >=> WishList.getWishList loadFromDb ]
+                path "/api/wishlist/" >=> WishList.getWishList loadFromDb
+                path "/api/wishlist/resetTime" >=> WishList.getResetTime getLastResetTime ]
 
             POST >=> choose [
                 path "/api/users/login" >=> Auth.login

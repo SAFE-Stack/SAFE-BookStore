@@ -34,6 +34,8 @@ type WishList =
         { UserName = userName
           Books = [] }
 
+type WishListResetDetails =
+    { Time : DateTime option }
 
 // Model validation functions.  Write your validation functions once, for server and client!
 module Validation =

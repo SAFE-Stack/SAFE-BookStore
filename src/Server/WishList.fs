@@ -49,4 +49,9 @@ let postWishList saveWishListToDB (ctx: HttpContext) =
         with exn ->
             logger.error (eventX "Database not available" >> addExn exn)
             return! SERVICE_UNAVAILABLE "Database not available" ctx
-    })    
+    })
+
+/// Retrieve the last time the wish list was reset.
+let getResetTime getLastResetTime ctx = async {
+    let! lastResetTime = getLastResetTime()    
+    return! Successful.OK (FableJson.toJson { Time = lastResetTime }) ctx }
