@@ -26,7 +26,9 @@ let start databaseType clientPath port =
     let loadFromDb, saveToDb =
         logger.logSimple (Message.event LogLevel.Info (sprintf "Using database %O" databaseType))
         match databaseType with
-        | Azure connection -> Storage.AzureTable.getWishListFromDB connection, Storage.AzureTable.saveWishListToDB connection
+        | Azure connection ->
+            Storage.AzureTable.startTableHousekeeping (System.TimeSpan.FromHours 1.) connection "test" |> Async.Start
+            Storage.AzureTable.getWishListFromDB connection, Storage.AzureTable.saveWishListToDB connection
         | FileSystem -> Storage.FileSystem.getWishListFromDB >> async.Return, Storage.FileSystem.saveWishListToDB >> async.Return
 
     let app =
@@ -34,12 +36,10 @@ let start databaseType clientPath port =
             GET >=> choose [
                 path "/" >=> Files.browseFileHome "index.html"
                 pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
-
                 path "/api/wishlist/" >=> WishList.getWishList loadFromDb ]
 
             POST >=> choose [
                 path "/api/users/login" >=> Auth.login
-
                 path "/api/wishlist/" >=> WishList.postWishList saveToDb
             ]
 

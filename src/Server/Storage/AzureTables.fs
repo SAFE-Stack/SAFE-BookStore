@@ -7,7 +7,16 @@ open ServerCode.Domain
 let getBooksTable connectionString = async {
     let client = (CloudStorageAccount.Parse connectionString).CreateCloudTableClient()
     let table = client.GetTableReference "book"
-    do! table.CreateIfNotExistsAsync() |> Async.AwaitTask |> Async.Ignore
+
+    // Azure will temporarily lock table names after deleting and can take some time before the table name is made available again.
+    let rec createTableSafe() = async {
+        try
+        do! table.CreateIfNotExistsAsync() |> Async.AwaitTask |> Async.Ignore
+        with _ ->
+            do! Async.Sleep 5000
+            return! createTableSafe() }
+
+    do! createTableSafe()
     return table }
 
 let getWishListFromDB connectionString userName = async {
@@ -40,3 +49,14 @@ let saveWishListToDB connectionString wishList = async {
     
     let! booksTable = getBooksTable connectionString
     return! booksTable.ExecuteBatchAsync operation |> Async.AwaitTask |> Async.Ignore }
+
+let resetWishList connectionString userName = async {
+    let! table = getBooksTable connectionString
+    do! table.DeleteIfExistsAsync() |> Async.AwaitTask |> Async.Ignore
+    do! saveWishListToDB connectionString (Defaults.defaultWishList userName) }
+
+let startTableHousekeeping (every:System.TimeSpan) connectionString userName = async {
+    while true do
+        do! resetWishList connectionString userName
+        do! Async.Sleep (int every.TotalMilliseconds)
+    }

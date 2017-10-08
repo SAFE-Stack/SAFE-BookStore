@@ -5,9 +5,20 @@
             "name": "Debug",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "Start",
+            "preLaunchTask": "Build Server",
             "program": "${workspaceRoot}/src/Server/bin/Debug/netcoreapp2.0/Server.dll",
             "args": ["${workspaceRoot}/src/Client"],
+            "cwd": "${workspaceRoot}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "Debug Azure",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Server",
+            "program": "${workspaceRoot}/src/Server/bin/Debug/netcoreapp2.0/Server.dll",
+            "args": ["${workspaceRoot}/src/Client", "AzureConnection=UseDevelopmentStorage=true" ],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": false,
             "console": "internalConsole"
