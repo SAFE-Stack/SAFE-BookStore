@@ -168,13 +168,13 @@ let viewPage model dispatch =
     | Page.WishList ->
         match model.SubModel with
         | WishListModel m ->
-            [ div [ ] [ lazyView2 WishList.view m dispatch ]]
+            [ div [ ] [ WishList.view m dispatch ]]
         | _ -> [ ]
 
 /// Constructs the view for the application given the model.
 let view model dispatch =
   div []
-    [ lazyView2 Menu.view model.Menu dispatch
+    [ Menu.view model.Menu dispatch
       hr []
       div [ centerStyle "column" ] (viewPage model dispatch)
     ]
