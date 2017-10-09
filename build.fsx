@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------
 
 #r @"packages/build/FAKE/tools/FakeLib.dll"
+#r @"packages/build/Newtonsoft.Json/lib/net45/Newtonsoft.Json.dll"
 
 open Fake
 open Fake.Git
@@ -11,7 +12,6 @@ open Fake.ReleaseNotesHelper
 open System
 open System.IO
 open Fake.Testing.Expecto
-
 
 let project = "Suave/Fable sample"
 
@@ -28,7 +28,12 @@ let serverPath = "./src/Server/" |> FullName
 let serverTestsPath = "./test/ServerTests" |> FullName
 let clientTestsPath = "./test/UITests" |> FullName
 
-let dotnetcliVersion = "2.0.0"
+open Newtonsoft.Json
+open Newtonsoft.Json.Linq
+let dotnetcliVersion :string = 
+    let content = File.ReadAllText "global.json"
+    let json = Newtonsoft.Json.Linq.JObject.Parse content
+    failwithf "test: %s" <| json.Item["sdk"].Item["version"].ToString()
 
 let mutable dotnetExePath = "dotnet"
 
