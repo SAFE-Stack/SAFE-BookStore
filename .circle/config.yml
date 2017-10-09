@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/api
+    docker:
+      - image: microsoft/dotnet:2.0.0-sdk
+    environment:
+      - DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    steps:
+      - checkout      
+      - run: ./build.sh
