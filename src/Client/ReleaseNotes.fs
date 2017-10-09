@@ -1,10 +1,13 @@
 module internal ReleaseNotes
 
-let Version = "0.6.4"
+let Version = "0.7.0"
 
 let IsPrerelease = false
 
 let Notes = """
+### 0.7.0 - 2017-10-09
+* Azure storage auto-cleanup
+
 ### 0.6.4 - 2017-10-09
 * Azure storage
 
