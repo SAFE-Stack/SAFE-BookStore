@@ -30,10 +30,16 @@ let clientTestsPath = "./test/UITests" |> FullName
 
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
-let dotnetcliVersion :string = 
-    let content = File.ReadAllText "global.json"
-    let json = Newtonsoft.Json.Linq.JObject.Parse content
-    failwithf "test: %s" <| json.Item["sdk"].Item["version"].ToString()
+
+let dotnetcliVersion : string = 
+    try
+        let content = File.ReadAllText "global.json"
+        let json = Newtonsoft.Json.Linq.JObject.Parse content
+        let sdk = json.Item("sdk") :?> JObject
+        let version = sdk.Property("version").Value.ToString()
+        version
+    with
+    | exn -> failwithf "Could not parse global.json: %s" exn.Message
 
 let mutable dotnetExePath = "dotnet"
 
