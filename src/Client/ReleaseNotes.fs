@@ -1,11 +1,11 @@
 module internal ReleaseNotes
 
-let Version = "0.6.1"
+let Version = "0.6.2"
 
 let IsPrerelease = false
 
 let Notes = """
-### 0.6.1 - 2017-10-09
+### 0.6.2 - 2017-10-09
 * Azure storage
 
 ### 0.5.4 - 2017-09-26
