@@ -1,3 +1,6 @@
+### 0.7.0 - 2017-10-09
+* Azure storage auto-cleanup
+
 ### 0.6.4 - 2017-10-09
 * Azure storage
 
