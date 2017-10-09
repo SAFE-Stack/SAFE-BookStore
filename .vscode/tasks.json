@@ -14,7 +14,8 @@
             ],
             "presentation": {
                 "reveal": "silent"
-            }
+            },
+            "problemMatcher": []
         },
         {
             "taskName": "Build Server",
@@ -27,13 +28,13 @@
             ],
             "presentation": {
                 "reveal": "silent"
-            }
+            },
+            "problemMatcher": []
         },
         {
             "taskName": "Open Browser",
             "type": "shell",
             "dependsOn": "Build Server",
-
             "windows": {
                 "command": "cmd.exe",
                 "args": [
@@ -68,7 +69,6 @@
                 "reveal": "silent"
             },
             "isBackground": true
-
         }
     ]
 }
