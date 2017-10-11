@@ -10,6 +10,7 @@ open Suave.Operators
 open Suave.RequestErrors
 open Microsoft.Azure.WebJobs
 open ServerCode.Storage.AzureTable
+open ServerCode
 
 type DatabaseType = 
     | FileSystem 
@@ -55,12 +56,12 @@ let start databaseType clientPath port =
             GET >=> choose [
                 path "/" >=> Files.browseFileHome "index.html"
                 pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
-                path "/api/wishlist/" >=> WishList.getWishList loadFromDb
-                path "/api/wishlist/resetTime" >=> WishList.getResetTime getLastResetTime ]
+                path ServerUrls.WishList >=> WishList.getWishList loadFromDb
+                path ServerUrls.ResetTime >=> WishList.getResetTime getLastResetTime ]
 
             POST >=> choose [
-                path "/api/users/login" >=> Auth.login
-                path "/api/wishlist/" >=> WishList.postWishList saveToDb
+                path ServerUrls.Login >=> Auth.login
+                path ServerUrls.WishList >=> WishList.postWishList saveToDb
             ]
 
             NOT_FOUND "Page not found."
