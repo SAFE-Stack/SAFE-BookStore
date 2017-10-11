@@ -54,7 +54,7 @@ let saveWishListToDB connectionString wishList = async {
         // Delete obsolete books
         (existingBooks - newBooks)
         |> Set.iter(fun book ->
-            let entity = book |> buildEntity wishList.UserName
+            let entity = buildEntity wishList.UserName book
             entity.ETag <- "*"
             entity |> TableOperation.Delete |> operation.Add)
 
