@@ -21,7 +21,7 @@
             "args": ["${workspaceRoot}/src/Client", "AzureConnection=UseDevelopmentStorage=true" ],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": false,
-            "console": "integratedTerminal"
+            "console": "internalConsole"
         },
         {
             "name": "Debug Server Test",
