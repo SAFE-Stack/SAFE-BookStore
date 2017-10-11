@@ -34,7 +34,10 @@ let main args =
         let database =
             args
             |> Array.tryFind(fun arg -> arg.StartsWith "AzureConnection=")
-            |> Option.map(fun arg -> WebServer.Azure (arg.Substring "AzureConnection=".Length))
+            |> Option.map(fun arg ->
+                arg.Substring "AzureConnection=".Length
+                |> ServerCode.Storage.AzureTable.AzureConnection
+                |> WebServer.Azure)
             |> Option.defaultValue WebServer.FileSystem
 
         let port = getPortsOrDefault 8085us

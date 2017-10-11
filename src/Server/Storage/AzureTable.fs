@@ -5,9 +5,9 @@ open Microsoft.WindowsAzure.Storage.Table
 open Microsoft.WindowsAzure.Storage.Blob
 open ServerCode.Domain
 
-type AzureConnection = AzureConnectionString of string
+type AzureConnection = AzureConnection of string
 
-let getBooksTable (AzureConnectionString connectionString) = async {
+let getBooksTable (AzureConnection connectionString) = async {
     let client = (CloudStorageAccount.Parse connectionString).CreateCloudTableClient()
     let table = client.GetTableReference "book"
 
@@ -63,7 +63,7 @@ let getWishListFromDB connectionString userName = async {
 
 
 module private StateManagement =
-    let getStateBlob (AzureConnectionString connectionString) name = async {
+    let getStateBlob (AzureConnection connectionString) name = async {
         let client = (CloudStorageAccount.Parse connectionString).CreateCloudBlobClient()
         let state = client.GetContainerReference "state"
         do! state.CreateIfNotExistsAsync() |> Async.AwaitTask |> Async.Ignore

@@ -17,7 +17,7 @@ type DatabaseType = FileSystem | Azure of ConnectionString:AzureConnection
 let startWebJobs azureConnection =    
     let host =
         let config =
-            let (AzureConnectionString connectionString) = azureConnection
+            let (AzureConnection connectionString) = azureConnection
             JobHostConfiguration(
                 DashboardConnectionString = connectionString,
                 StorageConnectionString = connectionString)
