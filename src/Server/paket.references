@@ -7,3 +7,5 @@ Fable.JsonConverter
 jose-jwt
 WindowsAzure.Storage
 Microsoft.DotNet.Watcher.Tools
+Microsoft.Azure.WebJobs
+Microsoft.Azure.WebJobs.Extensions

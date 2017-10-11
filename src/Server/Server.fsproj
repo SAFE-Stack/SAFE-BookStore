@@ -13,6 +13,7 @@
     <Compile Include="Storage/DefaultWishList.fs" />
     <Compile Include="Storage/FileSystem.fs" />
     <Compile Include="Storage/AzureTables.fs" />
+    <Compile Include="Storage/WebJobs.fs" />
     <Compile Include="WebServer.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

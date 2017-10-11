@@ -8,8 +8,23 @@ open System.Net
 open Suave.Filters
 open Suave.Operators
 open Suave.RequestErrors
+open Microsoft.Azure.WebJobs
+open ServerCode.Storage.AzureTable
 
-type DatabaseType = FileSystem | Azure of ConnectionString:string
+type DatabaseType = FileSystem | Azure of ConnectionString:AzureConnection
+
+// Start up background Azure web jobs.
+let startWebJobs azureConnection =    
+    let host =
+        let config =
+            let (AzureConnectionString connectionString) = azureConnection
+            JobHostConfiguration(
+                DashboardConnectionString = connectionString,
+                StorageConnectionString = connectionString)
+        config.UseTimers()
+        config.JobActivator <- ServerCode.Storage.WishListWebJobsActivator azureConnection
+        new JobHost(config)
+    host.Start()
 
 // Fire up our web server!
 let start databaseType clientPath port =
@@ -27,7 +42,7 @@ let start databaseType clientPath port =
         logger.logSimple (Message.event LogLevel.Info (sprintf "Using database %O" databaseType))
         match databaseType with
         | Azure connection ->
-            Storage.AzureTable.startTableHousekeeping (System.TimeSpan.FromHours 1.) connection "test" |> Async.Start
+            startWebJobs connection
             Storage.AzureTable.getWishListFromDB connection, Storage.AzureTable.saveWishListToDB connection, Storage.AzureTable.getLastResetTime connection
         | FileSystem ->
             let startupTime = Some System.DateTime.UtcNow

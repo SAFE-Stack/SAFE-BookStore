@@ -5,7 +5,9 @@ open Microsoft.WindowsAzure.Storage.Table
 open Microsoft.WindowsAzure.Storage.Blob
 open ServerCode.Domain
 
-let getBooksTable connectionString = async {
+type AzureConnection = AzureConnectionString of string
+
+let getBooksTable (AzureConnectionString connectionString) = async {
     let client = (CloudStorageAccount.Parse connectionString).CreateCloudTableClient()
     let table = client.GetTableReference "book"
 
@@ -19,19 +21,6 @@ let getBooksTable connectionString = async {
 
     do! createTableSafe()
     return table }
-
-let getWishListFromDB connectionString userName = async {
-    let! results = async {
-        let! table = getBooksTable connectionString
-        let query = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, userName)           
-        return! table.ExecuteQuerySegmentedAsync(TableQuery(FilterString = query), null) |> Async.AwaitTask }
-    return
-        { UserName = userName
-          Books =
-            [ for result in results ->
-                { Title = result.Properties.["Title"].StringValue
-                  Authors = string result.Properties.["Authors"].StringValue
-                  Link = string result.Properties.["Link"].StringValue } ] } }
 
 /// Save to the database
 let saveWishListToDB connectionString wishList = async {
@@ -51,32 +40,49 @@ let saveWishListToDB connectionString wishList = async {
     let! booksTable = getBooksTable connectionString
     return! booksTable.ExecuteBatchAsync operation |> Async.AwaitTask |> Async.Ignore }
 
-let resetWishList connectionString userName = async {
-    let! table = getBooksTable connectionString
-    do! table.DeleteIfExistsAsync() |> Async.AwaitTask |> Async.Ignore
-    do! saveWishListToDB connectionString (Defaults.defaultWishList userName) }
+let getWishListFromDB connectionString userName = async {
+    let rec loadResultsFromDb() = async {
+        let! table = getBooksTable connectionString
+        let query = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, userName)           
+        let! results = table.ExecuteQuerySegmentedAsync(TableQuery(FilterString = query), null) |> Async.AwaitTask
+        match results.Results |> Seq.toList with 
+        | [] ->
+            do! saveWishListToDB connectionString (Defaults.defaultWishList userName)
+            return! loadResultsFromDb()
+        | results -> return results }
+
+    let! results = loadResultsFromDb()
+    return
+        { UserName = userName
+          Books =
+            results
+            |> List.map(fun result ->
+                { Title = result.Properties.["Title"].StringValue
+                  Authors = string result.Properties.["Authors"].StringValue
+                  Link = string result.Properties.["Link"].StringValue }) } }
+
 
 module private StateManagement =
-    let getStateBlob connectionString name = async {
+    let getStateBlob (AzureConnectionString connectionString) name = async {
         let client = (CloudStorageAccount.Parse connectionString).CreateCloudBlobClient()
         let state = client.GetContainerReference "state"
         do! state.CreateIfNotExistsAsync() |> Async.AwaitTask |> Async.Ignore
         return state.GetBlockBlobReference name }
 
+    let resetTimeBlob connectionString = getStateBlob connectionString "resetTime"
     let storeResetTime connectionString = async {
-        let! blob = getStateBlob connectionString "resetTime"    
+        let! blob = resetTimeBlob connectionString
         do! blob.UploadTextAsync "" |> Async.AwaitTask |> Async.Ignore }
 
 let getLastResetTime connectionString =
     fun () ->
     async {
-        let! blob = StateManagement.getStateBlob connectionString "resetTime"
+        let! blob = StateManagement.resetTimeBlob connectionString
         do! blob.FetchAttributesAsync() |> Async.AwaitTask
         return blob.Properties.LastModified |> Option.ofNullable |> Option.map(fun d -> d.UtcDateTime) }
 
-let startTableHousekeeping (every:System.TimeSpan) connectionString userName = async {
-    while true do
-        do! resetWishList connectionString userName
-        do! StateManagement.storeResetTime connectionString
-        do! Async.Sleep (int every.TotalMilliseconds)
-    }
+/// Clears all Wishlists and records the time that it occurred at.
+let clearWishLists connectionString = async {
+    let! table = getBooksTable connectionString
+    do! table.DeleteIfExistsAsync() |> Async.AwaitTask |> Async.Ignore
+    do! StateManagement.storeResetTime connectionString }

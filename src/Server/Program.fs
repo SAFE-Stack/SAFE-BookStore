@@ -2,6 +2,7 @@
 module ServerCode.Program
 
 open System.IO
+open Microsoft.Azure.WebJobs
 
 let GetEnvVar var = 
     match System.Environment.GetEnvironmentVariable(var) with
