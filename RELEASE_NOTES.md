@@ -1,4 +1,4 @@
-### 0.8.0 - 2017-10-11
+### 0.8.1 - 2017-10-11
 * Azure storage auto-cleanup via Azure web job
 
 ### 0.7.0 - 2017-10-09
