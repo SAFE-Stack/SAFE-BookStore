@@ -5,7 +5,8 @@ open Microsoft.WindowsAzure.Storage.Table
 open Microsoft.WindowsAzure.Storage.Blob
 open ServerCode.Domain
 
-type AzureConnection = AzureConnection of string
+type AzureConnection = 
+    | AzureConnection of string
 
 let getBooksTable (AzureConnection connectionString) = async {
     let client = (CloudStorageAccount.Parse connectionString).CreateCloudTableClient()

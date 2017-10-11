@@ -13,7 +13,7 @@ open ServerCode.Storage.AzureTable
 
 type DatabaseType = 
     | FileSystem 
-    | Azure of ConnectionString : AzureConnection
+    | Azure of connectionString : AzureConnection
 
 // Start up background Azure web jobs.
 let startWebJobs azureConnection =    
