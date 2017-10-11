@@ -25,15 +25,15 @@ type Model =
 
 /// The different messages processed when interacting with the wish list
 type Msg =
-| LoadForUser of string
-| FetchedWishList of WishList
-| FetchedResetTime of DateTime
-| RemoveBook of Book
-| AddBook
-| TitleChanged of string
-| AuthorsChanged of string
-| LinkChanged of string
-| FetchError of exn
+    | LoadForUser of string
+    | FetchedWishList of WishList
+    | FetchedResetTime of DateTime
+    | RemoveBook of Book
+    | AddBook
+    | TitleChanged of string
+    | AuthorsChanged of string
+    | LinkChanged of string
+    | FetchError of exn
 
 /// Get the wish list from the server, used to populate the model
 let getWishList token =
@@ -56,7 +56,6 @@ let getResetTime token =
         let! details = Fable.PowerPack.Fetch.fetchAs<ServerCode.Domain.WishListResetDetails> url props
         return details.Time
     }
-
 
 let loadWishListCmd token = 
     Cmd.ofPromise getWishList token FetchedWishList FetchError

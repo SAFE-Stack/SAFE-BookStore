@@ -11,7 +11,9 @@ open Suave.RequestErrors
 open Microsoft.Azure.WebJobs
 open ServerCode.Storage.AzureTable
 
-type DatabaseType = FileSystem | Azure of ConnectionString:AzureConnection
+type DatabaseType = 
+    | FileSystem 
+    | Azure of ConnectionString : AzureConnection
 
 // Start up background Azure web jobs.
 let startWebJobs azureConnection =    

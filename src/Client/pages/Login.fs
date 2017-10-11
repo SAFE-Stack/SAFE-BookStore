@@ -13,8 +13,8 @@ open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
     
 type LoginState =
-| LoggedOut
-| LoggedIn of JWT
+    | LoggedOut
+    | LoggedIn of JWT
 
 type Model = { 
     State : LoginState
@@ -24,11 +24,11 @@ type Model = {
 
 /// The messages processed during login 
 type Msg =
-| GetTokenSuccess of string
-| SetUserName of string
-| SetPassword of string
-| AuthError of exn
-| ClickLogIn
+    | GetTokenSuccess of string
+    | SetUserName of string
+    | SetPassword of string
+    | AuthError of exn
+    | ClickLogIn
 
 let authUser (login:Login,apiUrl) =
     promise {

@@ -25,9 +25,9 @@ type Model = {
 }
 
 type Msg =
-| Logout
+    | Logout
 
-let init() = { User = Utils.load "user"; query = "" },Cmd.none
+let init() = { User = Utils.load "user"; query = "" }, Cmd.none
 
 let update (msg:Msg) model : Model*Cmd<Msg> = 
     match msg with
