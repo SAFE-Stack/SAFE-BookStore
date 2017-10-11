@@ -250,7 +250,7 @@ let newBookForm (model:Model) dispatch =
 let view (model:Model) (dispatch: Msg -> unit) = 
     div [] [
         h4 [] [
-            let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm")) |> Option.defaultValue ""
+            let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
             yield str (sprintf "Wishlist for %s%s" model.WishList.UserName time) ]
         table [ClassName "table table-striped table-hover"] [
             thead [] [
