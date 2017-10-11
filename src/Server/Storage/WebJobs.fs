@@ -6,7 +6,7 @@ open Microsoft.Azure.WebJobs.Host
 
 /// Contains all reactive web jobs as required by the application.
 type WishListWebJobs(connectionString) =
-    member __.ClearWishListsWebJob([<TimerTrigger "00:00:10">] timer:TimerInfo) =
+    member __.ClearWishListsWebJob([<TimerTrigger "00:10:00">] timer:TimerInfo) =
         AzureTable.clearWishLists connectionString |> Async.StartAsTask :> Task
 
 /// An extremely crude Job Activator, designed to create WishListWebJobs and nothing else.
