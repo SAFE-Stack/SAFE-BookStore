@@ -1,11 +1,11 @@
 module internal ReleaseNotes
 
-let Version = "0.8.2"
+let Version = "0.8.3"
 
 let IsPrerelease = false
 
 let Notes = """
-### 0.8.2 - 2017-10-11
+### 0.8.3 - 2017-10-11
 * Azure storage auto-cleanup via Azure web job
 
 ### 0.7.0 - 2017-10-09
