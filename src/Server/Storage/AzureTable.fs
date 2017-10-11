@@ -4,6 +4,7 @@ open Microsoft.WindowsAzure.Storage
 open Microsoft.WindowsAzure.Storage.Table
 open Microsoft.WindowsAzure.Storage.Blob
 open ServerCode.Domain
+open System
 
 type AzureConnection = 
     | AzureConnection of string
@@ -40,10 +41,10 @@ let getWishListFromDB connectionString userName = async {
 /// Save to the database
 let saveWishListToDB connectionString wishList = async {
     let buildEntity userName book =
-        let disallowed = [ "/"; "\\"; "#"; "?" ]
+        let isAllowed = string >> @"/\#?".Contains >> not
         let entity = DynamicTableEntity()
         entity.PartitionKey <- userName
-        entity.RowKey <- (book.Title, disallowed) ||> List.fold(fun title reserved -> title.Replace(reserved, ""))
+        entity.RowKey <- book.Title.ToCharArray() |> Array.filter isAllowed |> String
         entity
 
     let! existingWishList = getWishListFromDB connectionString wishList.UserName
@@ -85,12 +86,11 @@ module private StateManagement =
         let! blob = resetTimeBlob connectionString
         do! blob.UploadTextAsync "" |> Async.AwaitTask |> Async.Ignore }
 
-let getLastResetTime appStart connectionString =
-    fun () ->
+let getLastResetTime connectionString =
     async {
         let! blob = StateManagement.resetTimeBlob connectionString
         do! blob.FetchAttributesAsync() |> Async.AwaitTask
-        return blob.Properties.LastModified |> Option.ofNullable |> Option.map (fun d -> d.UtcDateTime) |> Option.defaultValue appStart }
+        return blob.Properties.LastModified |> Option.ofNullable |> Option.map (fun d -> d.UtcDateTime) }
 
 /// Clears all Wishlists and records the time that it occurred at.
 let clearWishLists connectionString = async {

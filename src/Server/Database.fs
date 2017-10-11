@@ -44,7 +44,10 @@ let getDatabase (logger:Logger) databaseType startupTime =
         { new IDatabaseFunctions with
             member __.LoadWishList key = Storage.AzureTable.getWishListFromDB connection key
             member __.SaveWishList wishList = Storage.AzureTable.saveWishListToDB connection wishList
-            member __.GetLastResetTime () = Storage.AzureTable.getLastResetTime startupTime connection ()}
+            member __.GetLastResetTime () = async {
+                let! resetTime = Storage.AzureTable.getLastResetTime connection
+                return resetTime |> Option.defaultValue startupTime } }
+
     | DatabaseType.FileSystem ->
         { new IDatabaseFunctions with
             member __.LoadWishList key = async { return Storage.FileSystem.getWishListFromDB key }
