@@ -10,13 +10,12 @@ open Fable.Import.Browser
 open Fable.PowerPack
 open Elmish.Browser.Navigation
 open Elmish.Browser.UrlParser
-open Messages
 module R = Fable.Helpers.React
 
 
 let viewLink page description =
   R.a [ Style [ Padding "0 20px" ]
-        Href (toHash page) ]
+        Href (Pages.toHash page) ]
       [ R.str description]
 
 let centerStyle direction =

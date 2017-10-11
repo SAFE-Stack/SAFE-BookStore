@@ -7,7 +7,6 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open ServerCode.Domain
 open Style
-open Messages
 open System
 open Fable.Core.JsInterop
 open Fable.PowerPack
@@ -21,6 +20,15 @@ type Model = {
     State : LoginState
     Login : Login
     ErrorMsg : string }
+
+
+/// The messages processed during login 
+type Msg =
+| GetTokenSuccess of string
+| SetUserName of string
+| SetPassword of string
+| AuthError of exn
+| ClickLogIn
 
 let authUser (login:Login,apiUrl) =
     promise {
@@ -51,7 +59,7 @@ let authUser (login:Login,apiUrl) =
 let authUserCmd login apiUrl = 
     Cmd.ofPromise authUser (login,apiUrl) GetTokenSuccess AuthError
 
-let init (user:UserData option) = 
+let init (user:Menu.UserData option) = 
     match user with
     | None ->
         { Login = { UserName = ""; Password = ""; PasswordId = Guid.NewGuid() }
@@ -62,29 +70,29 @@ let init (user:UserData option) =
           State = LoggedIn user.Token
           ErrorMsg = "" }, Cmd.none
 
-let update (msg:LoginMsg) model : Model*Cmd<LoginMsg> = 
+let update (msg:Msg) model : Model*Cmd<Msg> = 
     match msg with
-    | LoginMsg.GetTokenSuccess token ->
-        { model with State = LoggedIn token;  Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid()  } }, []
-    | LoginMsg.SetUserName name ->
-        { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, []
-    | LoginMsg.SetPassword pw ->
-        { model with Login = { model.Login with Password = pw }}, []
-    | LoginMsg.ClickLogIn ->
+    | GetTokenSuccess token ->
+        { model with State = LoggedIn token;  Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid()  } }, Cmd.none
+    | SetUserName name ->
+        { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
+    | SetPassword pw ->
+        { model with Login = { model.Login with Password = pw }}, Cmd.none
+    | ClickLogIn ->
         model, authUserCmd model.Login "/api/users/login"
-    | LoginMsg.AuthError exn ->
-        { model with ErrorMsg = string (exn.Message) }, []
+    | AuthError exn ->
+        { model with ErrorMsg = string (exn.Message) }, Cmd.none
 
 let [<Literal>] ENTER_KEY = 13.
 
-let view model (dispatch: AppMsg -> unit) = 
+let view model (dispatch: Msg -> unit) = 
     let showErrorClass = if String.IsNullOrEmpty model.ErrorMsg then "hidden" else ""
     let buttonActive = if String.IsNullOrEmpty model.Login.UserName || String.IsNullOrEmpty model.Login.Password then "btn-disabled" else "btn-primary"
 
     let onEnter msg dispatch =
         function 
         | (ev:React.KeyboardEvent) when ev.keyCode = ENTER_KEY ->
-            ev.preventDefault() 
+            ev.preventDefault()
             dispatch msg
         | _ -> ()
         |> OnKeyDown
@@ -113,7 +121,7 @@ let view model (dispatch: AppMsg -> unit) =
                     ClassName "form-control input-lg"
                     Placeholder "Username"
                     DefaultValue model.Login.UserName
-                    OnChange (fun ev -> dispatch (LoginMsg (SetUserName !!ev.target?value)))
+                    OnChange (fun ev -> dispatch (SetUserName !!ev.target?value))
                     AutoFocus true ]
           ]
 
@@ -128,12 +136,12 @@ let view model (dispatch: AppMsg -> unit) =
                         ClassName "form-control input-lg"
                         Placeholder "Password"
                         DefaultValue model.Login.Password
-                        OnChange (fun ev -> dispatch (LoginMsg (SetPassword !!ev.target?value)))
-                        onEnter (LoginMsg ClickLogIn) dispatch  ]
+                        OnChange (fun ev -> dispatch (SetPassword !!ev.target?value))
+                        onEnter ClickLogIn dispatch  ]
             ]    
            
           div [ ClassName "text-center" ] [
-              button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch (LoginMsg ClickLogIn)) ] [ str "Log In" ]
+              button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch ClickLogIn) ] [ str "Log In" ]
           ]                   
         ]    
  
