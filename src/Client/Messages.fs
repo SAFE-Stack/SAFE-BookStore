@@ -15,6 +15,7 @@ type LoginMsg =
 type WishListMsg =
   | LoadForUser of string
   | FetchedWishList of WishList
+  | FetchedResetTime of DateTime
   | RemoveBook of Book
   | AddBook
   | TitleChanged of string

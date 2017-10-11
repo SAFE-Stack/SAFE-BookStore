@@ -84,12 +84,12 @@ module private StateManagement =
         let! blob = resetTimeBlob connectionString
         do! blob.UploadTextAsync "" |> Async.AwaitTask |> Async.Ignore }
 
-let getLastResetTime connectionString =
+let getLastResetTime appStart connectionString =
     fun () ->
     async {
         let! blob = StateManagement.resetTimeBlob connectionString
         do! blob.FetchAttributesAsync() |> Async.AwaitTask
-        return blob.Properties.LastModified |> Option.ofNullable |> Option.map(fun d -> d.UtcDateTime) }
+        return blob.Properties.LastModified |> Option.ofNullable |> Option.map (fun d -> d.UtcDateTime) |> Option.defaultValue appStart }
 
 /// Clears all Wishlists and records the time that it occurred at.
 let clearWishLists connectionString = async {
