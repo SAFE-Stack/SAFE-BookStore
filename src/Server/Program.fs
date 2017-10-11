@@ -37,7 +37,7 @@ let main args =
             |> Option.map(fun arg ->
                 arg.Substring "AzureConnection=".Length
                 |> ServerCode.Storage.AzureTable.AzureConnection
-                |> Database.DatabaseType.Azure)
+                |> Database.DatabaseType.AzureStorage)
             |> Option.defaultValue Database.DatabaseType.FileSystem
 
         let port = getPortsOrDefault 8085us

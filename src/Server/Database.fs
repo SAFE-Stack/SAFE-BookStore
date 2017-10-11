@@ -15,7 +15,7 @@ open ServerCode
 [<RequireQualifiedAccess>]
 type DatabaseType = 
     | FileSystem 
-    | Azure of connectionString : AzureConnection
+    | AzureStorage of connectionString : AzureConnection
 
 /// Start up background Azure web jobs with the given Azure connection.
 let startWebJobs azureConnection =    
@@ -39,7 +39,7 @@ type IDatabaseFunctions =
 let getDatabase (logger:Logger) databaseType startupTime =
     logger.logSimple (Message.event LogLevel.Info (sprintf "Using database %O" databaseType))
     match databaseType with
-    | DatabaseType.Azure connection ->
+    | DatabaseType.AzureStorage connection ->
         startWebJobs connection
         { new IDatabaseFunctions with
             member __.LoadWishList key = Storage.AzureTable.getWishListFromDB connection key
