@@ -47,7 +47,8 @@ This topic will guide you through creating a new page. After every section you s
 #### Minimal setup
 Let's say we want to call our new page *Tomato*
 
-1. Adjust the `Messages.fs` and register our Tomato page as a page and define the corresponding hash value.
+1. Adjust the `src/Client/Pages.fs` and register our Tomato page as a page and define the corresponding hash value.
+
     ```fsharp
     type Page = 
         | Home 
@@ -61,24 +62,23 @@ Let's say we want to call our new page *Tomato*
         | Login -> "#login"
         | WishList -> "#wishlist"
         | Tomato -> "#tomato" // <- our page
-    ```
-2. Adjust the following functions inside the `App.fs`:
-
-    - pageParser function
-        ```fsharp
-        let pageParser : Parser<Page->_,_> =
-            oneOf
-                [ map Home (s "home")
-                map Page.Login (s "login")                   
-                map WishList (s "wishlist")
-                map Page.Tomato (s "tomato") ]
+    
+    let pageParser : Parser<Page->_,_> =
+        oneOf
+            [ map Home (s "home")
+            map Page.Login (s "login")
+            map WishList (s "wishlist")
+            map Page.Tomato (s "tomato") ] // <- our page
         ```
+
+2. Adjust the following functions inside the `src/Client/App.fs`:
+
     - urlUpdate function
         ```fsharp
         let urlUpdate (result:Page option) model =
             match result with
             // ...
-            | Some (Tomato as page) ->
+            | Some (Page.Tomato as page) ->
                 { model with Page = page }, []
         ```
     - viewPage function
@@ -91,9 +91,13 @@ Let's say we want to call our new page *Tomato*
             // ...
         ```
 3. Try it out by navigating to `http://localhost:8080/#tomato`
+
 You should see `Tomatoes taste good!`
+
 #### Adding the page to the menu
-Inside `src/Client/pages/Menu.fs`
+
+Inside `src/Client/pages/Menu.fs`:
+
 ```fsharp
 let view (model:Model) dispatch =
     div [ centerStyle "row" ] [ 
@@ -101,14 +105,17 @@ let view (model:Model) dispatch =
         yield viewLink Page.Tomato "Tomato"
         // ..
 ```
+
 #### Move code to separate Tomato.fs files
+
 1. Add a new .fs file to the pages folder: `src/Client/pages/Tomato.fs`. 
-Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
+Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above Apps.fs.
 
         <Compile Include="pages/Tomato.fs" />
         <Compile Include="App.fs" />
 
-2. Place following code in the `Tomato.fs`     
+2. Place following code in the `src/Client/pages/Tomato.fs`:
+
     ```fsharp
     module Client.Tomato
     open Style
@@ -116,7 +123,7 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
         [ words 60 "Tomatoes taste VERY good!"]
     ```
 
-3. remove old 'view' code from the  viewPage function in `App.fs` and replace it 
+3. remove old 'view' code from the  viewPage function in `src/Client/App.fs` and replace it 
     with:
     ```fsharp
     | Page.Tomato ->
@@ -124,7 +131,9 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
     ```
 
 #### Define a model for the page that holds the state
-1. Replace the code in `Tomato.fs` with
+
+1. Replace the code in `src/Client/pages/Tomato.fs` with
+
     ```fsharp
     module Client.Tomato
     open Style
@@ -142,6 +151,7 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
     ```
 
 2. Adjust the SubModel DU
+
     ```fsharp
     type SubModel =
         | NoSubModel
@@ -152,7 +162,7 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
 
 3. updateUrl should now call the init function and place the Tomato.Model as SubModel
     ```fsharp
-    | Some (Tomato as page) ->
+    | Some (Page.Tomato as page) ->
         let m = Tomato.init()
         { model with Page = page; SubModel = TomatoModel m }, []
     ```
@@ -166,31 +176,33 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
         | _ -> [ ]
     ```
 #### Make it interactive (update the state)
-1. add new message DU in `Messages.fs`
+
+1. add new message DU in `src/Client/pages/Tomato.fs`
     ```fsharp
-    type TomatoMsg =
+    type Msg =
         | ChangeColor of string
     ```
 
-2. add message to AppMsg DU in `Messages.fs`
+2. add message to Msg DU in `src/Client/App.fs`
     ```fsharp
-    type AppMsg = 
+    type Msg = 
     // ..
-        | TomatoMsg of TomatoMsg
+        | TomatoMsg of Tomato.Msg
     // ..
     ```
 
-3. adjust the match pattern in the update function of `App.fs`
+3. adjust the match pattern in the update function of `src/Client/App.fs`
     ```fsharp
-    | AppMsg.TomatoMsg msg, TomatoModel tm ->
+    | TomatoMsg msg, TomatoModel tm ->
         let color = match msg with ChangeColor c -> c
         let tm = { tm with Color = color }
         { model with SubModel = TomatoModel tm }, []
 
-    | AppMsg.TomatoMsg msg, _ -> model, [] // just to make the compiler happy
+    | TomatoMsg msg, _ -> model, [] // just to make the compiler happy
     ```
 
 4. Change the `Tomato.view` function to:
+
     ```fsharp
     let view model dispatch = 
         [ 
@@ -199,7 +211,7 @@ Add the `Tomato.fs` to your .fsproj file and move it above Apps.fs.
             br []
             button [
                 ClassName ("btn btn-primary") 
-                OnClick (fun _ -> dispatch (TomatoMsg (TomatoMsg.ChangeColor "green")))] 
+                OnClick (fun _ -> dispatch (ChangeColor "green"))] 
                 [ str "No, my tomatoes are green!" ]
         ]
     ```
