@@ -11,6 +11,7 @@ open System
 open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
+open ServerCode
     
 type LoginState =
     | LoggedOut
@@ -21,7 +22,6 @@ type Model = {
     Login : Login
     ErrorMsg : string }
 
-
 /// The messages processed during login 
 type Msg =
     | GetTokenSuccess of string
@@ -30,7 +30,7 @@ type Msg =
     | AuthError of exn
     | ClickLogIn
 
-let authUser (login:Login,apiUrl) =
+let authUser (login:Login) =
     promise {
         if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
         if String.IsNullOrEmpty login.Password then return! failwithf "You need to fill in a password." else
@@ -45,7 +45,7 @@ let authUser (login:Login,apiUrl) =
         
         try
 
-            let! response = Fetch.fetch apiUrl props
+            let! response = Fetch.fetch ServerUrls.Login props
 
             if not response.Ok then
                 return! failwithf "Error: %d" response.Status
@@ -56,8 +56,8 @@ let authUser (login:Login,apiUrl) =
         | _ -> return! failwithf "Could not authenticate user."
     }
 
-let authUserCmd login apiUrl = 
-    Cmd.ofPromise authUser (login,apiUrl) GetTokenSuccess AuthError
+let authUserCmd login = 
+    Cmd.ofPromise authUser login GetTokenSuccess AuthError
 
 let init (user:Menu.UserData option) = 
     match user with
@@ -79,7 +79,7 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
     | SetPassword pw ->
         { model with Login = { model.Login with Password = pw }}, Cmd.none
     | ClickLogIn ->
-        model, authUserCmd model.Login "/api/users/login"
+        model, authUserCmd model.Login
     | AuthError exn ->
         { model with ErrorMsg = string (exn.Message) }, Cmd.none
 

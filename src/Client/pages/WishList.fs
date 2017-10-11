@@ -11,6 +11,7 @@ open System
 open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
+open ServerCode
 
 type Model = 
   { WishList : WishList
@@ -38,7 +39,7 @@ type Msg =
 /// Get the wish list from the server, used to populate the model
 let getWishList token =
     promise {
-        let url = "api/wishlist/"
+        let url = ServerUrls.WishList
         let props = 
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
@@ -48,7 +49,7 @@ let getWishList token =
 
 let getResetTime token =
     promise {        
-        let url = "api/wishlist/resetTime"
+        let url = ServerUrls.ResetTime
         let props = 
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
@@ -66,7 +67,7 @@ let loadResetTimeCmd token =
 
 let postWishList (token,wishList) =
     promise {
-        let url = "api/wishlist/"
+        let url = ServerUrls.WishList
         let body = toJson wishList
         let props = 
             [ RequestProperties.Method HttpMethod.POST
