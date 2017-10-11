@@ -10,7 +10,7 @@
     <Compile Include="FableJson.fs" />
     <Compile Include="Auth.fs" />
     <Compile Include="WishList.fs" />
-    <Compile Include="Storage/DefaultWishList.fs" />
+    <Compile Include="Storage/Defaults.fs" />
     <Compile Include="Storage/FileSystem.fs" />
     <Compile Include="Storage/AzureTable.fs" />
     <Compile Include="Storage/WebJobs.fs" />
