@@ -18,6 +18,7 @@ type Model =
     Token : string
     NewBook : Book
     NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/fable-compiler/fable-suave-scaffold/issues/107#issuecomment-301312224
+    ResetTime : DateTime option
     TitleErrorText : string option
     AuthorsErrorText : string option
     LinkErrorText : string option
@@ -25,7 +26,7 @@ type Model =
 
 /// Get the wish list from the server, used to populate the model
 let getWishList token =
-    promise {        
+    promise {
         let url = "api/wishlist/"
         let props = 
             [ Fetch.requestHeaders [
@@ -34,11 +35,27 @@ let getWishList token =
         return! Fable.PowerPack.Fetch.fetchAs<WishList> url props
     }
 
+let getResetTime token =
+    promise {        
+        let url = "api/wishlist/resetTime"
+        let props = 
+            [ Fetch.requestHeaders [
+                HttpRequestHeaders.Authorization ("Bearer " + token) ]]
+
+        let! details = Fable.PowerPack.Fetch.fetchAs<ServerCode.Domain.WishListResetDetails> url props
+        return details.Time
+    }
+
+
 let loadWishListCmd token = 
     Cmd.ofPromise getWishList token FetchedWishList FetchError
 
+let loadResetTimeCmd token = 
+    Cmd.ofPromise getResetTime token FetchedResetTime FetchError
+
+
 let postWishList (token,wishList) =
-    promise {        
+    promise {
         let url = "api/wishlist/"
         let body = toJson wishList
         let props = 
@@ -61,9 +78,12 @@ let init (user:UserData) =
       NewBookId = Guid.NewGuid()
       TitleErrorText = None
       AuthorsErrorText = None
+      ResetTime = None
       LinkErrorText = None
-      ErrorMsg = None }, loadWishListCmd user.Token
-
+      ErrorMsg = None }, 
+        Cmd.batch [
+            loadWishListCmd user.Token
+            loadResetTimeCmd user.Token ]
 
 let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> = 
     match msg with
@@ -73,6 +93,9 @@ let update (msg:WishListMsg) model : Model*Cmd<WishListMsg> =
     | FetchedWishList wishList ->
         let wishList = { wishList with Books = wishList.Books |> List.sortBy (fun b -> b.Title) }
         { model with WishList = wishList }, Cmd.none
+
+    | FetchedResetTime datetime ->
+        { model with ResetTime = Some datetime }, Cmd.none
 
     | TitleChanged title ->
         let newBook = { model.NewBook with Title = title }
@@ -216,7 +239,9 @@ let newBookForm (model:Model) dispatch =
 
 let view (model:Model) (dispatch: AppMsg -> unit) = 
     div [] [
-        h4 [] [str (sprintf "Wishlist for %s" model.WishList.UserName) ]
+        h4 [] [
+            let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm")) |> Option.defaultValue ""
+            yield str (sprintf "Wishlist for %s%s" model.WishList.UserName time) ]
         table [ClassName "table table-striped table-hover"] [
             thead [] [
                     tr [] [

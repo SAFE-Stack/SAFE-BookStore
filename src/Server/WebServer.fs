@@ -28,6 +28,7 @@ let startWebJobs azureConnection =
 
 // Fire up our web server!
 let start databaseType clientPath port =
+    let startupTime = System.DateTime.UtcNow
     if not (Directory.Exists clientPath) then
         failwithf "Client-HomePath '%s' doesn't exist." clientPath
 
@@ -43,9 +44,8 @@ let start databaseType clientPath port =
         match databaseType with
         | Azure connection ->
             startWebJobs connection
-            Storage.AzureTable.getWishListFromDB connection, Storage.AzureTable.saveWishListToDB connection, Storage.AzureTable.getLastResetTime connection
+            Storage.AzureTable.getWishListFromDB connection, Storage.AzureTable.saveWishListToDB connection, Storage.AzureTable.getLastResetTime startupTime connection
         | FileSystem ->
-            let startupTime = Some System.DateTime.UtcNow
             Storage.FileSystem.getWishListFromDB >> async.Return, Storage.FileSystem.saveWishListToDB >> async.Return, fun _ -> async.Return startupTime
 
     let app =
