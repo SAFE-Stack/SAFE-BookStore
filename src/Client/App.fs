@@ -19,19 +19,19 @@ JsInterop.importSideEffects "babel-polyfill"
 // Model
 
 type SubModel =
-| NoSubModel
-| LoginModel of Login.Model
-| WishListModel of WishList.Model
+    | NoSubModel
+    | LoginModel of Login.Model
+    | WishListModel of WishList.Model
 
 type Msg = 
-| LoggedIn
-| LoggedOut
-| StorageFailure of exn
-| OpenLogIn
-| MenuMsg of Menu.Msg
-| LoginMsg of Login.Msg
-| WishListMsg of WishList.Msg
-| Logout
+    | LoggedIn
+    | LoggedOut
+    | StorageFailure of exn
+    | OpenLogIn
+    | MenuMsg of Menu.Msg
+    | LoginMsg of Login.Msg
+    | WishListMsg of WishList.Msg
+    | Logout
 
 type Model =
   { Page : Page
