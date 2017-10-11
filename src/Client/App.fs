@@ -60,8 +60,7 @@ let urlUpdate (result:Page option) model =
 
     | Some (Page.Home as page) ->
         { model with
-            Page = page
-            Menu = { model.Menu with query = "" } }, Cmd.none
+            Page = page }, Cmd.none
 
 let init result =
     let menu,menuCmd = Menu.init()
