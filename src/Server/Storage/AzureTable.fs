@@ -22,45 +22,55 @@ let getBooksTable (AzureConnection connectionString) = async {
     do! createTableSafe()
     return table }
 
-/// Save to the database
-let saveWishListToDB connectionString wishList = async {
-    let operation = TableBatchOperation()
-
-    wishList.Books
-    |> List.map(fun book ->
-        let entity = DynamicTableEntity()
-        entity.PartitionKey <- wishList.UserName
-        entity.RowKey <- (wishList.UserName + book.Title).GetHashCode() |> string
-        entity.Properties.["Title"] <- EntityProperty.GeneratePropertyForString book.Title
-        entity.Properties.["Authors"] <- EntityProperty.GeneratePropertyForString book.Authors
-        entity.Properties.["Link"] <- EntityProperty.GeneratePropertyForString book.Link
-        entity)
-    |> List.iter (TableOperation.InsertOrReplace >> operation.Add)
-    
-    let! booksTable = getBooksTable connectionString
-    return! booksTable.ExecuteBatchAsync operation |> Async.AwaitTask |> Async.Ignore }
-
+/// Load from the database
 let getWishListFromDB connectionString userName = async {
-    let rec loadResultsFromDb() = async {
+    let! results = async {
         let! table = getBooksTable connectionString
         let query = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, userName)           
-        let! results = table.ExecuteQuerySegmentedAsync(TableQuery(FilterString = query), null) |> Async.AwaitTask
-        match results.Results |> Seq.toList with 
-        | [] ->
-            do! saveWishListToDB connectionString (Defaults.defaultWishList userName)
-            return! loadResultsFromDb()
-        | results -> return results }
-
-    let! results = loadResultsFromDb()
+        return! table.ExecuteQuerySegmentedAsync(TableQuery(FilterString = query), null) |> Async.AwaitTask }
     return
         { UserName = userName
           Books =
-            results
-            |> List.map(fun result ->
+            [ for result in results -> 
                 { Title = result.Properties.["Title"].StringValue
                   Authors = string result.Properties.["Authors"].StringValue
-                  Link = string result.Properties.["Link"].StringValue }) } }
+                  Link = string result.Properties.["Link"].StringValue } ] } }
 
+/// Save to the database
+let saveWishListToDB connectionString wishList = async {
+    let buildEntity userName book =
+        let disallowed = [ "/"; "\\"; "#"; "?" ]
+        let entity = DynamicTableEntity()
+        entity.PartitionKey <- userName
+        entity.RowKey <- (book.Title, disallowed) ||> List.fold(fun title reserved -> title.Replace(reserved, ""))
+        entity
+
+    let! existingWishList = getWishListFromDB connectionString wishList.UserName
+    let batch =
+        let operation = TableBatchOperation()
+        let existingBooks = existingWishList.Books |> Set
+        let newBooks = wishList.Books |> Set
+
+        // Delete obsolete books
+        (existingBooks - newBooks)
+        |> Set.iter(fun book ->
+            let entity = book |> buildEntity wishList.UserName
+            entity.ETag <- "*"
+            entity |> TableOperation.Delete |> operation.Add)
+
+        // Insert new / update existing books
+        (newBooks - existingBooks)
+        |> Set.iter(fun book ->
+            let entity = buildEntity wishList.UserName book
+            entity.Properties.["Title"] <- EntityProperty.GeneratePropertyForString book.Title
+            entity.Properties.["Authors"] <- EntityProperty.GeneratePropertyForString book.Authors
+            entity.Properties.["Link"] <- EntityProperty.GeneratePropertyForString book.Link
+            entity |> TableOperation.InsertOrReplace |> operation.Add)
+
+        operation
+    
+    let! booksTable = getBooksTable connectionString
+    return! booksTable.ExecuteBatchAsync batch |> Async.AwaitTask |> Async.Ignore }
 
 module private StateManagement =
     let getStateBlob (AzureConnection connectionString) name = async {
@@ -85,4 +95,5 @@ let getLastResetTime connectionString =
 let clearWishLists connectionString = async {
     let! table = getBooksTable connectionString
     do! table.DeleteIfExistsAsync() |> Async.AwaitTask |> Async.Ignore
+    do! Defaults.defaultWishList "test" |> saveWishListToDB connectionString
     do! StateManagement.storeResetTime connectionString }
