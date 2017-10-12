@@ -3,12 +3,10 @@ module Client.App
 open Fable.Core
 open Fable.Core.JsInterop
 
-open Fable.Core
 open Fable.Import
 open Elmish
 open Elmish.React
 open Fable.Import.Browser
-open Fable.PowerPack
 open Elmish.Browser.Navigation
 open Elmish.HMR
 open Client.Pages
@@ -103,7 +101,7 @@ let update msg model =
                 SubModel = LoginModel m
                 Menu = { model.Menu with User = None } }, cmd
 
-    | LoginMsg msg, _ -> model, Cmd.none
+    | LoginMsg _, _ -> model, Cmd.none
 
     | MenuMsg msg, _ ->
         match msg with
@@ -116,13 +114,13 @@ let update msg model =
         { model with
             SubModel = WishListModel m }, cmd
 
-    | WishListMsg msg, _ -> model, Cmd.none
+    | WishListMsg _, _ -> model, Cmd.none
 
     | LoggedIn, _ ->
         let nextPage = Page.WishList
         let m,cmd = urlUpdate (Some nextPage) model
         match m.Menu.User with
-        | Some user ->
+        | Some _ ->
             m, Cmd.batch [cmd; Navigation.newUrl (toHash nextPage) ]
         | None ->
             m, Cmd.ofMsg Logout

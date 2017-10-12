@@ -1,13 +1,7 @@
 /// Functions for managing the database.
 module ServerCode.Database
 
-open System.IO
-open Suave
 open Suave.Logging
-open System.Net
-open Suave.Filters
-open Suave.Operators
-open Suave.RequestErrors
 open Microsoft.Azure.WebJobs
 open ServerCode.Storage.AzureTable
 open ServerCode
