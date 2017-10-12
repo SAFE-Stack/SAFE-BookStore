@@ -66,10 +66,10 @@ Let's say we want to call our new page *Tomato*
     let pageParser : Parser<Page->_,_> =
         oneOf
             [ map Home (s "home")
-            map Page.Login (s "login")
-            map WishList (s "wishlist")
-            map Page.Tomato (s "tomato") ] // <- our page
-        ```
+              map Page.Login (s "login")
+              map WishList (s "wishlist")
+              map Page.Tomato (s "tomato") ] // <- our page
+    ```
 
 2. Adjust the following functions inside the `src/Client/App.fs`:
 
