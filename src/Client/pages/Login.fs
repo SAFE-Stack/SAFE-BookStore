@@ -6,7 +6,6 @@ open Elmish
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open ServerCode.Domain
-open Style
 open System
 open Fable.Core.JsInterop
 open Fable.PowerPack

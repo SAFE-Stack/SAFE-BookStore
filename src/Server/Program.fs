@@ -1,24 +1,25 @@
 ﻿/// Server program entry point module.
 module ServerCode.Program
 
+open System
 open System.IO
-open Microsoft.Azure.WebJobs
 
 let GetEnvVar var = 
-    match System.Environment.GetEnvironmentVariable(var) with
+    match Environment.GetEnvironmentVariable(var) with
     | null -> None
     | value -> Some value
 
 let getPortsOrDefault defaultVal = 
-    match System.Environment.GetEnvironmentVariable("SUAVE_FABLE_PORT") with
+    match Environment.GetEnvironmentVariable("SUAVE_FABLE_PORT") with
     | null -> defaultVal
     | value -> value |> uint16
 
 [<EntryPoint>]
 let main args =
     try
+        let args = Array.toList args
         let clientPath =
-            match args |> Array.toList with
+            match args with
             | clientPath:: _  when Directory.Exists clientPath -> clientPath
             | _ -> 
                 // did we start from server folder?
@@ -33,7 +34,7 @@ let main args =
 
         let database =
             args
-            |> Array.tryFind(fun arg -> arg.StartsWith "AzureConnection=")
+            |> List.tryFind(fun arg -> arg.StartsWith "AzureConnection=")
             |> Option.map(fun arg ->
                 arg.Substring "AzureConnection=".Length
                 |> ServerCode.Storage.AzureTable.AzureConnection
@@ -45,8 +46,8 @@ let main args =
         0
     with
     | exn ->
-        let color = System.Console.ForegroundColor
-        System.Console.ForegroundColor <- System.ConsoleColor.Red
-        System.Console.WriteLine(exn.Message)
-        System.Console.ForegroundColor <- color
+        let color = Console.ForegroundColor
+        Console.ForegroundColor <- System.ConsoleColor.Red
+        Console.WriteLine(exn.Message)
+        Console.ForegroundColor <- color
         1

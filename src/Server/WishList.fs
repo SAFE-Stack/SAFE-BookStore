@@ -1,20 +1,12 @@
 /// Wish list API web parts and data access functions.
 module ServerCode.WishList
 
-open System.IO
 open Suave
 open Suave.Logging
-open System.Net
-open Suave.Filters
-open Suave.Operators
 open Suave.RequestErrors
-open System
 open Suave.ServerErrors
 open ServerCode.Domain
-open Suave.Logging
 open Suave.Logging.Message
-open Microsoft.WindowsAzure.Storage
-open Microsoft.WindowsAzure.Storage.Table
 
 let logger = Log.create "FableSample"
 
