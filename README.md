@@ -220,7 +220,7 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above Apps
 
 The server side of the application can be debugged using Ionide.
 
-1. Run `build.cmd` \ `build.sh` to restore verything properly
+1. Run `build.cmd` \ `build.sh` to restore everything properly
 2. Open repo in VSCode
 3. Open debug panel, choose `Debug` from combobox, and press green arrow (or `F5`). This will build server and start it with debugger attached. It will also start Fable watch mode for the Client side and open the browser.
 
