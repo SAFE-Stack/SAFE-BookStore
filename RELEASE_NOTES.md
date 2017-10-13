@@ -1,3 +1,6 @@
+### 0.8.4 - 2017-10-13
+* Test docker container before we ship
+
 ### 0.8.3 - 2017-10-11
 * Azure storage auto-cleanup via Azure web job
 
