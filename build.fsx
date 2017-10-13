@@ -267,7 +267,7 @@ Target "PrepareRelease" (fun _ ->
     if result <> 0 then failwith "Docker tag failed"
 )
 
-Target "Publish" (fun _ ->
+Target "BundleClient" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- dotnetExePath
@@ -290,11 +290,39 @@ Target "Publish" (fun _ ->
 )
 
 Target "CreateDockerImage" (fun _ ->
+    if String.IsNullOrEmpty dockerUser then
+        failwithf "docker username not given."
+    if String.IsNullOrEmpty dockerImageName then
+        failwithf "docker image Name not given."
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
+            info.UseShellExecute <- false
             info.Arguments <- sprintf "build -t %s/%s ." dockerUser dockerImageName) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker build failed"
+)
+
+Target "TestDockerImage" (fun _ ->
+    ActivateFinalTarget "KillProcess"
+    let testImageName = "test"
+
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- "docker"
+            info.Arguments <- sprintf "run -d -p 127.0.0.1:8085:8085 --rm --name %s -it %s/%s" testImageName dockerUser dockerImageName) TimeSpan.MaxValue
+    if result <> 0 then failwith "Docker run failed"
+
+    System.Threading.Thread.Sleep 5000 |> ignore  // give server some time to start
+
+    !! clientTestExecutables
+    |> Expecto (fun p -> { p with Parallel = false } )
+    |> ignore
+
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- "docker"
+            info.Arguments <- sprintf "stop %s" testImageName) TimeSpan.MaxValue
+    if result <> 0 then failwith "Docker stop failed"
 )
 
 Target "Deploy" (fun _ ->
@@ -328,9 +356,10 @@ Target "All" DoNothing
   ==> "BuildClientTests"
   ==> "RenameDrivers"
   ==> "RunClientTests"
+  ==> "BundleClient"
   ==> "All"
-  ==> "Publish"
   ==> "CreateDockerImage"
+  ==> "TestDockerImage"
   ==> "PrepareRelease"
   ==> "Deploy"
 
