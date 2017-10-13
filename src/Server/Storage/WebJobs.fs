@@ -14,3 +14,19 @@ type WishListWebJobsActivator(connectionString) =
     interface IJobActivator with
         member __.CreateInstance<'T>() =
             WishListWebJobs connectionString |> box :?> 'T
+
+/// Start up background Azure web jobs with the given Azure connection.
+module WebJobs =
+    open ServerCode.Storage
+    open ServerCode.Storage.AzureTable
+    let startWebJobs azureConnection =    
+        let host =
+            let config =
+                let (AzureConnection connectionString) = azureConnection
+                JobHostConfiguration(
+                    DashboardConnectionString = connectionString,
+                    StorageConnectionString = connectionString)
+            config.UseTimers()
+            config.JobActivator <- WishListWebJobsActivator azureConnection
+            new JobHost(config)
+        host.Start()

@@ -11,19 +11,6 @@ type DatabaseType =
     | FileSystem 
     | AzureStorage of connectionString : AzureConnection
 
-/// Start up background Azure web jobs with the given Azure connection.
-let startWebJobs azureConnection =    
-    let host =
-        let config =
-            let (AzureConnection connectionString) = azureConnection
-            JobHostConfiguration(
-                DashboardConnectionString = connectionString,
-                StorageConnectionString = connectionString)
-        config.UseTimers()
-        config.JobActivator <- ServerCode.Storage.WishListWebJobsActivator azureConnection
-        new JobHost(config)
-    host.Start()
-
 type IDatabaseFunctions =
     abstract member LoadWishList : string -> Async<Domain.WishList>
     abstract member SaveWishList : Domain.WishList -> Async<unit>
@@ -34,7 +21,7 @@ let getDatabase (logger:Logger) databaseType startupTime =
     logger.logSimple (Message.event LogLevel.Info (sprintf "Using database %O" databaseType))
     match databaseType with
     | DatabaseType.AzureStorage connection ->
-        startWebJobs connection
+        Storage.WebJobs.startWebJobs connection
         { new IDatabaseFunctions with
             member __.LoadWishList key = Storage.AzureTable.getWishListFromDB connection key
             member __.SaveWishList wishList = Storage.AzureTable.saveWishListToDB connection wishList
