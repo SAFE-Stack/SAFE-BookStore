@@ -140,10 +140,10 @@ let viewPage model dispatch =
         Home.view ()
 
     | LoginModel m ->
-        [ div [] [ Login.view m (LoginMsg >> dispatch) ] ]
+        [ Login.view m (LoginMsg >> dispatch) ]
 
     | WishListModel m ->
-        [ div [] [ WishList.view m (WishListMsg >> dispatch) ] ]
+        [ WishList.view m (WishListMsg >> dispatch) ]
 
 /// Constructs the view for the application given the model.
 let view model dispatch =
