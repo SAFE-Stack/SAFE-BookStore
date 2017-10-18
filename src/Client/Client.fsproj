@@ -5,11 +5,12 @@
   <ItemGroup>
     <Compile Include="ReleaseNotes.fs" />
     <Compile Include="../Server/Shared/Domain.fs" />
-    <Compile Include="Pages.fs" />
     <Compile Include="../Server/Shared/ServerUrls.fs" />
+    <Compile Include="Pages.fs" />
     <Compile Include="Style.fs" />
     <Compile Include="Utils.fs" />
     <Compile Include="pages/Menu.fs" />
+    <Compile Include="pages/Home.fs" />
     <Compile Include="pages/WishList.fs" />
     <Compile Include="pages/Login.fs" />
     <Compile Include="App.fs" />
