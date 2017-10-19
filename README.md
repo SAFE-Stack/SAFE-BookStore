@@ -17,7 +17,7 @@ You can see it running on Microsoft Azure at http://fable-suave.azurewebsites.ne
 - [.NET Framework 4.6.2](https://support.microsoft.com/en-us/help/3151800/the--net-framework-4-6-2-offline-installer-for-windows) on Windows
 - [node.js](https://nodejs.org/) - JavaScript runtime
 - [yarn](https://yarnpkg.com/) - Package manager for npm modules
-- [dotnet SDK 2.0.0](https://www.microsoft.com/net/core) is required but it will be downloaded automatically by the build script if not installed (see below).
+- [dotnet SDK 2.0.2](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.2-sdk-download.md) is required but it will be downloaded automatically by the build script if not installed (see below).
 - Other tools like [Paket](https://fsprojects.github.io/Paket/) or [FAKE](https://fake.build/) will also be installed by the build script.
 - For [deployment](#deployment) you need to have [docker](https://www.docker.com/) installed.
 
