@@ -8,9 +8,12 @@
     <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
+  <PropertyGroup>
+    <DotNetHost Condition="'$(DotNetHost)' == ''">dotnet</DotNetHost>
+  </PropertyGroup>
   <Target Name="TestAndRun">
-    <Exec Command="dotnet run" WorkingDirectory=".\" />
-    <Exec Command="dotnet run" WorkingDirectory="..\..\src\Server\" />
+    <Exec Command="$(DotNetHost) run" WorkingDirectory=".\" />
+    <Exec Command="$(DotNetHost) run" WorkingDirectory="..\..\src\Server\" />
   </Target>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Server\Server.fsproj" />

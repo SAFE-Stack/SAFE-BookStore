@@ -216,7 +216,7 @@ Target "Run" (fun _ ->
             ExecProcess (fun info ->
                 info.FileName <- dotnetExePath
                 info.WorkingDirectory <- serverTestsPath
-                info.Arguments <- "watch msbuild /t:TestAndRun") TimeSpan.MaxValue
+                info.Arguments <- sprintf "watch msbuild /t:TestAndRun /p:DotNetHost=%s" dotnetExePath) TimeSpan.MaxValue
 
         if result <> 0 then failwith "Website shut down." }
 
