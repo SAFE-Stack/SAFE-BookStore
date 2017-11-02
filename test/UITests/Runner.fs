@@ -29,7 +29,7 @@ let startBrowser() =
     if isWindows then
         canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"packages/uitests/PhantomJS/tools/phantomjs")
     else
-        canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"node_modules/phantomjs/bin")
+        canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"node_modules/phantomjs-prebuilt/bin")
 
 
     start phantomJS //Use 'start chrome' if you want to see your tests in the browser

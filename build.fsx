@@ -161,7 +161,7 @@ Target "BuildClient" (fun _ ->
 
 Target "RenameDrivers" (fun _ ->
     if not isWindows then
-        run npmTool "install phantomjs" ""
+        run npmTool "install phantomjs-prebuilt" ""
     try
         if isMacOS && not <| File.Exists "test/UITests/bin/Debug/net461/chromedriver" then
             Fake.FileHelper.Rename "test/UITests/bin/Debug/net461/chromedriver" "test/UITests/bin/Debug/net461/chromedriver_macOS"
