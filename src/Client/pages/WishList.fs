@@ -117,10 +117,6 @@ let init (user:Menu.UserData) =
             loadWishListCmd user.Token
             loadResetTimeCmd user.Token ]
 
-let updateTextField (msg:FormFieldMsg<_>) (model:FormField<_>) : FormField<_>*Cmd<FormField<_>> =
-    match msg with
-    | FormFieldValueChanged v -> { model with Value = v }, Cmd.none
-
 let validatedBook wishList title authors link =
     let book = { Title = title.Value; Authors = authors.Value; Link = link.Value }
     match Validation.verifyBook book, Validation.verifyBookisNotADuplicate wishList book with
