@@ -140,7 +140,7 @@ Target "BuildClientTests" (fun _ ->
 )
 
 Target "BuildServerTests" (fun _ ->
-    runDotnet serverPath "build"
+    runDotnet serverTestsPath "build"
 )
 
 Target "InstallClient" (fun _ ->
