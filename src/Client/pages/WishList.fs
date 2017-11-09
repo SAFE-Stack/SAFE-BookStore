@@ -185,7 +185,7 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
             NewBookForm = m }, Cmd.map NewBookMsg cmd
 
 let viewTextField name placeholder id (field: TextField) dispatch =
-    div [ClassName ("form-group has-feedback" + if String.IsNullOrEmpty field.Value then "" else "has-success")] [
+    div [ClassName ("form-group has-feedback" + if String.IsNullOrEmpty field.Value then "" else " has-success")] [
         yield div [ClassName "input-group"] [
              yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon-pencil"] [] ]
              yield input [
