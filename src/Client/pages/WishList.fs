@@ -174,7 +174,7 @@ let newBookForm (model:Model) dispatch =
         div [ClassName "container"] [
             div [ClassName "row"] [
                 div [ClassName "col-md-8"] [
-                    div [ClassName ("form-group has-feedback" + titleStatus)] [
+                    div [ClassName ("form-group has-feedback " + titleStatus)] [
                         yield div [ClassName "input-group"] [
                              yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon-pencil"] [] ]
                              yield input [
@@ -194,7 +194,7 @@ let newBookForm (model:Model) dispatch =
                         | Some e -> yield p [ClassName "text-danger"][str e]
                         | _ -> ()
                     ]
-                    div [ClassName ("form-group has-feedback" + authorStatus) ] [
+                    div [ClassName ("form-group has-feedback " + authorStatus) ] [
                          yield div [ClassName "input-group"][
                              yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon-user"] [] ]
                              yield input [ 
@@ -214,7 +214,7 @@ let newBookForm (model:Model) dispatch =
                          | Some e -> yield p [ClassName "text-danger"][str e]
                          | _ -> ()
                     ]
-                    div [ClassName ("form-group has-feedback" + linkStatus)] [
+                    div [ClassName ("form-group has-feedback " + linkStatus)] [
                          yield div [ClassName "input-group"] [
                              yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon glyphicon-pencil"] [] ]
                              yield input [ 
