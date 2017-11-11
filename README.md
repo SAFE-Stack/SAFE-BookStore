@@ -101,7 +101,7 @@ You should see `Tomatoes taste good!`
 
 #### Adding the page to the menu
 
-Inside `src/Client/pages/Menu.fs`:
+Inside `src/Client/views/Menu.fs`:
 
 ```fsharp
 let view (model:Model) dispatch =
