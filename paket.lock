@@ -1,15 +1,15 @@
 STORAGE: NONE
 NUGET
   remote: https://www.nuget.org/api/v2
-    dotnet-fable (1.3.1) - clitool: true
+    dotnet-fable (1.3.2) - clitool: true
       Dotnet.ProjInfo (>= 0.7.4) - restriction: >= netcoreapp2.0
-      Fable.Compiler (>= 1.3.1) - restriction: >= netcoreapp2.0
+      Fable.Compiler (>= 1.3.2) - restriction: >= netcoreapp2.0
       Fable.Core (>= 1.3.1) - restriction: >= netcoreapp2.0
       FSharp.Core (>= 4.2.3) - restriction: >= netcoreapp2.0
       Microsoft.NETCore.App (>= 2.0) - restriction: >= netcoreapp2.0
     Dotnet.ProjInfo (0.9) - restriction: >= netcoreapp2.0
       FSharp.Core (>= 4.2.3) - restriction: && (< net45) (>= netstandard2.0)
-    Fable.Compiler (1.3.1) - restriction: >= netcoreapp2.0
+    Fable.Compiler (1.3.2) - restriction: >= netcoreapp2.0
       Fable.Core (>= 1.3.1) - restriction: >= netstandard1.6
       Fable.FCS (>= 16.0.3) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
@@ -20,7 +20,7 @@ NUGET
     Fable.Core (1.3.1)
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
       NETStandard.Library (>= 1.6.1) - restriction: >= netstandard1.6
-    Fable.Elmish (1.0) - restriction: >= netstandard1.6
+    Fable.Elmish (1.0.1) - restriction: >= netstandard1.6
       Fable.Core (>= 1.2.4) - restriction: >= netstandard1.6
       Fable.PowerPack (>= 1.3) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
@@ -29,8 +29,8 @@ NUGET
       Fable.Elmish (>= 1.0) - restriction: >= netstandard1.6
       Fable.Import.Browser (>= 0.1) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
-    Fable.Elmish.Debugger (1.0)
-      Fable.Core (>= 1.2.4) - restriction: >= netstandard1.6
+    Fable.Elmish.Debugger (1.0.1)
+      Fable.Core (>= 1.3.1) - restriction: >= netstandard1.6
       Fable.Elmish (>= 1.0) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
     Fable.Elmish.HMR (1.0)
