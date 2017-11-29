@@ -12,6 +12,7 @@ open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open ServerCode
+open Client.ClientTypes
 
 type Model = 
   { WishList : WishList
@@ -82,7 +83,7 @@ let postWishList (token,wishList) =
 let postWishListCmd (token,wishList) = 
     Cmd.ofPromise postWishList (token,wishList) FetchedWishList FetchError
 
-let init (user:Menu.UserData) = 
+let init (user:UserData) = 
     { WishList = WishList.New user.UserName
       Token = user.Token
       NewBook = Book.empty

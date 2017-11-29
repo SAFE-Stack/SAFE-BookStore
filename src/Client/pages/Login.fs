@@ -11,6 +11,7 @@ open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open ServerCode
+open Client.ClientTypes
     
 type LoginState =
     | LoggedOut
@@ -58,7 +59,7 @@ let authUser (login:Login) =
 let authUserCmd login = 
     Cmd.ofPromise authUser login GetTokenSuccess AuthError
 
-let init (user:Menu.UserData option) = 
+let init (user:UserData option) = 
     match user with
     | None ->
         { Login = { UserName = ""; Password = ""; PasswordId = Guid.NewGuid() }
