@@ -12,6 +12,7 @@ open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open ServerCode
 open Client.ClientTypes
+open Client.Style
     
 type LoginState =
     | LoggedOut
@@ -83,20 +84,10 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
     | AuthError exn ->
         { model with ErrorMsg = string (exn.Message) }, Cmd.none
 
-let [<Literal>] ENTER_KEY = 13.
-
 let view model (dispatch: Msg -> unit) = 
     let showErrorClass = if String.IsNullOrEmpty model.ErrorMsg then "hidden" else ""
     let buttonActive = if String.IsNullOrEmpty model.Login.UserName || String.IsNullOrEmpty model.Login.Password then "btn-disabled" else "btn-primary"
-
-    let onEnter msg dispatch =
-        function 
-        | (ev:React.KeyboardEvent) when ev.keyCode = ENTER_KEY ->
-            ev.preventDefault()
-            dispatch msg
-        | _ -> ()
-        |> OnKeyDown
-        
+    
     match model.State with
     | LoggedIn _ ->
         div [Id "greeting"] [
