@@ -91,9 +91,9 @@ let view model (dispatch: Msg -> unit) =
     let buttonActive = if String.IsNullOrEmpty model.Login.UserName || String.IsNullOrEmpty model.Login.Password then "btn-disabled" else "btn-primary"
     
     match model.State with
-    | LoggedIn _ ->
+    | LoggedIn user ->
         div [Id "greeting"] [
-          h3 [ ClassName "text-center" ] [ str (sprintf "Hi %s!" model.Login.UserName) ]
+          h3 [ ClassName "text-center" ] [ str (sprintf "Hi %s!" user.UserName) ]
         ]
 
     | LoggedOut ->
