@@ -25,7 +25,7 @@ type Model = {
 
 /// The messages processed during login 
 type Msg =
-    | GetTokenSuccess of UserData
+    | LoginSuccess of UserData
     | SetUserName of string
     | SetPassword of string
     | AuthError of exn
@@ -60,7 +60,7 @@ let authUser (login:Login) =
     }
 
 let authUserCmd login = 
-    Cmd.ofPromise authUser login GetTokenSuccess AuthError
+    Cmd.ofPromise authUser login LoginSuccess AuthError
 
 let init (user:UserData option) = 
     match user with
@@ -75,8 +75,8 @@ let init (user:UserData option) =
 
 let update (msg:Msg) model : Model*Cmd<Msg> = 
     match msg with
-    | GetTokenSuccess user ->
-        { model with State = LoggedIn user;  Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid()  } }, Cmd.none
+    | LoginSuccess user ->
+        { model with State = LoggedIn user; Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
     | SetUserName name ->
         { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
     | SetPassword pw ->
