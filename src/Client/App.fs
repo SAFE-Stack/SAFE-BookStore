@@ -26,7 +26,6 @@ type Msg =
     | LoggedIn
     | LoggedOut
     | StorageFailure of exn
-    | OpenLogIn
     | LoginMsg of Login.Msg
     | WishListMsg of WishList.Msg
     | Logout of unit
@@ -66,10 +65,6 @@ let init result =
 
 let update msg model =
     match msg, model.PageModel with
-    | OpenLogIn, _ ->
-        let m,cmd = Login.init None
-        { model with PageModel = LoginModel m }, Cmd.batch [cmd; Navigation.newUrl (toHash Page.Login) ]
-
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
         model, []
