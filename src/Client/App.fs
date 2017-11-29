@@ -93,12 +93,7 @@ let update msg model =
 
     | LoggedIn newUser, _ ->
         let nextPage = Page.WishList
-        let m,cmd = urlUpdate (Some nextPage) { model with User = Some newUser }
-        match m.User with
-        | Some _ ->
-            m, Cmd.batch [cmd; Navigation.newUrl (toHash nextPage) ]
-        | None ->
-            m, Cmd.ofMsg (Logout ())
+        { model with User = Some newUser }, Navigation.newUrl (toHash nextPage)
 
     | LoggedOut, _ ->
         { model with
