@@ -16,7 +16,7 @@ open Client.Style
     
 type LoginState =
     | LoggedOut
-    | LoggedIn of JWT
+    | LoggedIn of UserData
 
 type Model = { 
     State : LoginState
@@ -25,7 +25,7 @@ type Model = {
 
 /// The messages processed during login 
 type Msg =
-    | GetTokenSuccess of string
+    | GetTokenSuccess of UserData
     | SetUserName of string
     | SetPassword of string
     | AuthError of exn
@@ -52,7 +52,9 @@ let authUser (login:Login) =
                 return! failwithf "Error: %d" response.Status
             else    
                 let! data = response.text() 
-                return data
+                return
+                    { UserName = login.UserName
+                      Token = data }
         with
         | _ -> return! failwithf "Could not authenticate user."
     }
@@ -68,13 +70,13 @@ let init (user:UserData option) =
           ErrorMsg = "" }, Cmd.none
     | Some user ->
         { Login = { UserName = user.UserName; Password = ""; PasswordId = Guid.NewGuid() }
-          State = LoggedIn user.Token
+          State = LoggedIn user
           ErrorMsg = "" }, Cmd.none
 
 let update (msg:Msg) model : Model*Cmd<Msg> = 
     match msg with
-    | GetTokenSuccess token ->
-        { model with State = LoggedIn token;  Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid()  } }, Cmd.none
+    | GetTokenSuccess user ->
+        { model with State = LoggedIn user;  Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid()  } }, Cmd.none
     | SetUserName name ->
         { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
     | SetPassword pw ->

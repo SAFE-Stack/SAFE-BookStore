@@ -78,8 +78,7 @@ let update msg model =
         let m,cmd = Login.update msg m
         let cmd = Cmd.map LoginMsg cmd
         match m.State with
-        | Login.LoginState.LoggedIn token ->
-            let newUser : UserData = { UserName = m.Login.UserName; Token = token }
+        | Login.LoginState.LoggedIn newUser ->
             let cmd =
                 if model.User = Some newUser then cmd else
                 Cmd.batch [cmd
