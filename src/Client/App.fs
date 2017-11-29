@@ -23,7 +23,7 @@ type PageModel =
     | WishListModel of WishList.Model
 
 type Msg =
-    | LoggedIn
+    | LoggedIn of UserData
     | LoggedOut
     | StorageFailure of exn
     | LoginMsg of Login.Msg
@@ -67,25 +67,19 @@ let update msg model =
     match msg, model.PageModel with
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
-        model, []
+        model, Cmd.none
 
     | LoginMsg msg, LoginModel m ->
-        let m,cmd = Login.update msg m
-        let cmd = Cmd.map LoginMsg cmd
-        match m.State with
-        | Login.LoginState.LoggedIn newUser ->
-            let cmd =
-                if model.User = Some newUser then cmd else
-                Cmd.batch [cmd
-                           Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn) StorageFailure ]
+        let onSuccess newUser =
+            if model.User = Some newUser then
+                Cmd.ofMsg (LoggedIn newUser)
+            else
+                Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn newUser) StorageFailure
 
-            { model with
-                User = Some newUser
-                PageModel = LoginModel m }, cmd
-        | _ ->
-            { model with
-                User = None
-                PageModel = LoginModel m }, cmd
+        let m,cmd,successCmd = Login.update onSuccess msg m
+        let cmd = Cmd.map LoginMsg cmd
+        { model with
+            PageModel = LoginModel m }, Cmd.batch [cmd; successCmd]
 
     | LoginMsg _, _ -> model, Cmd.none
 
@@ -97,9 +91,9 @@ let update msg model =
 
     | WishListMsg _, _ -> model, Cmd.none
 
-    | LoggedIn, _ ->
+    | LoggedIn newUser, _ ->
         let nextPage = Page.WishList
-        let m,cmd = urlUpdate (Some nextPage) model
+        let m,cmd = urlUpdate (Some nextPage) { model with User = Some newUser }
         match m.User with
         | Some _ ->
             m, Cmd.batch [cmd; Navigation.newUrl (toHash nextPage) ]
