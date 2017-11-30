@@ -76,16 +76,14 @@ let update msg model =
             else
                 Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn newUser) StorageFailure
 
-        let m,cmd,successCmd = Login.update onSuccess msg m
-        let cmd = Cmd.map LoginMsg cmd
+        let m,cmd = Login.update LoginMsg onSuccess msg m
         { model with
-            PageModel = LoginModel m }, Cmd.batch [cmd; successCmd]
+            PageModel = LoginModel m }, cmd
 
     | LoginMsg _, _ -> model, Cmd.none
 
     | WishListMsg msg, WishListModel m ->
-        let m,cmd = WishList.update msg m
-        let cmd = Cmd.map WishListMsg cmd
+        let m,cmd = WishList.update WishListMsg msg m
         { model with
             PageModel = WishListModel m }, cmd
 

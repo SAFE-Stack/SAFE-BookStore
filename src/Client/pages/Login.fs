@@ -73,18 +73,18 @@ let init (user:UserData option) =
           State = LoggedIn user
           ErrorMsg = "" }, Cmd.none
 
-let update onSuccess (msg:Msg) model : Model*Cmd<Msg>*Cmd<'a> = 
+let update f onSuccess (msg:Msg) model : Model*Cmd<'a> = 
     match msg with
     | LoginSuccess user ->
-        { model with State = LoggedIn user; Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none, onSuccess user
+        { model with State = LoggedIn user; Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid() } }, onSuccess user
     | SetUserName name ->
-        { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none, Cmd.none
+        { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
     | SetPassword pw ->
-        { model with Login = { model.Login with Password = pw }}, Cmd.none, Cmd.none
+        { model with Login = { model.Login with Password = pw }}, Cmd.none
     | ClickLogIn ->
-        model, authUserCmd model.Login, Cmd.none
+        model, authUserCmd model.Login |> Cmd.map f
     | AuthError exn ->
-        { model with ErrorMsg = string (exn.Message) }, Cmd.none, Cmd.none
+        { model with ErrorMsg = string (exn.Message) }, Cmd.none
 
 let view model (dispatch: Msg -> unit) = 
     let showErrorClass = if String.IsNullOrEmpty model.ErrorMsg then "hidden" else ""
