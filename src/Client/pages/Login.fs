@@ -11,10 +11,12 @@ open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open ServerCode
+open Client.ClientTypes
+open Client.Style
     
 type LoginState =
     | LoggedOut
-    | LoggedIn of JWT
+    | LoggedIn of UserData
 
 type Model = { 
     State : LoginState
@@ -23,7 +25,7 @@ type Model = {
 
 /// The messages processed during login 
 type Msg =
-    | GetTokenSuccess of string
+    | LoginSuccess of UserData
     | SetUserName of string
     | SetPassword of string
     | AuthError of exn
@@ -50,15 +52,17 @@ let authUser (login:Login) =
                 return! failwithf "Error: %d" response.Status
             else    
                 let! data = response.text() 
-                return data
+                return
+                    { UserName = login.UserName
+                      Token = data }
         with
         | _ -> return! failwithf "Could not authenticate user."
     }
 
 let authUserCmd login = 
-    Cmd.ofPromise authUser login GetTokenSuccess AuthError
+    Cmd.ofPromise authUser login LoginSuccess AuthError
 
-let init (user:Menu.UserData option) = 
+let init (user:UserData option) = 
     match user with
     | None ->
         { Login = { UserName = ""; Password = ""; PasswordId = Guid.NewGuid() }
@@ -66,40 +70,30 @@ let init (user:Menu.UserData option) =
           ErrorMsg = "" }, Cmd.none
     | Some user ->
         { Login = { UserName = user.UserName; Password = ""; PasswordId = Guid.NewGuid() }
-          State = LoggedIn user.Token
+          State = LoggedIn user
           ErrorMsg = "" }, Cmd.none
 
-let update (msg:Msg) model : Model*Cmd<Msg> = 
+let update f onSuccess (msg:Msg) model : Model*Cmd<'a> = 
     match msg with
-    | GetTokenSuccess token ->
-        { model with State = LoggedIn token;  Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid()  } }, Cmd.none
+    | LoginSuccess user ->
+        { model with State = LoggedIn user; Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid() } }, onSuccess user
     | SetUserName name ->
         { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
     | SetPassword pw ->
         { model with Login = { model.Login with Password = pw }}, Cmd.none
     | ClickLogIn ->
-        model, authUserCmd model.Login
+        model, authUserCmd model.Login |> Cmd.map f
     | AuthError exn ->
         { model with ErrorMsg = string (exn.Message) }, Cmd.none
-
-let [<Literal>] ENTER_KEY = 13.
 
 let view model (dispatch: Msg -> unit) = 
     let showErrorClass = if String.IsNullOrEmpty model.ErrorMsg then "hidden" else ""
     let buttonActive = if String.IsNullOrEmpty model.Login.UserName || String.IsNullOrEmpty model.Login.Password then "btn-disabled" else "btn-primary"
-
-    let onEnter msg dispatch =
-        function 
-        | (ev:React.KeyboardEvent) when ev.keyCode = ENTER_KEY ->
-            ev.preventDefault()
-            dispatch msg
-        | _ -> ()
-        |> OnKeyDown
-        
+    
     match model.State with
-    | LoggedIn _ ->
+    | LoggedIn user ->
         div [Id "greeting"] [
-          h3 [ ClassName "text-center" ] [ str (sprintf "Hi %s!" model.Login.UserName) ]
+          h3 [ ClassName "text-center" ] [ str (sprintf "Hi %s!" user.UserName) ]
         ]
 
     | LoggedOut ->

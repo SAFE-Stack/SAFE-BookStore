@@ -29,10 +29,13 @@ let buttonLink cssClass onClick elements =
           OnTouchStart (fun _ -> onClick())
           Style [ !!("cursor", "pointer") ] ] elements
 
+let [<Literal>] ENTER_KEY = 13.
+
 let onEnter msg dispatch =
-    OnKeyDown (fun (ev:React.KeyboardEvent) ->
-        match ev with 
-        | _ when ev.keyCode = 13. ->
-            ev.preventDefault()
-            dispatch msg
-        | _ -> ())
+    function 
+    | (ev:React.KeyboardEvent) when ev.keyCode = ENTER_KEY ->
+        ev.preventDefault()
+        dispatch msg
+    | _ -> ()
+    |> OnKeyDown
+   

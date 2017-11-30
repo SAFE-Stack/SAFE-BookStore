@@ -10,6 +10,7 @@ open Fable.Import.Browser
 open Elmish.Browser.Navigation
 open Elmish.HMR
 open Client.Pages
+open Client.ClientTypes
 
 JsInterop.importSideEffects "whatwg-fetch"
 JsInterop.importSideEffects "babel-polyfill"
@@ -22,17 +23,15 @@ type PageModel =
     | WishListModel of WishList.Model
 
 type Msg =
-    | LoggedIn
+    | LoggedIn of UserData
     | LoggedOut
     | StorageFailure of exn
-    | OpenLogIn
-    | MenuMsg of Menu.Msg
     | LoginMsg of Login.Msg
     | WishListMsg of WishList.Msg
-    | Logout
+    | Logout of unit
 
 type Model =
-  { Menu : Menu.Model
+  { User : UserData option
     PageModel : PageModel }
 
 let urlUpdate (result:Page option) model =
@@ -42,90 +41,75 @@ let urlUpdate (result:Page option) model =
         ( model, Navigation.modifyUrl (toHash Page.Home) )
 
     | Some Page.Login ->
-        let m,cmd = Login.init model.Menu.User
+        let m,cmd = Login.init model.User
         { model with PageModel = LoginModel m }, Cmd.map LoginMsg cmd
 
     | Some Page.WishList ->
-        match model.Menu.User with
+        match model.User with
         | Some user ->
             let m,cmd = WishList.init user
             { model with PageModel = WishListModel m }, Cmd.map WishListMsg cmd
         | None ->
-            model, Cmd.ofMsg Logout
+            model, Cmd.ofMsg (Logout ())
 
     | Some Page.Home ->
         { model with PageModel = HomePageModel }, Cmd.none
 
+let loadUser () =
+    Utils.load "user"
+
+let saveUserCmd user =
+    Cmd.ofFunc (Utils.save "user") user (fun _ -> LoggedIn user) StorageFailure
+
+let deleteUserCmd =
+    Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
+
 let init result =
-    let menu,menuCmd = Menu.init()
-    let m =
-        { Menu = menu
+    let user = loadUser ()
+    let model =
+        { User = user
           PageModel = HomePageModel }
 
-    let m,cmd = urlUpdate result m
-    m,Cmd.batch[cmd; menuCmd]
+    urlUpdate result model
 
 let update msg model =
     match msg, model.PageModel with
-    | OpenLogIn, _ ->
-        let m,cmd = Login.init None
-        { model with PageModel = LoginModel m }, Cmd.batch [cmd; Navigation.newUrl (toHash Page.Login) ]
-
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
-        model, []
+        model, Cmd.none
 
     | LoginMsg msg, LoginModel m ->
-        let m,cmd = Login.update msg m
-        let cmd = Cmd.map LoginMsg cmd
-        match m.State with
-        | Login.LoginState.LoggedIn token ->
-            let newUser : Menu.UserData = { UserName = m.Login.UserName; Token = token }
-            let cmd =
-                if model.Menu.User = Some newUser then cmd else
-                Cmd.batch [cmd
-                           Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn) StorageFailure ]
+        let onSuccess newUser =
+            if model.User = Some newUser then
+                Cmd.ofMsg (LoggedIn newUser)
+            else
+                saveUserCmd newUser
 
-            { model with
-                PageModel = LoginModel m
-                Menu = { model.Menu with User = Some newUser }}, cmd
-        | _ ->
-            { model with
-                PageModel = LoginModel m
-                Menu = { model.Menu with User = None } }, cmd
+        let m,cmd = Login.update LoginMsg onSuccess msg m
+        { model with
+            PageModel = LoginModel m }, cmd
 
     | LoginMsg _, _ -> model, Cmd.none
 
-    | MenuMsg msg, _ ->
-        match msg with
-        | Menu.Msg.Logout ->
-            model, Cmd.ofMsg Logout
-
     | WishListMsg msg, WishListModel m ->
-        let m,cmd = WishList.update msg m
-        let cmd = Cmd.map WishListMsg cmd
+        let m,cmd = WishList.update WishListMsg msg m
         { model with
             PageModel = WishListModel m }, cmd
 
     | WishListMsg _, _ -> model, Cmd.none
 
-    | LoggedIn, _ ->
+    | LoggedIn newUser, _ ->
         let nextPage = Page.WishList
-        let m,cmd = urlUpdate (Some nextPage) model
-        match m.Menu.User with
-        | Some _ ->
-            m, Cmd.batch [cmd; Navigation.newUrl (toHash nextPage) ]
-        | None ->
-            m, Cmd.ofMsg Logout
+        { model with User = Some newUser }, Navigation.newUrl (toHash nextPage)
 
     | LoggedOut, _ ->
         { model with
-            PageModel = HomePageModel
-            Menu = { model.Menu with User = None } },
+            User = None
+            PageModel = HomePageModel },
         Navigation.newUrl (toHash Page.Home)
 
-    | Logout, _ ->
-        model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
+    | Logout(), _ ->
+        model, deleteUserCmd
 
 // VIEW
 
@@ -148,7 +132,7 @@ let viewPage model dispatch =
 /// Constructs the view for the application given the model.
 let view model dispatch =
   div []
-    [ Menu.view model.Menu (MenuMsg >> dispatch)
+    [ Menu.view (Logout >> dispatch) model.User
       hr []
       div [ centerStyle "column" ] (viewPage model dispatch)
     ]
