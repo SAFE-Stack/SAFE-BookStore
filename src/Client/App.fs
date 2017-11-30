@@ -55,8 +55,17 @@ let urlUpdate (result:Page option) model =
     | Some Page.Home ->
         { model with PageModel = HomePageModel }, Cmd.none
 
+let loadUser () =
+    Utils.load "user"
+
+let saveUserCmd user =
+    Cmd.ofFunc (Utils.save "user") user (fun _ -> LoggedIn user) StorageFailure
+
+let deleteUserCmd =
+    Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
+
 let init result =
-    let user = Utils.load "user"
+    let user = loadUser ()
     let model =
         { User = user
           PageModel = HomePageModel }
@@ -74,7 +83,7 @@ let update msg model =
             if model.User = Some newUser then
                 Cmd.ofMsg (LoggedIn newUser)
             else
-                Cmd.ofFunc (Utils.save "user") newUser (fun _ -> LoggedIn newUser) StorageFailure
+                saveUserCmd newUser
 
         let m,cmd = Login.update LoginMsg onSuccess msg m
         { model with
@@ -100,7 +109,7 @@ let update msg model =
         Navigation.newUrl (toHash Page.Home)
 
     | Logout(), _ ->
-        model, Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
+        model, deleteUserCmd
 
 // VIEW
 
