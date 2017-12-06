@@ -4,8 +4,8 @@ open Fable.Helpers.React.Props
 open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
+open Fable.PowerPack
 module R = Fable.Helpers.React
-
 
 let viewLink page description =
   R.a [ Style [ Padding "0 20px" ]
@@ -23,19 +23,16 @@ let centerStyle direction =
 let words size message =
     R.span [ Style [ !!("fontSize", size |> sprintf "%dpx") ] ] [ R.str message ]
 
-let buttonLink cssClass onClick elements = 
+let buttonLink cssClass onClick elements =
     R.a [ ClassName cssClass
           OnClick (fun _ -> onClick())
           OnTouchStart (fun _ -> onClick())
           Style [ !!("cursor", "pointer") ] ] elements
 
-let [<Literal>] ENTER_KEY = 13.
-
 let onEnter msg dispatch =
-    function 
-    | (ev:React.KeyboardEvent) when ev.keyCode = ENTER_KEY ->
+    function
+    | (ev:React.KeyboardEvent) when ev.keyCode = Keyboard.Codes.enter ->
         ev.preventDefault()
         dispatch msg
     | _ -> ()
     |> OnKeyDown
-   
