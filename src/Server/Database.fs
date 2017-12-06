@@ -1,7 +1,6 @@
 /// Functions for managing the database.
 module ServerCode.Database
 
-open Suave.Logging
 open Microsoft.Azure.WebJobs
 open ServerCode.Storage.AzureTable
 open ServerCode
@@ -17,8 +16,7 @@ type IDatabaseFunctions =
     abstract member GetLastResetTime : unit -> Async<System.DateTime>
 
 /// Start the web server and connect to database
-let getDatabase (logger:Logger) databaseType startupTime =
-    logger.logSimple (Message.event LogLevel.Info (sprintf "Using database %O" databaseType))
+let getDatabase databaseType startupTime =
     match databaseType with
     | DatabaseType.AzureStorage connection ->
         Storage.WebJobs.startWebJobs connection

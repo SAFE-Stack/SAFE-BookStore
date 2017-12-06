@@ -23,7 +23,9 @@ let start databaseType clientPath port =
             homeFolder = Some clientPath
             bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") port] }
 
-    let db = Database.getDatabase logger databaseType startupTime
+    let db =
+        logger.logSimple (Message.event LogLevel.Info (sprintf "Using database %O" databaseType))
+        Database.getDatabase databaseType startupTime
 
     let app =
         choose [
