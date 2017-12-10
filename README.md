@@ -1,7 +1,7 @@
 # SAFE - A web stack designed for developer happiness
 
-The following document describes the [SAFE-Stack](https://safe-stack.github.io/) sample project. 
-SAFE is a technology stack that brings together several technologies into a single, coherent stack for typesafe, 
+The following document describes the [SAFE-Stack](https://safe-stack.github.io/) sample project.
+SAFE is a technology stack that brings together several technologies into a single, coherent stack for typesafe,
 flexible end-to-end web-enabled applications that are written entirely in F#.
 
 ![SAFE-Stack](src/Client/images/safe_logo.png "SAFE-Stack")
@@ -50,8 +50,8 @@ Let's say we want to call our new page *Tomato*
 1. Adjust the `src/Client/Pages.fs` and register our Tomato page as a page and define the corresponding hash value.
 
     ```fsharp
-    type Page = 
-        | Home 
+    type Page =
+        | Home
         | Login
         | WishList
         | Tomato // <- our page
@@ -62,7 +62,7 @@ Let's say we want to call our new page *Tomato*
         | Login -> "#login"
         | WishList -> "#wishlist"
         | Tomato -> "#tomato" // <- our page
-    
+
     let pageParser : Parser<Page->_,_> =
         oneOf
             [ map Home (s "home")
@@ -105,7 +105,7 @@ Inside `src/Client/views/Menu.fs`:
 
 ```fsharp
 let view (model:Model) dispatch =
-    div [ centerStyle "row" ] [ 
+    div [ centerStyle "row" ] [
         //...
         yield viewLink Page.Tomato "Tomato"
         //...
@@ -113,7 +113,7 @@ let view (model:Model) dispatch =
 
 #### Move code to separate Tomato.fs files
 
-1. Add a new .fs file to the pages folder: `src/Client/pages/Tomato.fs`. 
+1. Add a new .fs file to the pages folder: `src/Client/pages/Tomato.fs`.
 Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App.fs`.
 
         <Compile Include="pages/Tomato.fs" />
@@ -124,11 +124,11 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
     ```fsharp
     module Client.Tomato
     open Style
-    let view() = 
+    let view() =
         [ words 60 "Tomatoes taste VERY good!"]
     ```
 
-3. Remove old 'view' code from the `viewPage` function in `src/Client/App.fs` and replace it 
+3. Remove old 'view' code from the `viewPage` function in `src/Client/App.fs` and replace it
     with:
     ```fsharp
     | TomatoModel ->
@@ -146,10 +146,10 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
     type Model = {
         Color:string
     }
-    let init() = 
+    let init() =
         { Color = "red" }
-    let view model = 
-        [ 
+    let view model =
+        [
             words 60 "Tomatoes taste VERY good!"
             words 20 (sprintf "The color of a tomato is %s"  model.Color)
         ]
@@ -188,7 +188,7 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
 
 2. Add a message to the `Msg` DU in `src/Client/App.fs`
     ```fsharp
-    type Msg = 
+    type Msg =
         //...
         | TomatoMsg of Tomato.Msg
     ```
@@ -206,14 +206,14 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
 4. Change the `Tomato.view` function to:
 
     ```fsharp
-    let view model dispatch = 
-        [ 
+    let view model dispatch =
+        [
             words 60 "Tomatoes taste VERY good!"
             words 20 (sprintf "The color of a tomato is %s" model.Color)
             br []
             button [
-                ClassName ("btn btn-primary") 
-                OnClick (fun _ -> dispatch (ChangeColor "green"))] 
+                ClassName ("btn btn-primary")
+                OnClick (fun _ -> dispatch (ChangeColor "green"))]
                 [ str "No, my tomatoes are green!" ]
         ]
     ```
@@ -233,8 +233,8 @@ The server side of the application can be debugged using Ionide.
 2. Open repo in VSCode
 3. Open debug panel, choose `Debug` from combobox, and press green arrow (or `F5`). This will build server and start it with debugger attached. It will also start Fable watch mode for the Client side and open the browser.
 
-Client side debugging is supported by any modern browser with any developer tools. 
-Fable even provides source maps which will let you put breakpoints in F# source code (in browser dev tools). 
+Client side debugging is supported by any modern browser with any developer tools.
+Fable even provides source maps which will let you put breakpoints in F# source code (in browser dev tools).
 Also, we additionally suggest installing React-devtools (for better UI debugging) and Redux-devtools (time travel debugger).
 
 ## Technology stack
@@ -336,17 +336,27 @@ Don't worry the file is already in `.gitignore` so your password will not be com
 
 #### Initial docker push
 
-In order to release a container you need to create a new entry in [RELEASE_NOTES.md] and run `release.cmd`. 
+In order to release a container you need to create a new entry in [RELEASE_NOTES.md] and run `release.cmd`.
 This will build the server and client, run all test, put the app into a docker container and push it to your docker hub repro.
 
 #### Azure Portal
 
-Go to the [Azure Portal](https://portal.azure.com) and create a new "Web App for Containers". 
+Go to the [Azure Portal](https://portal.azure.com) and create a new "Web App for Containers".
 Configure the Web App to point to the docker repo and select `latest` channel of the container.
 
 ![Docker setup](https://user-images.githubusercontent.com/57396/31279587-e06001d0-aaa9-11e7-9b4b-a3e8278a6419.png)
 
 Also look for the "WebHook Url" on the portal, copy that url and set it as new trigger in your Docker Hub repo.
+
+*Note that entering a Startup File is not necessary.*
+
+The `Dockerfile` used to create the docker image exposes port 8085 for the Suave server application. This port needs to be mapped to port 80 within the Azure App Service for the application to receive http traffic.
+
+Presently this can only be done using the Azure CLI. You can do this easily in Azure Cloud Shell (accessible from the Azure Portal in the top menu bar) using the following command:
+
+`az webapp config appsettings set --resource-group <resource group name> --name <web app name> --settings WEBSITES_PORT=8085`
+
+The above command is effectively the same as running `docker run -p 80:8085 <image name>`.
 
 Now you should be able to reach the website on your `.azurewebsites.net` url.
 
