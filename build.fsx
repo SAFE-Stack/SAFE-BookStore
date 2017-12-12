@@ -3,7 +3,6 @@
 // --------------------------------------------------------------------------------------
 
 #r @"packages/build/FAKE/tools/FakeLib.dll"
-#r @"packages/build/Newtonsoft.Json/lib/net45/Newtonsoft.Json.dll"
 
 open Fake
 open Fake.Git
@@ -28,19 +27,7 @@ let serverPath = "./src/Server/" |> FullName
 let serverTestsPath = "./test/ServerTests" |> FullName
 let clientTestsPath = "./test/UITests" |> FullName
 
-open Newtonsoft.Json
-open Newtonsoft.Json.Linq
-
-let dotnetcliVersion : string = 
-    try
-        let content = File.ReadAllText "global.json"
-        let json = Newtonsoft.Json.Linq.JObject.Parse content
-        let sdk = json.Item("sdk") :?> JObject
-        let version = sdk.Property("version").Value.ToString()
-        version
-    with
-    | exn -> failwithf "Could not parse global.json: %s" exn.Message
-
+let dotnetcliVersion = DotNetCli.GetDotNetSDKVersionFromGlobalJson()
 let mutable dotnetExePath = "dotnet"
 
 let deployDir = "./deploy"
@@ -57,7 +44,6 @@ let dockerImageName = getBuildParam "DockerImageName"
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
 // --------------------------------------------------------------------------------------
-
 
 let run' timeout cmd args dir =
     if execProcess (fun info ->
