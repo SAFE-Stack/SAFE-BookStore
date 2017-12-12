@@ -14,7 +14,7 @@ open Fake.Testing.Expecto
 
 let project = "Suave/Fable sample"
 
-let summary = "Suave and Fable sample"
+let summary = "SAFE sample"
 
 let description = summary
 
