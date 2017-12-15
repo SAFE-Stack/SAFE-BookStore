@@ -1,7 +1,6 @@
 module Client.App
 
 open Fable.Core
-open Fable.Core.JsInterop
 
 open Fable.Import
 open Elmish
@@ -10,7 +9,7 @@ open Fable.Import.Browser
 open Elmish.Browser.Navigation
 open Elmish.HMR
 open Client.Pages
-open Client.ClientTypes
+open ServerCode.Domain
 
 JsInterop.importSideEffects "whatwg-fetch"
 JsInterop.importSideEffects "babel-polyfill"

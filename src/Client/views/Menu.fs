@@ -1,10 +1,9 @@
 module Client.Menu
 
-open Elmish
 open Fable.Helpers.React
 open Client.Style
 open Client.Pages
-open Client.ClientTypes
+open ServerCode.Domain
 
 type Model = UserData option
 

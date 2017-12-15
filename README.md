@@ -32,7 +32,7 @@ Start the development mode with:
 
 This command will call the target "Run" in **build.fsx**. This will start in parallel:
 - **dotnet fable webpack-dev-server** in [src/Client](src/Client) (note: the Webpack development server will serve files on http://localhost:8080)
-- **dotnet watch msbuild /t:TestAndRun** in [test/serverTests](src/ServerTests) to run unit tests and then server (note: Suave is launched on port **8085**)
+- **dotnet watch msbuild /t:TestAndRun** in [test/serverTests](src/ServerTests) to run unit tests and then server (note: Giraffe is launched on port **8085**)
 
 You can now edit files in `src/Server` or `src/Client` and recompile + browser refresh will be triggered automatically.
 For the case of the client ["Hot Module Replacement"](https://webpack.js.org/concepts/hot-module-replacement/) is supported, which means your app state is kept over recompile.
@@ -243,9 +243,9 @@ Also, we additionally suggest installing React-devtools (for better UI debugging
 
 ## Technology stack
 
-### Suave on .NET Core
+### Giraffe on .NET Core
 
-The webserver backend is running as a [Suave.io](https://suave.io/) service on .NET Core.
+The webserver backend is running as a [Giraffe](https://github.com/giraffe-fsharp/Giraffe) service on ASP.NET Core.
 
 In development mode the server is automatically restarted whenever a file in `src/Server` is saved.
 
@@ -354,7 +354,7 @@ Also look for the "WebHook Url" on the portal, copy that url and set it as new t
 
 *Note that entering a Startup File is not necessary.*
 
-The `Dockerfile` used to create the docker image exposes port 8085 for the Suave server application. This port needs to be mapped to port 80 within the Azure App Service for the application to receive http traffic.
+The `Dockerfile` used to create the docker image exposes port 8085 for the Giraffe server application. This port needs to be mapped to port 80 within the Azure App Service for the application to receive http traffic.
 
 Presently this can only be done using the Azure CLI. You can do this easily in Azure Cloud Shell (accessible from the Azure Portal in the top menu bar) using the following command:
 

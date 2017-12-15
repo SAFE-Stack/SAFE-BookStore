@@ -1,11 +1,12 @@
 FSharp.Core
-Suave
-Microsoft.Extensions.Logging.Console
 System.Net.NetworkInformation
-Newtonsoft.Json
 Fable.JsonConverter
 jose-jwt
-WindowsAzure.Storage
 Microsoft.DotNet.Watcher.Tools
 Microsoft.Azure.WebJobs
 Microsoft.Azure.WebJobs.Extensions
+Giraffe
+Microsoft.AspNetCore.StaticFiles
+Microsoft.AspNetCore
+Microsoft.AspNetCore.WebSockets
+Microsoft.AspNetCore.WebSockets.Server

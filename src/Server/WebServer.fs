@@ -1,47 +1,28 @@
 /// Functions for managing the Suave web server.
 module ServerCode.WebServer
 
-open System.IO
-open Suave
-open Suave.Logging
-open System.Net
-open Suave.Filters
-open Suave.Operators
-open Suave.RequestErrors
 open ServerCode
+open Giraffe
+open Giraffe.TokenRouter
+open RequestErrors
 
 /// Start the web server and connect to database
-let start databaseType clientPath port =
+let webApp databaseType root =
     let startupTime = System.DateTime.UtcNow
-    if not (Directory.Exists clientPath) then
-        failwithf "Client-HomePath '%s' doesn't exist." clientPath
+    
+    let db = Database.getDatabase databaseType startupTime
 
-    let logger = Logging.Targets.create Logging.Info [| "Suave" |]
-    let serverConfig =
-        { defaultConfig with
-            logger = Targets.create LogLevel.Debug [|"ServerCode"; "Server" |]
-            homeFolder = Some clientPath
-            bindings = [ HttpBinding.create HTTP (IPAddress.Parse "0.0.0.0") port] }
+    let notfound = NOT_FOUND "Page not found"
 
-    let db =
-        logger.logSimple (Message.event LogLevel.Info (sprintf "Using database %O" databaseType))
-        Database.getDatabase databaseType startupTime
+    router notfound [
+        GET [
+            route "/" (htmlFile (System.IO.Path.Combine(root,"index.html")))
+            route ServerUrls.WishList (WishList.getWishList db.LoadWishList)
+            route ServerUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
+        ]
 
-    let app =
-        choose [
-            GET >=> choose [
-                path "/" >=> Files.browseFileHome "index.html"
-                pathRegex @"/(public|js|css|Images)/(.*)\.(css|png|gif|jpg|js|map)" >=> Files.browseHome
-                path ServerUrls.WishList >=> WishList.getWishList db.LoadWishList
-                path ServerUrls.ResetTime >=> WishList.getResetTime db.GetLastResetTime ]
-
-            POST >=> choose [
-                path ServerUrls.Login >=> Auth.login
-                path ServerUrls.WishList >=> WishList.postWishList db.SaveWishList
-            ]
-
-            NOT_FOUND "Page not found."
-
-        ] >=> logWithLevelStructured Logging.Info logger logFormatStructured
-
-    startWebServer serverConfig app
+        POST [
+            route ServerUrls.Login Auth.login
+            route ServerUrls.WishList (WishList.postWishList db.SaveWishList)
+        ]
+    ]

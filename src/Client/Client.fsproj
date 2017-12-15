@@ -8,7 +8,6 @@
     <Compile Include="../Server/Shared/ServerUrls.fs" />
     <Compile Include="Pages.fs" />
     <Compile Include="Style.fs" />
-    <Compile Include="ClientTypes.fs" />
     <Compile Include="views/Menu.fs" />
     <Compile Include="pages/Home.fs" />
     <Compile Include="pages/WishList.fs" />
