@@ -206,6 +206,10 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
 4. Change the `Tomato.view` function to:
 
     ```fsharp
+    
+    open Fable.Helpers.React
+    open Fable.Helpers.React.Props
+    //...
     let view model dispatch =
         [
             words 60 "Tomatoes taste VERY good!"
