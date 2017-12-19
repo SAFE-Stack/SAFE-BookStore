@@ -196,16 +196,20 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
 3. Adjust the match pattern in the `update` function of `src/Client/App.fs`
     ```fsharp
     | TomatoMsg msg, TomatoModel tm ->
-        let color = match msg with ChangeColor c -> c
+        let color = match msg with Tomato.Msg.ChangeColor c -> c
         let tm = { tm with Color = color }
         { model with PageModel = TomatoModel tm }, Cmd.none
 
     | TomatoMsg msg, _ -> model, Cmd.none // in case we receive a delayed message originating from the previous page
     ```
 
-4. Change the `Tomato.view` function to:
+4. Change the `Tomato.view` function (and add in required packages):
 
     ```fsharp
+    
+    open Fable.Helpers.React
+    open Fable.Helpers.React.Props
+    //...
     let view model dispatch =
         [
             words 60 "Tomatoes taste VERY good!"
