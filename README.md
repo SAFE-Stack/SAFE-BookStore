@@ -196,7 +196,7 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
 3. Adjust the match pattern in the `update` function of `src/Client/App.fs`
     ```fsharp
     | TomatoMsg msg, TomatoModel tm ->
-        let color = match msg with ChangeColor c -> c
+        let color = match msg with Tomato.Msg.ChangeColor c -> c
         let tm = { tm with Color = color }
         { model with PageModel = TomatoModel tm }, Cmd.none
 
