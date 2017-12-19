@@ -203,7 +203,7 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
     | TomatoMsg msg, _ -> model, Cmd.none // in case we receive a delayed message originating from the previous page
     ```
 
-4. Change the `Tomato.view` function to:
+4. Change the `Tomato.view` function (and add in required packages):
 
     ```fsharp
     
