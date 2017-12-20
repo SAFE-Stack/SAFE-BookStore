@@ -110,7 +110,9 @@ Target "Clean" (fun _ ->
 )
 
 Target "InstallDotNetCore" (fun _ ->
-    dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
+    printfn "Cli is installed %A" <| DotNetCli.isInstalled()
+    printfn "Version are same %A" <| (DotNetCli.getVersion() = dotnetcliVersion)
+    if (DotNetCli.isInstalled() |> not && DotNetCli.getVersion() <> dotnetcliVersion) then dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
 )
 
 // --------------------------------------------------------------------------------------
