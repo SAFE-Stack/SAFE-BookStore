@@ -1,13 +1,15 @@
 module Client.Utils
 
 open Fable.Import
+open Fable.Core.JsInterop
 
-let load<'T> key =
+let inline load<'T> key =
     Browser.localStorage.getItem(key) |> unbox
-    |> Option.map (JS.JSON.parse >> unbox<'T>)
+    |> Option.map ofJson<'T>
 
-let save key (data: 'T) =
-    Browser.localStorage.setItem(key, JS.JSON.stringify data)
-
-let delete key =
+let inline delete key =
     Browser.localStorage.removeItem(key)
+
+let inline save<'T> key (data: 'T) =
+    delete key
+    Browser.localStorage.setItem(key, toJson data)
