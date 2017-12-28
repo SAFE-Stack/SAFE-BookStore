@@ -56,13 +56,13 @@ let urlUpdate (result:Page option) model =
         { model with PageModel = HomePageModel }, Cmd.none
 
 let loadUser () =
-    Utils.load "user"
+    Fable.PowerPack.BrowserLocalStorage.load "user"
 
 let saveUserCmd user =
-    Cmd.ofFunc (Utils.save "user") user (fun _ -> LoggedIn user) StorageFailure
+    Cmd.ofFunc (Fable.PowerPack.BrowserLocalStorage.save "user") user (fun _ -> LoggedIn user) StorageFailure
 
 let deleteUserCmd =
-    Cmd.ofFunc Utils.delete "user" (fun _ -> LoggedOut) StorageFailure
+    Cmd.ofFunc Fable.PowerPack.BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
 
 let init result =
     let user = loadUser ()
