@@ -11,7 +11,6 @@ open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open ServerCode
-open Client.ClientTypes
 open Client.Style
     
 type LoginState =
@@ -45,16 +44,7 @@ let authUser (login:Login) =
               RequestProperties.Body !^body ]
         
         try
-
-            let! response = Fetch.fetch ServerUrls.Login props
-
-            if not response.Ok then
-                return! failwithf "Error: %d" response.Status
-            else    
-                let! data = response.text() 
-                return
-                    { UserName = login.UserName
-                      Token = data }
+            return! Fetch.fetchAs<UserData> ServerUrls.Login props
         with
         | _ -> return! failwithf "Could not authenticate user."
     }

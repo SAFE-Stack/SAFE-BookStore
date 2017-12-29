@@ -12,6 +12,11 @@ type Login =
       Password : string
       PasswordId : Guid }
 
+type UserData = 
+  { UserName : string 
+    Token : JWT }
+
+
 /// The data for each book in /api/wishlist
 type Book = 
     { Title: string

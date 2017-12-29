@@ -12,7 +12,6 @@ open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open ServerCode
-open Client.ClientTypes
 
 type Model = 
   { WishList : WishList

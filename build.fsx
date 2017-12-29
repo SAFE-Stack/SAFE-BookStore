@@ -32,7 +32,6 @@ let mutable dotnetExePath = "dotnet"
 
 let deployDir = "./deploy"
 
-
 // Pattern specifying assemblies to be tested using expecto
 let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.exe"
 
