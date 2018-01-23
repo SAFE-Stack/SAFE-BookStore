@@ -14,7 +14,7 @@ nuget jose-jwt
 nuget Fable.Core
 nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger
-nuget Fable.Elmish.React
+nuget Fable.Elmish.React prerelease
 nuget Fable.Elmish.HMR
 nuget Microsoft.Azure.WebJobs prerelease
 nuget Microsoft.Azure.WebJobs.Extensions prerelease
