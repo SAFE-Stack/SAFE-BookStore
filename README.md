@@ -388,6 +388,20 @@ The `version` and `verbosity` flag isn't need, but it is recommended to use the 
 
 Deploy to the flex environment with a custom runtime like this is might take some time, but the instructions here should work.
 
+#### Workaround for Split Health Checks
+
+Newly created projects have [Split Health Checks](https://cloud.google.com/appengine/docs/flexible/python/configuring-your-app-with-app-yaml#updated_health_checks) enabled by default, which causes the deployment to fail. This can be resolved by disabling them on the project.
+
+First install the beta components if you don't already have them:
+
+    gcloud components install beta
+
+then run the following command on your project:
+
+    gcloud beta app update --no-split-health-checks --project <YOUR PROJECT ID>
+
+After that, deploying as described above should work just fine.
+
 ## Known Issues
 
 ### Getting rid of errors in chrome
