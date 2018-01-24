@@ -13,7 +13,7 @@ open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open ServerCode
 
-type Model = 
+type Model =
   { WishList : WishList
     Token : string
     NewBook : Book
@@ -40,7 +40,7 @@ type Msg =
 let getWishList token =
     promise {
         let url = ServerUrls.WishList
-        let props = 
+        let props =
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
 
@@ -48,9 +48,9 @@ let getWishList token =
     }
 
 let getResetTime token =
-    promise {        
+    promise {
         let url = ServerUrls.ResetTime
-        let props = 
+        let props =
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
 
@@ -58,10 +58,10 @@ let getResetTime token =
         return details.Time
     }
 
-let loadWishListCmd token = 
+let loadWishListCmd token =
     Cmd.ofPromise getWishList token FetchedWishList FetchError
 
-let loadResetTimeCmd token = 
+let loadResetTimeCmd token =
     Cmd.ofPromise getResetTime token FetchedResetTime FetchError
 
 
@@ -69,7 +69,7 @@ let postWishList (token,wishList) =
     promise {
         let url = ServerUrls.WishList
         let body = toJson wishList
-        let props = 
+        let props =
             [ RequestProperties.Method HttpMethod.POST
               Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token)
@@ -79,10 +79,10 @@ let postWishList (token,wishList) =
         return! Fable.PowerPack.Fetch.fetchAs<WishList> url props
     }
 
-let postWishListCmd (token,wishList) = 
+let postWishListCmd (token,wishList) =
     Cmd.ofPromise postWishList (token,wishList) FetchedWishList FetchError
 
-let init (user:UserData) = 
+let init (user:UserData) =
     { WishList = WishList.New user.UserName
       Token = user.Token
       NewBook = Book.empty
@@ -91,12 +91,12 @@ let init (user:UserData) =
       AuthorsErrorText = None
       ResetTime = None
       LinkErrorText = None
-      ErrorMsg = None }, 
+      ErrorMsg = None },
         Cmd.batch [
             loadWishListCmd user.Token
             loadResetTimeCmd user.Token ]
 
-let update f (msg:Msg) model : Model*Cmd<'a> = 
+let update f (msg:Msg) model : Model*Cmd<'a> =
     match msg with
     | LoadForUser user ->
         model, Cmd.none
@@ -117,19 +117,19 @@ let update f (msg:Msg) model : Model*Cmd<'a> =
 
     | AuthorsChanged authors ->
         let newBook = { model.NewBook with Authors = authors }
-        { model with 
+        { model with
             NewBook = newBook
             AuthorsErrorText = Validation.verifyBookAuthors authors
             ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
 
     | LinkChanged link ->
         let newBook = { model.NewBook with Link = link }
-        { model with 
+        { model with
             NewBook = newBook
             LinkErrorText = Validation.verifyBookLink link
             ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
 
-    | RemoveBook book -> 
+    | RemoveBook book ->
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
         { model with
             WishList = wishList
@@ -138,13 +138,13 @@ let update f (msg:Msg) model : Model*Cmd<'a> =
     | AddBook ->
         if Validation.verifyBook model.NewBook then
             match Validation.verifyBookisNotADuplicate model.WishList model.NewBook with
-            | Some err -> 
+            | Some err ->
                 { model with ErrorMsg = Some err }, Cmd.none
-            | None ->        
+            | None ->
                 let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
                 { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid(); ErrorMsg = None }, postWishListCmd(model.Token,wishList) |> Cmd.map f
         else
-            { model with 
+            { model with
                 TitleErrorText = Validation.verifyBookTitle model.NewBook.Title
                 AuthorsErrorText = Validation.verifyBookAuthors model.NewBook.Authors
                 LinkErrorText = Validation.verifyBookLink model.NewBook.Link
@@ -154,14 +154,14 @@ let update f (msg:Msg) model : Model*Cmd<'a> =
         { model with ErrorMsg = Some e.Message }, Cmd.none
 
 let newBookForm (model:Model) dispatch =
-    let buttonActive = 
+    let buttonActive =
         if String.IsNullOrEmpty model.NewBook.Title ||
            String.IsNullOrEmpty model.NewBook.Authors ||
            String.IsNullOrEmpty model.NewBook.Link ||
            model.ErrorMsg <> None
         then "btn-disabled"
         else "btn-primary"
-    
+
     let titleStatus = if String.IsNullOrEmpty model.NewBook.Title then "" else "has-success"
 
     let authorStatus = if String.IsNullOrEmpty model.NewBook.Authors then "" else "has-success"
@@ -197,7 +197,7 @@ let newBookForm (model:Model) dispatch =
                     div [ClassName ("form-group has-feedback " + authorStatus) ] [
                          yield div [ClassName "input-group"][
                              yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon-user"] [] ]
-                             yield input [ 
+                             yield input [
                                      Key ("Author_" + model.NewBookId.ToString())
                                      HTMLAttr.Type "text"
                                      Name "Author"
@@ -217,7 +217,7 @@ let newBookForm (model:Model) dispatch =
                     div [ClassName ("form-group has-feedback " + linkStatus)] [
                          yield div [ClassName "input-group"] [
                              yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon glyphicon-pencil"] [] ]
-                             yield input [ 
+                             yield input [
                                     Key ("Link_" + model.NewBookId.ToString())
                                     HTMLAttr.Type "text"
                                     Name "Link"
@@ -243,12 +243,27 @@ let newBookForm (model:Model) dispatch =
                         | None -> ()
                         | Some e -> yield p [ClassName "text-danger"][str e]
                     ]
-                ]                    
-            ]        
+                ]
+            ]
         ]
     ]
 
-let view (model:Model) (dispatch: Msg -> unit) = 
+type [<Pojo>] BookProps = { key: string; book: Book; removeBook: unit -> unit }
+
+let bookComponent { book = book; removeBook = removeBook } =
+  tr [] [
+    td [] [
+        if String.IsNullOrWhiteSpace book.Link then
+            yield str book.Title
+        else
+            yield a [ Href book.Link; Target "_blank"] [str book.Title ] ]
+    td [] [ str book.Authors ]
+    td [] [ buttonLink "" removeBook [ str "Remove" ] ]
+    ]
+
+let inline BookComponent props = (ofFunction bookComponent) props []
+
+let view (model:Model) (dispatch: Msg -> unit) =
     div [] [
         h4 [] [
             let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
@@ -260,18 +275,15 @@ let view (model:Model) (dispatch: Msg -> unit) =
                         th [] [str "Authors"]
                 ]
             ]
-            tbody[] [
-                for book in model.WishList.Books do
-                    yield 
-                      tr [] [
-                        td [] [
-                            if String.IsNullOrWhiteSpace book.Link then 
-                                yield str book.Title
-                            else
-                                yield a [ Href book.Link; Target "_blank"] [str book.Title ] ]
-                        td [] [ str book.Authors ]
-                        td [] [ buttonLink "" (fun _ -> dispatch (RemoveBook book)) [ str "Remove" ] ]
-                        ]
+            tbody [] [
+                model.WishList.Books
+                    |> List.map(fun book ->
+                        BookComponent {
+                            key = book.Title + book.Authors
+                            book = book
+                            removeBook = (fun _ -> dispatch (RemoveBook book))
+                    })
+                    |> ofList
             ]
         ]
         newBookForm model dispatch
