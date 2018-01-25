@@ -54,7 +54,7 @@ let urlUpdate (result:Page option) model =
     | Some Page.Home ->
         { model with PageModel = HomePageModel }, Cmd.none
 
-let loadUser () =
+let loadUser () : UserData option =
     Fable.PowerPack.BrowserLocalStorage.load "user"
 
 let saveUserCmd user =
