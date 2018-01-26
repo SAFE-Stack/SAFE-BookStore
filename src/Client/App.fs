@@ -14,6 +14,8 @@ open ServerCode.Domain
 JsInterop.importSideEffects "whatwg-fetch"
 JsInterop.importSideEffects "babel-polyfill"
 
+JsInterop.importAll "../../my_semantic_theme/semantic.less"
+
 // Model
 
 type PageModel =
