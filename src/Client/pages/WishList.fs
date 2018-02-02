@@ -2,16 +2,17 @@ module Client.WishList
 
 open Fable.Core
 open Fable.Import
-open Elmish
+open Fable.PowerPack
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
+open Fable.Core.JsInterop
+
+open Elmish
+open Fetch.Fetch_types
+open ServerCode
 open ServerCode.Domain
 open Style
 open System
-open Fable.Core.JsInterop
-open Fable.PowerPack
-open Fable.PowerPack.Fetch.Fetch_types
-open ServerCode
 
 type Model =
   { WishList : WishList
@@ -44,7 +45,7 @@ let getWishList token =
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
 
-        return! Fable.PowerPack.Fetch.fetchAs<WishList> url props
+        return! Fetch.fetchAs<WishList> url props
     }
 
 let getResetTime token =
@@ -54,7 +55,7 @@ let getResetTime token =
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
 
-        let! details = Fable.PowerPack.Fetch.fetchAs<ServerCode.Domain.WishListResetDetails> url props
+        let! details = Fetch.fetchAs<ServerCode.Domain.WishListResetDetails> url props
         return details.Time
     }
 
@@ -76,7 +77,7 @@ let postWishList (token,wishList) =
                 HttpRequestHeaders.ContentType "application/json" ]
               RequestProperties.Body !^body ]
 
-        return! Fable.PowerPack.Fetch.fetchAs<WishList> url props
+        return! Fetch.fetchAs<WishList> url props
     }
 
 let postWishListCmd (token,wishList) =
@@ -154,13 +155,13 @@ let update f (msg:Msg) model : Model*Cmd<'a> =
         { model with ErrorMsg = Some e.Message }, Cmd.none
 
 let newBookForm (model:Model) dispatch =
-    let buttonActive =
-        if String.IsNullOrEmpty model.NewBook.Title ||
-           String.IsNullOrEmpty model.NewBook.Authors ||
-           String.IsNullOrEmpty model.NewBook.Link ||
-           model.ErrorMsg <> None
-        then "btn-disabled"
-        else "btn-primary"
+    let buttonInactive =
+        String.IsNullOrEmpty model.NewBook.Title ||
+        String.IsNullOrEmpty model.NewBook.Authors ||
+        String.IsNullOrEmpty model.NewBook.Link ||
+        model.ErrorMsg <> None
+
+    let buttonTag = if buttonInactive then  "btn-disabled" else "btn-primary"
 
     let titleStatus = if String.IsNullOrEmpty model.NewBook.Title then "" else "has-success"
 
@@ -235,7 +236,7 @@ let newBookForm (model:Model) dispatch =
                          | _ -> ()
                     ]
                     div [] [
-                        yield button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch AddBook)] [
+                        yield button [ ClassName ("btn " + buttonTag); OnClick (fun _ -> dispatch AddBook)] [
                                   i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []
                                   str "Add"
                         ]

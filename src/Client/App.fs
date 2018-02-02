@@ -3,6 +3,7 @@ module Client.App
 open Fable.Core
 
 open Fable.Import
+open Fable.PowerPack
 open Elmish
 open Elmish.React
 open Fable.Import.Browser
@@ -14,13 +15,18 @@ open ServerCode.Domain
 JsInterop.importSideEffects "whatwg-fetch"
 JsInterop.importSideEffects "babel-polyfill"
 
-// Model
-
+/// The composed model for the different possible page states of the application
 type PageModel =
     | HomePageModel
     | LoginModel of Login.Model
     | WishListModel of WishList.Model
 
+/// The composed model for the application, which is a single page state plus login information
+type Model =
+    { User : UserData option
+      PageModel : PageModel }
+
+/// The composed set of messages that update the state of the application
 type Msg =
     | LoggedIn of UserData
     | LoggedOut
@@ -29,10 +35,8 @@ type Msg =
     | WishListMsg of WishList.Msg
     | Logout of unit
 
-type Model =
-  { User : UserData option
-    PageModel : PageModel }
-
+/// The navigation logic of the application given a page identity parsed from the .../#info 
+/// information in the URL.
 let urlUpdate (result:Page option) model =
     match result with
     | None ->
@@ -40,13 +44,13 @@ let urlUpdate (result:Page option) model =
         ( model, Navigation.modifyUrl (toHash Page.Home) )
 
     | Some Page.Login ->
-        let m,cmd = Login.init model.User
+        let m, cmd = Login.init model.User
         { model with PageModel = LoginModel m }, Cmd.map LoginMsg cmd
 
     | Some Page.WishList ->
         match model.User with
         | Some user ->
-            let m,cmd = WishList.init user
+            let m, cmd = WishList.init user
             { model with PageModel = WishListModel m }, Cmd.map WishListMsg cmd
         | None ->
             model, Cmd.ofMsg (Logout ())
@@ -55,13 +59,13 @@ let urlUpdate (result:Page option) model =
         { model with PageModel = HomePageModel }, Cmd.none
 
 let loadUser () : UserData option =
-    Fable.PowerPack.BrowserLocalStorage.load "user"
+    BrowserLocalStorage.load "user"
 
 let saveUserCmd user =
-    Cmd.ofFunc (Fable.PowerPack.BrowserLocalStorage.save "user") user (fun _ -> LoggedIn user) StorageFailure
+    Cmd.ofFunc (BrowserLocalStorage.save "user") user (fun _ -> LoggedIn user) StorageFailure
 
 let deleteUserCmd =
-    Cmd.ofFunc Fable.PowerPack.BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
+    Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
 
 let init result =
     let user = loadUser ()
@@ -84,18 +88,19 @@ let update msg model =
             else
                 saveUserCmd newUser
 
-        let m,cmd = Login.update LoginMsg onSuccess msg m
+        let m, cmd = Login.update LoginMsg onSuccess msg m
         { model with
             PageModel = LoginModel m }, cmd
 
     | LoginMsg _, _ -> model, Cmd.none
 
     | WishListMsg msg, WishListModel m ->
-        let m,cmd = WishList.update WishListMsg msg m
+        let m, cmd = WishList.update WishListMsg msg m
         { model with
             PageModel = WishListModel m }, cmd
 
-    | WishListMsg _, _ -> model, Cmd.none
+    | WishListMsg _, _ -> 
+        model, Cmd.none
 
     | LoggedIn newUser, _ ->
         let nextPage = Page.WishList
@@ -104,7 +109,7 @@ let update msg model =
     | LoggedOut, _ ->
         { model with
             User = None
-            PageModel = HomePageModel },
+            PageModel = HomePageModel }, 
         Navigation.newUrl (toHash Page.Home)
 
     | Logout(), _ ->
@@ -130,10 +135,10 @@ let viewPage model dispatch =
 
 /// Constructs the view for the application given the model.
 let view model dispatch =
-  div []
-    [ Menu.view (Logout >> dispatch) model.User
-      hr []
-      div [ centerStyle "column" ] (viewPage model dispatch)
+    div [] [ 
+        Menu.view (Logout >> dispatch) model.User
+        hr []
+        div [ centerStyle "column" ] (viewPage model dispatch)
     ]
 
 open Elmish.React

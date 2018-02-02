@@ -40,13 +40,13 @@ let authUser (login:Login) =
         let props = 
             [ RequestProperties.Method HttpMethod.POST
               Fetch.requestHeaders [
-                HttpRequestHeaders.ContentType "application/json" ]
+                  HttpRequestHeaders.ContentType "application/json" ]
               RequestProperties.Body !^body ]
         
         try
             return! Fetch.fetchAs<UserData> ServerUrls.Login props
-        with
-        | _ -> return! failwithf "Could not authenticate user."
+        with _ -> 
+            return! failwithf "Could not authenticate user."
     }
 
 let authUserCmd login = 
@@ -82,21 +82,21 @@ let view model (dispatch: Msg -> unit) =
     
     match model.State with
     | LoggedIn user ->
-        div [Id "greeting"] [
-          h3 [ ClassName "text-center" ] [ str (sprintf "Hi %s!" user.UserName) ]
+        div [ Id "greeting"] [
+            h3 [ ClassName "text-center" ] [ str (sprintf "Hi %s!" user.UserName) ]
         ]
 
     | LoggedOut ->
-        div [ClassName "signInBox" ] [
-          h3 [ ClassName "text-center" ] [ str "Log in with 'test' / 'test'."]
+        div [ ClassName "signInBox" ] [
+            h3 [ ClassName "text-center" ] [ str "Log in with 'test' / 'test'."]
            
-          div [ ClassName showErrorClass ] [
-                  div [ ClassName "alert alert-danger" ] [ str model.ErrorMsg ]
-           ]
+            div [ ClassName showErrorClass ] [
+                div [ ClassName "alert alert-danger" ] [ str model.ErrorMsg ]
+             ]
 
-          div [ ClassName "input-group input-group-lg" ] [
+            div [ ClassName "input-group input-group-lg" ] [
                 span [ClassName "input-group-addon" ] [
-                  span [ClassName "glyphicon glyphicon-user"] []
+                    span [ClassName "glyphicon glyphicon-user"] []
                 ]
                 input [ 
                     Id "username"
@@ -105,26 +105,30 @@ let view model (dispatch: Msg -> unit) =
                     Placeholder "Username"
                     DefaultValue model.Login.UserName
                     OnChange (fun ev -> dispatch (SetUserName !!ev.target?value))
-                    AutoFocus true ]
-          ]
+                    AutoFocus true 
+                ]
+            ]
 
-          div [ ClassName "input-group input-group-lg" ] [
+            div [ ClassName "input-group input-group-lg" ] [
                 span [ClassName "input-group-addon" ] [
-                  span [ClassName "glyphicon glyphicon-asterisk"] []
+                    span [ClassName "glyphicon glyphicon-asterisk"] []
                 ]
                 input [ 
-                        Id "password"
-                        Key ("password_" + model.Login.PasswordId.ToString())
-                        HTMLAttr.Type "password"
-                        ClassName "form-control input-lg"
-                        Placeholder "Password"
-                        DefaultValue model.Login.Password
-                        OnChange (fun ev -> dispatch (SetPassword !!ev.target?value))
-                        onEnter ClickLogIn dispatch  ]
+                    Id "password"
+                    Key ("password_" + model.Login.PasswordId.ToString())
+                    HTMLAttr.Type "password"
+                    ClassName "form-control input-lg"
+                    Placeholder "Password"
+                    DefaultValue model.Login.Password
+                    OnChange (fun ev -> dispatch (SetPassword !!ev.target?value))
+                    onEnter ClickLogIn dispatch 
+                ]
             ]    
            
-          div [ ClassName "text-center" ] [
-              button [ ClassName ("btn " + buttonActive); OnClick (fun _ -> dispatch ClickLogIn) ] [ str "Log In" ]
-          ]                   
+            div [ ClassName "text-center" ] [
+                button [ ClassName ("btn " + buttonActive);
+                         OnClick (fun _ -> dispatch ClickLogIn) ] 
+                       [ str "Log In" ]
+            ]                   
         ]    
  
