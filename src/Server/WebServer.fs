@@ -21,6 +21,7 @@ let webApp databaseType =
 
     scope {
         error_handler (NOT_FOUND "Page not found")
+        get "/" (htmlFile "index.html")
         post ServerUrls.Login Auth.login
         forward "" secured
     }
