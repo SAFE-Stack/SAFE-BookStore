@@ -1,15 +1,14 @@
 /// Functions for managing the database.
 module ServerCode.Database
 
-open Microsoft.Azure.WebJobs
 open ServerCode.Storage.AzureTable
 open ServerCode
 open System.Threading.Tasks
 open Giraffe.Tasks
 
 [<RequireQualifiedAccess>]
-type DatabaseType = 
-    | FileSystem 
+type DatabaseType =
+    | FileSystem
     | AzureStorage of connectionString : AzureConnection
 
 type IDatabaseFunctions =
@@ -33,5 +32,5 @@ let getDatabase databaseType startupTime =
         { new IDatabaseFunctions with
             member __.LoadWishList key = task { return Storage.FileSystem.getWishListFromDB key }
             member __.SaveWishList wishList = task { return Storage.FileSystem.saveWishListToDB wishList }
-            member __.GetLastResetTime () = task { return startupTime } } 
+            member __.GetLastResetTime () = task { return startupTime } }
 

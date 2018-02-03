@@ -3,13 +3,10 @@ storage:none
 
 nuget FSharp.Core redirects: force
 nuget Fable.JsonConverter
-nuget Giraffe
-nuget Microsoft.AspNetCore.StaticFiles
-nuget Microsoft.AspNetCore
 nuget Microsoft.AspNetCore.WebSockets
 nuget Microsoft.AspNetCore.WebSockets.Server
 nuget System.Net.NetworkInformation
-nuget jose-jwt
+nuget Saturn
 
 nuget Fable.Core
 nuget Fable.Elmish.Browser

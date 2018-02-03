@@ -3,26 +3,25 @@ module ServerCode.WebServer
 
 open ServerCode
 open Giraffe
-open Giraffe.TokenRouter
 open RequestErrors
+open Saturn.Router
+open Saturn.Pipeline
 
 /// Start the web server and connect to database
-let webApp databaseType root =
+let webApp databaseType =
     let startupTime = System.DateTime.UtcNow
-    
     let db = Database.getDatabase databaseType startupTime
 
-    let notfound = NOT_FOUND "Page not found"
+    let secured = scope {
+        pipe_through jwtAuthentication
+        get ServerUrls.WishList (WishList.getWishList db.LoadWishList)
+        get ServerUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
+        post ServerUrls.WishList (WishList.postWishList db.SaveWishList)
+    }
 
-    router notfound [
-        GET [
-            route "/" (htmlFile (System.IO.Path.Combine(root,"index.html")))
-            route ServerUrls.WishList (WishList.getWishList db.LoadWishList)
-            route ServerUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
-        ]
+    scope {
+        error_handler (NOT_FOUND "Page not found")
+        post ServerUrls.Login Auth.login
+        forward "" secured
+    }
 
-        POST [
-            route ServerUrls.Login Auth.login
-            route ServerUrls.WishList (WishList.postWishList db.SaveWishList)
-        ]
-    ]
