@@ -1,9 +1,9 @@
 /// Login web part and functions for API web part request authorisation with JWT.
 module ServerCode.Auth
 
-open Giraffe
-open RequestErrors
+open Saturn.ControllerHelpers
 open Microsoft.AspNetCore.Http
+open Giraffe.Tasks
 
 /// Login web part that authenticates a user and returns a token in the HTTP body.
 let login next (ctx: HttpContext) = task {
@@ -18,6 +18,6 @@ let login next (ctx: HttpContext) = task {
         return! FableJson.serialize userData next ctx
     with
     | _ ->
-        return! UNAUTHORIZED "Bearer" "" (sprintf "User '%s' can't be logged in." login.UserName) next ctx
+        return! Response.unauthorized ctx "Bearer" "" (sprintf "User '%s' can't be logged in." login.UserName)
 }
 
