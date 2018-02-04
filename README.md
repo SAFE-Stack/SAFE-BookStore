@@ -243,9 +243,9 @@ Also, we additionally suggest installing React-devtools (for better UI debugging
 
 ## Technology stack
 
-### Giraffe on .NET Core
+### Saturn on .Net Core
 
-The webserver backend is running as a [Giraffe](https://github.com/giraffe-fsharp/Giraffe) service on ASP.NET Core.
+The webserver backend is using [Saturn](https://github.com/SaturnFramework/Saturn) - web framework building on top of  [Giraffe](https://github.com/giraffe-fsharp/Giraffe) and ASP.NET Core
 
 In development mode the server is automatically restarted whenever a file in `src/Server` is saved.
 
