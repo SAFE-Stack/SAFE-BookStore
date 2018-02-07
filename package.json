@@ -27,6 +27,6 @@
     "restoreClient": "cd src/Client && yarn install",
     "restoreNetClient": "dotnet restore src/Client/Client.fsproj",
     "prestartClient": "concurrently \"npm run restoreClient\" \"npm run restoreNetClient\" ",
-    "startClient": "cd src/Client && dotnet fable webpack-dev-server"
+    "startClient": "cd src/Client && dotnet fable webpack-dev-server --port free"
   }
 }
