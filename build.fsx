@@ -138,7 +138,7 @@ Target "InstallClient" (fun _ ->
 
 Target "BuildClient" (fun _ ->
     runDotnet clientPath "restore"
-    runDotnet clientPath "fable webpack -- -p"
+    runDotnet clientPath "fable webpack --port free -- -p"
 )
 
 // --------------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ Target "Run" (fun _ ->
 
         if result <> 0 then failwith "Website shut down." }
 
-    let fablewatch = async { runDotnet clientPath "fable webpack-dev-server" }
+    let fablewatch = async { runDotnet clientPath "fable --port free webpack-dev-server" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
