@@ -20,7 +20,7 @@ let ofJson<'a> (json:string) : 'a =
 let serialize x =
     setStatusCode 200
       >=> setHttpHeader "Content-Type" "application/json"
-      >=> setBodyAsString (toJson x)
+      >=> setBodyFromString (toJson x)
 
 
 let getJsonFromCtx<'a> (ctx:HttpContext) = task {
