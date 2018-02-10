@@ -5,6 +5,15 @@ open Giraffe
 open RequestErrors
 open Microsoft.AspNetCore.Http
 
+let createUserData (login : Domain.Login) =
+    {
+        UserName = login.UserName
+        Token    =
+            ServerCode.JsonWebToken.encode (
+                { UserName = login.UserName } : ServerTypes.UserRights
+            )
+    } : Domain.UserData
+
 /// Authenticates a user and returns a token in the HTTP body.
 let login : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
@@ -12,7 +21,7 @@ let login : HttpHandler =
             let! login = ctx.BindJsonAsync<Domain.Login>()
             return!
                 match login.IsValid() with
-                | true  -> ctx.WriteJsonAsync (Domain.UserData.FromLogin login)
+                | true  -> ctx.WriteJsonAsync (createUserData login)
                 | false -> UNAUTHORIZED "Bearer" "" (sprintf "User '%s' can't be logged in." login.UserName) next ctx
         }
 

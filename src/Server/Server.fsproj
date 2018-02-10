@@ -4,10 +4,10 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ServerTypes.fs" />
-    <Compile Include="JsonWebToken.fs" />
     <Compile Include="Shared/Domain.fs" />
     <Compile Include="Shared/ServerUrls.fs" />
+    <Compile Include="ServerTypes.fs" />
+    <Compile Include="JsonWebToken.fs" />
     <Compile Include="FableJson.fs" />
     <Compile Include="Auth.fs" />
     <Compile Include="WishList.fs" />

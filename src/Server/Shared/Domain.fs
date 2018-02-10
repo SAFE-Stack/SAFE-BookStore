@@ -2,7 +2,6 @@
 namespace ServerCode.Domain
 
 open System
-open ServerCode
 
 // Json web token type.
 type JWT = string
@@ -20,15 +19,6 @@ type Login =
 type UserData =
   { UserName : string
     Token    : JWT }
-
-  static member FromLogin (login : Login) =
-    {
-        UserName = login.UserName
-        Token    =
-            JsonWebToken.encode (
-                { UserName = login.UserName } : ServerTypes.UserRights
-            )
-    }
 
 /// The data for each book in /api/wishlist
 type Book =
