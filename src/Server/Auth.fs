@@ -5,36 +5,28 @@ open Giraffe
 open RequestErrors
 open Microsoft.AspNetCore.Http
 
-/// Login web part that authenticates a user and returns a token in the HTTP body.
-let login next (ctx: HttpContext) = task {
-    let! login = ctx.BindJsonAsync<Domain.Login>()
+/// Authenticates a user and returns a token in the HTTP body.
+let login : HttpHandler =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        task {
+            let! login = ctx.BindJsonAsync<Domain.Login>()
+            return!
+                match login.IsValid() with
+                | true  -> ctx.WriteJsonAsync (Domain.UserData.FromLogin login)
+                | false -> UNAUTHORIZED "Bearer" "" (sprintf "User '%s' can't be logged in." login.UserName) next ctx
+        }
 
-    try
-        if (login.UserName <> "test" || login.Password <> "test") &&
-           (login.UserName <> "test2" || login.Password <> "test2") then
-            return! failwithf "Could not authenticate %s" login.UserName
-        let user : ServerTypes.UserRights = { UserName = login.UserName }
-        let userData :Domain.UserData = { UserName = login.UserName; Token = JsonWebToken.encode user }
-        return! ctx.WriteJsonAsync userData
-    with
-    | _ ->
-        return! UNAUTHORIZED "Bearer" "" (sprintf "User '%s' can't be logged in." login.UserName) next ctx
-}
+let private missingToken = RequestErrors.BAD_REQUEST "Request doesn't contain a JSON Web Token"
+let private invalidToken = RequestErrors.FORBIDDEN "Accessing this API is not allowed"
 
-/// Invokes a function that produces the output for a web part if the HttpContext
-/// contains a valid auth token. Use to authorise the expressions in your web part
-/// code (e.g. WishList.getWishList).
-let useToken next (ctx: HttpContext) f = task {
-    match ctx.Request.Headers.TryGetValue "Authorization" with
-    | true, accesstoken ->
-        match Seq.tryHead accesstoken with
-        | Some t when t.StartsWith "Bearer " ->
-            let jwt = t.Replace("Bearer ","")
+/// Checks if the HTTP request has a valid JWT token.
+/// On success it will invoke the given `f` function by passing in the valid token.
+let requiresJwtToken f : HttpHandler =
+    fun (next : HttpFunc) (ctx : HttpContext) ->
+        (match ctx.TryGetRequestHeader "Authorization" with
+        | Some authHeader ->
+            let jwt = authHeader.Replace("Bearer ", "")
             match JsonWebToken.isValid jwt with
-            | None -> return! FORBIDDEN "Accessing this API is not allowed" next ctx
-            | Some token -> return! f token
-        | _ ->
-           return! BAD_REQUEST "Request doesn't contain a JSON Web Token" next ctx
-    | _ ->
-        return! BAD_REQUEST "Request doesn't contain a JSON Web Token" next ctx
-}
+            | Some token -> f token
+            | None -> invalidToken
+        | None -> missingToken) next ctx

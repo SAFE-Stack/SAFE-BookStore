@@ -1,41 +1,54 @@
 /// Domain model shared between client and server.
 namespace ServerCode.Domain
-   
+
 open System
+open ServerCode
 
 // Json web token type.
 type JWT = string
 
 // Login credentials.
-type Login = 
-    { UserName : string
-      Password : string
+type Login =
+    { UserName   : string
+      Password   : string
       PasswordId : Guid }
 
-type UserData = 
-  { UserName : string 
-    Token : JWT }
+    member this.IsValid() =
+        not ((this.UserName <> "test"  || this.Password <> "test") &&
+             (this.UserName <> "test2" || this.Password <> "test2"))
 
+type UserData =
+  { UserName : string
+    Token    : JWT }
+
+  static member FromLogin (login : Login) =
+    {
+        UserName = login.UserName
+        Token    =
+            JsonWebToken.encode (
+                { UserName = login.UserName } : ServerTypes.UserRights
+            )
+    }
 
 /// The data for each book in /api/wishlist
-type Book = 
+type Book =
     { Title: string
       Authors: string
       Link: string }
 
-    static member empty = 
+    static member empty =
         { Title = ""
           Authors = ""
           Link = "" }
 
 /// The logical representation of the data for /api/wishlist
-type WishList = 
+type WishList =
     { UserName : string
       Books : Book list }
 
     // Create a new WishList.  This is supported in client code too,
     // thanks to the magic of https://www.nuget.org/packages/Fable.JsonConverter
-    static member New userName = 
+    static member New userName =
         { UserName = userName
           Books = [] }
 
