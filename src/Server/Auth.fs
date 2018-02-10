@@ -7,17 +7,17 @@ open Microsoft.AspNetCore.Http
 
 /// Login web part that authenticates a user and returns a token in the HTTP body.
 let login next (ctx: HttpContext) = task {
-    let! login = FableJson.getJsonFromCtx<Domain.Login> ctx
+    let! login = ctx.BindJsonAsync<Domain.Login>()
 
     try
-        if (login.UserName <> "test" || login.Password <> "test") && 
+        if (login.UserName <> "test" || login.Password <> "test") &&
            (login.UserName <> "test2" || login.Password <> "test2") then
             return! failwithf "Could not authenticate %s" login.UserName
         let user : ServerTypes.UserRights = { UserName = login.UserName }
         let userData :Domain.UserData = { UserName = login.UserName; Token = JsonWebToken.encode user }
-        return! FableJson.serialize userData next ctx
+        return! ctx.WriteJsonAsync userData
     with
-    | _ -> 
+    | _ ->
         return! UNAUTHORIZED "Bearer" "" (sprintf "User '%s' can't be logged in." login.UserName) next ctx
 }
 
@@ -26,8 +26,8 @@ let login next (ctx: HttpContext) = task {
 /// code (e.g. WishList.getWishList).
 let useToken next (ctx: HttpContext) f = task {
     match ctx.Request.Headers.TryGetValue "Authorization" with
-    | true, accesstoken -> 
-        match Seq.tryHead accesstoken with 
+    | true, accesstoken ->
+        match Seq.tryHead accesstoken with
         | Some t when t.StartsWith "Bearer " ->
             let jwt = t.Replace("Bearer ","")
             match JsonWebToken.isValid jwt with
@@ -35,6 +35,6 @@ let useToken next (ctx: HttpContext) f = task {
             | Some token -> return! f token
         | _ ->
            return! BAD_REQUEST "Request doesn't contain a JSON Web Token" next ctx
-    | _ -> 
+    | _ ->
         return! BAD_REQUEST "Request doesn't contain a JSON Web Token" next ctx
 }

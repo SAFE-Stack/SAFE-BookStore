@@ -3,23 +3,25 @@ module ServerCode.Program
 
 open System
 open System.IO
+open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Logging
+open Microsoft.Extensions.DependencyInjection
+open Newtonsoft.Json
 open Giraffe
-open Microsoft.AspNetCore
-open ServerErrors
+open Giraffe.Serialization.Json
+open Giraffe.HttpStatusCodeHandlers.ServerErrors
 
-let GetEnvVar var = 
+let GetEnvVar var =
     match Environment.GetEnvironmentVariable(var) with
     | null -> None
     | value -> Some value
 
-let getPortsOrDefault defaultVal = 
+let getPortsOrDefault defaultVal =
     match Environment.GetEnvironmentVariable("SUAVE_FABLE_PORT") with
     | null -> defaultVal
     | value -> value |> uint16
-
 
 let errorHandler (ex : Exception) (logger : ILogger) =
     logger.LogError(EventId(), ex, "An unhandled exception has occurred while executing the request.")
@@ -29,13 +31,22 @@ let configureApp db root (app : IApplicationBuilder) =
     app.UseGiraffeErrorHandler(errorHandler)
        .UseStaticFiles()
        .UseGiraffe (WebServer.webApp db root)
-       
+
+let configureServices (services : IServiceCollection) =
+    // Add default Giraffe dependencies
+    services.AddGiraffe() |> ignore
+
+    // Configure JsonSerializer to use Fable.JsonConverter
+    let fableJsonSettings = JsonSerializerSettings()
+    fableJsonSettings.Converters.Add(Fable.JsonConverter())
+
+    services.AddSingleton<IJsonSerializer>(
+        NewtonsoftJsonSerializer(fableJsonSettings)) |> ignore
+
 let configureLogging (loggerBuilder : ILoggingBuilder) =
     loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)
                  .AddConsole()
                  .AddDebug() |> ignore
-
-
 
 [<EntryPoint>]
 let main args =
@@ -44,14 +55,14 @@ let main args =
         let clientPath =
             match args with
             | clientPath:: _  when Directory.Exists clientPath -> clientPath
-            | _ -> 
+            | _ ->
                 // did we start from server folder?
                 let devPath = Path.Combine("..","Client")
-                if Directory.Exists devPath then devPath 
+                if Directory.Exists devPath then devPath
                 else
                     // maybe we are in root of project?
                     let devPath = Path.Combine("src","Client")
-                    if Directory.Exists devPath then devPath 
+                    if Directory.Exists devPath then devPath
                     else @"./client"
             |> Path.GetFullPath
 
@@ -65,12 +76,13 @@ let main args =
             |> Option.defaultValue Database.DatabaseType.FileSystem
 
         let port = getPortsOrDefault 8085us
-        
+
         WebHost
             .CreateDefaultBuilder()
             .UseWebRoot(clientPath)
             .UseContentRoot(clientPath)
             .ConfigureLogging(configureLogging)
+            .ConfigureServices(configureServices)
             .Configure(Action<IApplicationBuilder> (configureApp database clientPath))
             .UseUrls("http://0.0.0.0:" + port.ToString() + "/")
             .Build()
