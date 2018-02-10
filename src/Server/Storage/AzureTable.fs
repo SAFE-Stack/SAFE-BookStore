@@ -4,10 +4,10 @@ open Microsoft.WindowsAzure.Storage
 open Microsoft.WindowsAzure.Storage.Table
 open ServerCode.Domain
 open System
-open Giraffe.Tasks
 open System.Threading.Tasks
+open FSharp.Control.Tasks.ContextInsensitive
 
-type AzureConnection = 
+type AzureConnection =
     | AzureConnection of string
 
 let getBooksTable (AzureConnection connectionString) = task {
@@ -17,7 +17,7 @@ let getBooksTable (AzureConnection connectionString) = task {
     // Azure will temporarily lock table names after deleting and can take some time before the table name is made available again.
     let rec createTableSafe() = task {
         try
-        let! _ = table.CreateIfNotExistsAsync() 
+        let! _ = table.CreateIfNotExistsAsync()
         ()
         with _ ->
             do! Task.Delay 5000
@@ -35,7 +35,7 @@ let getWishListFromDB connectionString userName = task {
     return
         { UserName = userName
           Books =
-            [ for result in results -> 
+            [ for result in results ->
                 { Title = result.Properties.["Title"].StringValue
                   Authors = string result.Properties.["Authors"].StringValue
                   Link = string result.Properties.["Link"].StringValue } ] } }
@@ -72,16 +72,16 @@ let saveWishListToDB connectionString wishList = task {
             entity |> TableOperation.InsertOrReplace |> operation.Add)
 
         operation
-    
+
     let! booksTable = getBooksTable connectionString
-    let! _ = booksTable.ExecuteBatchAsync batch 
+    let! _ = booksTable.ExecuteBatchAsync batch
     return () }
 
 module private StateManagement =
     let getStateBlob (AzureConnection connectionString) name = task {
         let client = (CloudStorageAccount.Parse connectionString).CreateCloudBlobClient()
         let state = client.GetContainerReference "state"
-        let! _ = state.CreateIfNotExistsAsync() 
+        let! _ = state.CreateIfNotExistsAsync()
         return state.GetBlockBlobReference name }
 
     let resetTimeBlob connectionString = getStateBlob connectionString "resetTime"
@@ -92,14 +92,14 @@ module private StateManagement =
 
 let getLastResetTime connectionString = task {
     let! blob = StateManagement.resetTimeBlob connectionString
-    do! blob.FetchAttributesAsync() 
+    do! blob.FetchAttributesAsync()
     return blob.Properties.LastModified |> Option.ofNullable |> Option.map (fun d -> d.UtcDateTime)
 }
 
 /// Clears all Wishlists and records the time that it occurred at.
 let clearWishLists connectionString = task {
     let! table = getBooksTable connectionString
-    let! _ = table.DeleteIfExistsAsync() 
-    
+    let! _ = table.DeleteIfExistsAsync()
+
     let! _ = Defaults.defaultWishList "test" |> saveWishListToDB connectionString
     do! StateManagement.storeResetTime connectionString }

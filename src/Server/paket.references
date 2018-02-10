@@ -6,6 +6,7 @@ Microsoft.DotNet.Watcher.Tools
 Microsoft.Azure.WebJobs
 Microsoft.Azure.WebJobs.Extensions
 Giraffe
+Giraffe.TokenRouter
 Microsoft.AspNetCore.StaticFiles
 Microsoft.AspNetCore
 Microsoft.AspNetCore.WebSockets

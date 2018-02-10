@@ -4,6 +4,7 @@ storage:none
 nuget FSharp.Core redirects: force
 nuget Fable.JsonConverter
 nuget Giraffe
+nuget Giraffe.TokenRouter
 nuget Microsoft.AspNetCore.StaticFiles
 nuget Microsoft.AspNetCore
 nuget Microsoft.AspNetCore.WebSockets
