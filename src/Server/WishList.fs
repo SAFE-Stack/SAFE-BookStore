@@ -14,7 +14,7 @@ let getWishList (getWishListFromDB: string -> Task<WishList>) next (ctx: HttpCon
     Auth.useToken next ctx (fun token -> task {
         try
             let! wishList = getWishListFromDB token.UserName
-            return! FableJson.serialize wishList next ctx
+            return! ctx.WriteJsonAsync wishList
         with exn ->
             let msg = "Database not available"
             let logger = ctx.GetLogger "wishlist"
@@ -26,14 +26,14 @@ let getWishList (getWishListFromDB: string -> Task<WishList>) next (ctx: HttpCon
 let postWishList (saveWishListToDB: WishList -> Task<unit>) next (ctx: HttpContext) =
     Auth.useToken next ctx (fun token -> task {
         try
-            let! wishList = FableJson.getJsonFromCtx<Domain.WishList> ctx
+            let! wishList = ctx.BindJsonAsync<Domain.WishList>()
 
             if token.UserName <> wishList.UserName then
                 return! FORBIDDEN (sprintf "WishList is not matching user %s" token.UserName) next ctx
             else
                 if Validation.verifyWishList wishList then
                     do! saveWishListToDB wishList
-                    return! FableJson.serialize wishList next ctx
+                    return! ctx.WriteJsonAsync wishList
                 else
                     return! BAD_REQUEST "WishList is not valid" next ctx
         with exn ->
@@ -44,6 +44,9 @@ let postWishList (saveWishListToDB: WishList -> Task<unit>) next (ctx: HttpConte
     })
 
 /// Retrieve the last time the wish list was reset.
-let getResetTime (getLastResetTime: unit -> Task<System.DateTime>) next ctx = task {
-    let! lastResetTime = getLastResetTime()
-    return! FableJson.serialize { Time = lastResetTime } next ctx }
+let getResetTime (getLastResetTime: unit -> Task<System.DateTime>) : HttpHandler =
+    fun next ctx ->
+        task {
+            let! lastResetTime = getLastResetTime()
+            return! ctx.WriteJsonAsync({ Time = lastResetTime })
+        }
