@@ -24,8 +24,14 @@ let getPortsOrDefault defaultVal =
     | value -> value |> uint16
 
 let errorHandler (ex : Exception) (logger : ILogger) =
-    logger.LogError(EventId(), ex, "An unhandled exception has occurred while executing the request.")
-    clearResponse >=> INTERNAL_ERROR ex.Message
+    match ex with
+    | :? Microsoft.WindowsAzure.Storage.StorageException as dbEx ->
+        let msg = sprintf "An unhandled Windows Azure Storage exception has occured: %s" dbEx.Message
+        logger.LogError (EventId(), dbEx, "An error has occured when hitting the database.")
+        SERVICE_UNAVAILABLE msg
+    | _ ->
+        logger.LogError(EventId(), ex, "An unhandled exception has occurred while executing the request.")
+        clearResponse >=> INTERNAL_ERROR ex.Message
 
 let configureApp db root (app : IApplicationBuilder) =
     app.UseGiraffeErrorHandler(errorHandler)
