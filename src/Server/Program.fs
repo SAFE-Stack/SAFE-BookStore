@@ -90,7 +90,7 @@ let main args =
             .ConfigureLogging(configureLogging)
             .ConfigureServices(configureServices)
             .Configure(Action<IApplicationBuilder> (configureApp database clientPath))
-            .UseUrls("http://0.0.0.0:" + port.ToString() + "/")
+            .UseUrls("http://localhost:" + port.ToString() + "/")
             .Build()
             .Run()
         0
