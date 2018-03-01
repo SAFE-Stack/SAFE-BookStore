@@ -95,9 +95,9 @@ let update msg model =
     | LoginMsg _, _ -> model, Cmd.none
 
     | WishListMsg msg, WishListModel m ->
-        let m, cmd = WishList.update WishListMsg msg m
+        let m, cmd = WishList.update msg m
         { model with
-            PageModel = WishListModel m }, cmd
+            PageModel = WishListModel m }, Cmd.map WishListMsg cmd
 
     | WishListMsg _, _ -> 
         model, Cmd.none

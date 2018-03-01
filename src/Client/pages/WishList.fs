@@ -13,6 +13,7 @@ open ServerCode
 open ServerCode.Domain
 open Style
 open System
+open Client
 
 type Model =
   { WishList : WishList
@@ -97,7 +98,7 @@ let init (user:UserData) =
             loadWishListCmd user.Token
             loadResetTimeCmd user.Token ]
 
-let update f (msg:Msg) model : Model*Cmd<'a> =
+let update (msg:Msg) model : Model*Cmd<Msg> =
     match msg with
     | LoadForUser user ->
         model, Cmd.none
@@ -134,7 +135,8 @@ let update f (msg:Msg) model : Model*Cmd<'a> =
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
         { model with
             WishList = wishList
-            ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBook }, postWishListCmd(model.Token,wishList) |> Cmd.map f
+            ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBook }, 
+                postWishListCmd(model.Token,wishList)
 
     | AddBook ->
         if Validation.verifyBook model.NewBook then
@@ -143,7 +145,8 @@ let update f (msg:Msg) model : Model*Cmd<'a> =
                 { model with ErrorMsg = Some err }, Cmd.none
             | None ->
                 let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
-                { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid(); ErrorMsg = None }, postWishListCmd(model.Token,wishList) |> Cmd.map f
+                { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid(); ErrorMsg = None }, 
+                    postWishListCmd(model.Token,wishList)
         else
             { model with
                 TitleErrorText = Validation.verifyBookTitle model.NewBook.Title
