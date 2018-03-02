@@ -30,6 +30,10 @@ type Msg =
     | AuthError of exn
     | ClickLogIn
 
+type ExternalMsg =
+    | NoOp
+    | UserLoggedIn of UserData
+
 let authUser (login:Login) =
     promise {
         if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
@@ -63,18 +67,18 @@ let init (user:UserData option) =
           State = LoggedIn user
           ErrorMsg = "" }, Cmd.none
 
-let update f onSuccess (msg:Msg) model : Model*Cmd<'a> = 
+let update (msg:Msg) model : Model*Cmd<Msg>*ExternalMsg = 
     match msg with
     | LoginSuccess user ->
-        { model with State = LoggedIn user; Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid() } }, onSuccess user
+        { model with State = LoggedIn user; Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none, ExternalMsg.UserLoggedIn user
     | SetUserName name ->
-        { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
+        { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none, NoOp
     | SetPassword pw ->
-        { model with Login = { model.Login with Password = pw }}, Cmd.none
+        { model with Login = { model.Login with Password = pw }}, Cmd.none, NoOp
     | ClickLogIn ->
-        model, authUserCmd model.Login |> Cmd.map f
+        model, authUserCmd model.Login, NoOp
     | AuthError exn ->
-        { model with ErrorMsg = string (exn.Message) }, Cmd.none
+        { model with ErrorMsg = string (exn.Message) }, Cmd.none, NoOp
 
 let view model (dispatch: Msg -> unit) = 
     let showErrorClass = if String.IsNullOrEmpty model.ErrorMsg then "hidden" else ""
