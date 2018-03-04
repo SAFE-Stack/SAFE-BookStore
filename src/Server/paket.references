@@ -11,3 +11,7 @@ Microsoft.AspNetCore.StaticFiles
 Microsoft.AspNetCore
 Microsoft.AspNetCore.WebSockets
 Microsoft.AspNetCore.WebSockets.Server
+
+Fable.Core
+Fable.Import.Browser
+Fable.Elmish.Browser

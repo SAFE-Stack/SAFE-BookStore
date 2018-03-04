@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ItemGroup>
+    <Compile Include="../../paket-files/fable-compiler/fable-react/src/Fable.React/Fable.Import.React.fs" />
+    <Compile Include="../../paket-files/fable-compiler/fable-react/src/Fable.React/Fable.Helpers.React.fs" />
+    <Compile Include="../../paket-files/fable-compiler/fable-react/src/Fable.React/Fable.Helpers.Isomorphic.fs" />
+    <Compile Include="../../paket-files/fable-elmish/react/src/common.fs" />
+    <Compile Include="../../paket-files/fable-elmish/react/src/react.fs" />
+
+    <Compile Include="../Client/ReleaseNotes.fs" />
+
+    <Compile Include="../Server/Shared/Domain.fs" />
+    <Compile Include="../Server/Shared/ServerUrls.fs" />
+
+    <Compile Include="../Client/Pages.fs" />
+    <Compile Include="../Client/Style.fs" />
+    <Compile Include="../Client/views/Menu.fs" />
+    <Compile Include="../Client/pages/Home.fs" />
+    <Compile Include="../Client/pages/WishList.fs" />
+    <Compile Include="../Client/pages/Login.fs" />
+    <Compile Include="../Client/Shared.fs" />
+  </ItemGroup>
+</Project>

@@ -1,6 +1,9 @@
 source https://nuget.org/api/v2
 storage:none
 
+github fable-elmish/react
+github fable-compiler/fable-react
+
 nuget FSharp.Core redirects: force
 nuget Fable.JsonConverter
 nuget Giraffe

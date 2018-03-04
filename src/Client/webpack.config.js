@@ -42,7 +42,8 @@ module.exports = {
       }
     },
     hot: true,
-    inline: true
+    inline: true,
+    historyApiFallback: true,
   },
   module: {
     rules: [

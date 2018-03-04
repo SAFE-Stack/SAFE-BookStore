@@ -2,16 +2,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+  <Import Project="../Shared/Shared.props" />
   <ItemGroup>
-    <Compile Include="ReleaseNotes.fs" />
-    <Compile Include="../Server/Shared/Domain.fs" />
-    <Compile Include="../Server/Shared/ServerUrls.fs" />
-    <Compile Include="Pages.fs" />
-    <Compile Include="Style.fs" />
-    <Compile Include="views/Menu.fs" />
-    <Compile Include="pages/Home.fs" />
-    <Compile Include="pages/WishList.fs" />
-    <Compile Include="pages/Login.fs" />
+    <Compile Include="withHydrate.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

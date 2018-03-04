@@ -1,10 +1,21 @@
 /// API urls shared between client and server.
-[<RequireQualifiedAccess>]
 module ServerCode.ServerUrls
 
-[<Literal>]
-let WishList = "/api/wishlist/"
-[<Literal>]
-let ResetTime = "/api/wishlist/resetTime/"
-[<Literal>]
-let Login = "/api/users/login/"
+[<RequireQualifiedAccess>]
+module PageUrls =
+  [<Literal>]
+  let Home = "/"
+  [<Literal>]
+  let WishList = "/wishlist"
+  [<Literal>]
+  let Login = "/login"
+
+[<RequireQualifiedAccess>]
+module APIUrls =
+
+  [<Literal>]
+  let WishList = "/api/wishlist/"
+  [<Literal>]
+  let ResetTime = "/api/wishlist/resetTime/"
+  [<Literal>]
+  let Login = "/api/users/login/"
