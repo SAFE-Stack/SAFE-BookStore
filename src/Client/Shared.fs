@@ -41,7 +41,7 @@ let viewPage model dispatch =
         [ WishList.view m (WishListMsg >> dispatch) ]
 
 /// Constructs the view for the application given the model.
-let view model dispatch =
+let view dispatch model =
     div [] [
         Menu.view (Logout >> dispatch) model.User
         hr []

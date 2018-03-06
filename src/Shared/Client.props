@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ItemGroup>
+    <Compile Include="../Client/ReleaseNotes.fs" />
+    <Compile Include="../Client/Pages.fs" />
+    <Compile Include="../Client/Style.fs" />
+    <Compile Include="../Client/views/Menu.fs" />
+    <Compile Include="../Client/pages/Home.fs" />
+    <Compile Include="../Client/pages/WishList.fs" />
+    <Compile Include="../Client/pages/Login.fs" />
+    <Compile Include="../Client/Shared.fs" />
+  </ItemGroup>
+</Project>

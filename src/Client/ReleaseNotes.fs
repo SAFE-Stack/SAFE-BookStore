@@ -1,4 +1,4 @@
-module Client.ReleaseNotes
+module internal ReleaseNotes
 
 let Version = "0.9.9"
 

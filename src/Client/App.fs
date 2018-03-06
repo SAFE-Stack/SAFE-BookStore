@@ -55,20 +55,20 @@ let deleteUserCmd =
     ]
 
 let init result =
-    let user = loadUser ()
     let stateJson: string option = !!Browser.window?__INIT_MODEL__
     match stateJson with
     | Some json ->
         let model: Model = ofJson json
         model, Cmd.none
     | _ ->
+        let user = loadUser ()
         let model =
             { User = user
               PageModel = HomePageModel }
 
         urlUpdate result model
 
-let update msg model =
+let update model msg =
     match msg, model.PageModel with
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
@@ -125,7 +125,6 @@ let withReact =
     then Program.withReactHydrate
     else Program.withReact
 
-open System.Text.RegularExpressions
 
 // App
 Program.mkProgram init update view

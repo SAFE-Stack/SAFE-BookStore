@@ -11,8 +11,7 @@ open ServerTypes
 open Client.Shared
 open Giraffe.GiraffeViewEngine
 open Fable.Helpers.ReactServer
-
-#if DEBUG
+#if DEBUG_SSR
 let assetsBaseUrl = "http://localhost:8080"
 #else
 let assetsBaseUrl = ""
@@ -20,7 +19,7 @@ let assetsBaseUrl = ""
 
 let index (model: Model) =
   let jsonState = toJson (toJson model)
-  let htmlStr = Client.Shared.view model ignore |> renderToString
+  let htmlStr = Client.Shared.view ignore model |> renderToString
   html []
     [ head [] [ meta [ _httpEquiv "Content-Type"; _content "text/html"; _charset "utf-8" ] ]
       title [] [ rawText "SAFE-Stack sample" ]
