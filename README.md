@@ -341,7 +341,7 @@ Don't worry the file is already in `.gitignore` so your password will not be com
 #### Initial docker push
 
 In order to release a container you need to create a new entry in [RELEASE_NOTES.md] and run `release.cmd`.
-This will build the server and client, run all test, put the app into a docker container and push it to your docker hub repro.
+This will build the server and client, run all test, put the app into a docker container and push it to your docker hub repo.
 
 #### Azure Portal
 
