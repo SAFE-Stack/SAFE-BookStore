@@ -310,7 +310,7 @@ testCase "login with test user" <| fun () ->
 
 ## Deployment
 
-The deployment for this repo works via [docker](https://www.docker.com/) and therefore you need docker installed on your machine.
+The deployment for this repo works via [docker](https://www.docker.com/) with Linux containers and therefore you need docker installed on your machine.
 
 ### Microsoft Azure
 
@@ -341,7 +341,7 @@ Don't worry the file is already in `.gitignore` so your password will not be com
 #### Initial docker push
 
 In order to release a container you need to create a new entry in [RELEASE_NOTES.md] and run `release.cmd`.
-This will build the server and client, run all test, put the app into a docker container and push it to your docker hub repro.
+This will build the server and client, run all test, put the app into a docker container and push it to your docker hub repo.
 
 #### Azure Portal
 
