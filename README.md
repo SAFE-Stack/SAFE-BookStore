@@ -310,7 +310,7 @@ testCase "login with test user" <| fun () ->
 
 ## Deployment
 
-The deployment for this repo works via [docker](https://www.docker.com/) and therefore you need docker installed on your machine.
+The deployment for this repo works via [docker](https://www.docker.com/) with Linux containers and therefore you need docker installed on your machine.
 
 ### Microsoft Azure
 
