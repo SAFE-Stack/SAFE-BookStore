@@ -1,3 +1,6 @@
+### 0.9.4 - 2018-03-06
+* Upload latest changes
+
 ### 0.8.5 - 2017-10-13
 * Test docker container before we ship
 
