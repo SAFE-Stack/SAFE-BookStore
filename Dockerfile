@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore:2.0.4
+FROM microsoft/aspnetcore
 COPY /deploy .
 WORKDIR .
 EXPOSE 8085
