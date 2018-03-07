@@ -82,29 +82,37 @@ let update msg model =
         model, Cmd.none
 
     | LoginMsg msg, LoginModel m ->
-        let onSuccess newUser =
-            if model.User = Some newUser then
-                Cmd.ofMsg (LoggedIn newUser)
-            else
-                saveUserCmd newUser
+        let m, cmd, externalMsg = Login.update msg m
 
-        let m, cmd = Login.update LoginMsg onSuccess msg m
+        let cmd2 =
+            match externalMsg with
+            | Login.ExternalMsg.NoOp ->
+                Cmd.none
+            | Login.ExternalMsg.UserLoggedIn newUser ->
+                Cmd.ofMsg (LoggedIn newUser)
+
         { model with
-            PageModel = LoginModel m }, cmd
+            PageModel = LoginModel m },
+                Cmd.batch [
+                    Cmd.map LoginMsg cmd
+                    cmd2 ]
 
     | LoginMsg _, _ -> model, Cmd.none
 
     | WishListMsg msg, WishListModel m ->
-        let m, cmd = WishList.update WishListMsg msg m
+        let m, cmd = WishList.update msg m
         { model with
-            PageModel = WishListModel m }, cmd
+            PageModel = WishListModel m }, Cmd.map WishListMsg cmd
 
     | WishListMsg _, _ -> 
         model, Cmd.none
 
     | LoggedIn newUser, _ ->
         let nextPage = Page.WishList
-        { model with User = Some newUser }, Navigation.newUrl (toHash nextPage)
+        { model with User = Some newUser },
+            Cmd.batch [
+                saveUserCmd newUser
+                Navigation.newUrl (toHash nextPage) ]
 
     | LoggedOut, _ ->
         { model with

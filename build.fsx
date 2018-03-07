@@ -294,7 +294,7 @@ Target "TestDockerImage" (fun _ ->
     let result =
         ExecProcess (fun info ->
             info.FileName <- "docker"
-            info.Arguments <- sprintf "run -d -p 127.0.0.1:8085:8085 --rm --name %s -it %s/%s" testImageName dockerUser dockerImageName) TimeSpan.MaxValue
+            info.Arguments <- sprintf "run -d -p 127.0.0.1:8086:8085 --rm --name %s -it %s/%s" testImageName dockerUser dockerImageName) TimeSpan.MaxValue
     if result <> 0 then failwith "Docker run failed"
 
     System.Threading.Thread.Sleep 5000 |> ignore  // give server some time to start
