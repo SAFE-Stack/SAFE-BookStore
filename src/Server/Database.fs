@@ -21,7 +21,7 @@ type IDatabaseFunctions =
 let getDatabase databaseType startupTime =
     match databaseType with
     | DatabaseType.AzureStorage connection ->
-        Storage.WebJobs.startWebJobs connection
+        //Storage.WebJobs.startWebJobs connection
         { new IDatabaseFunctions with
             member __.LoadWishList key = Storage.AzureTable.getWishListFromDB connection key
             member __.SaveWishList wishList = Storage.AzureTable.saveWishListToDB connection wishList
