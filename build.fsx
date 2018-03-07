@@ -205,7 +205,7 @@ Target "Run" (fun _ ->
 
         if result <> 0 then failwith "Website shut down." }
 
-    let fablewatch = async { runDotnet clientPath "fable webpack-dev-server --port free" }
+    let fablewatch = async { runDotnet clientPath "fable webpack-dev-server --port free -- --mode development" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
