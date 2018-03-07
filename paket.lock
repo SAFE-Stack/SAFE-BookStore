@@ -17,43 +17,43 @@ NUGET
       System.Collections.Immutable (>= 1.4) - restriction: >= netstandard1.6
       System.Reflection.Metadata (>= 1.5) - restriction: >= netstandard1.6
       System.Runtime.Loader (>= 4.3) - restriction: >= netstandard1.6
-    Fable.Core (1.3.8)
+    Fable.Core (1.3.9)
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
       NETStandard.Library (>= 1.6.1) - restriction: >= netstandard1.6
-    Fable.Elmish (1.0.1) - restriction: >= netstandard1.6
-      Fable.Core (>= 1.2.4) - restriction: >= netstandard1.6
-      Fable.PowerPack (>= 1.3) - restriction: >= netstandard1.6
-      FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
-    Fable.Elmish.Browser (1.0)
-      Fable.Core (>= 1.2.4) - restriction: >= netstandard1.6
-      Fable.Elmish (>= 1.0) - restriction: >= netstandard1.6
-      Fable.Import.Browser (>= 0.1) - restriction: >= netstandard1.6
-      FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
-    Fable.Elmish.Debugger (1.0.1)
-      Fable.Core (>= 1.3.1) - restriction: >= netstandard1.6
-      Fable.Elmish (>= 1.0) - restriction: >= netstandard1.6
-      FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
-    Fable.Elmish.HMR (1.0)
-      Fable.Core (>= 1.2.4) - restriction: >= netstandard1.6
-      Fable.Elmish (>= 0.9.2) - restriction: >= netstandard1.6
-      FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
-    Fable.Elmish.React (1.0.1)
-      Fable.Core (>= 1.3.8) - restriction: >= netstandard1.6
-      Fable.Elmish (>= 1.0.1) - restriction: >= netstandard1.6
-      Fable.PowerPack (>= 1.3.2) - restriction: >= netstandard1.6
-      Fable.React (>= 2.0) - restriction: >= netstandard1.6
-      FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
-    Fable.Import.Browser (1.1.1) - restriction: >= netstandard1.6
+    Fable.Elmish (2.0.0-beta-2)
+      Fable.Core (>= 1.3.8) - restriction: >= netstandard2.0
+      Fable.PowerPack (>= 1.3.4) - restriction: >= netstandard2.0
+      FSharp.Core (>= 4.3.2) - restriction: >= netstandard2.0
+    Fable.Elmish.Browser (2.0.0-beta-1)
+      Fable.Core (>= 1.3.8) - restriction: >= netstandard2.0
+      Fable.Elmish (>= 2.0.0-beta-1) - restriction: >= netstandard2.0
+      Fable.Import.Browser (>= 1.1.1) - restriction: >= netstandard2.0
+      FSharp.Core (>= 4.3.3) - restriction: >= netstandard2.0
+    Fable.Elmish.Debugger (2.0.0-beta-1)
+      Fable.Core (>= 1.3.8) - restriction: >= netstandard2.0
+      Fable.Elmish (>= 2.0.0-beta-1) - restriction: >= netstandard2.0
+      FSharp.Core (>= 4.3.3) - restriction: >= netstandard2.0
+    Fable.Elmish.HMR (2.0.0-beta-1)
+      Fable.Core (>= 1.3.8) - restriction: >= netstandard2.0
+      Fable.Elmish (>= 2.0.0-beta-1) - restriction: >= netstandard2.0
+      FSharp.Core (>= 4.3.3) - restriction: >= netstandard2.0
+    Fable.Elmish.React (2.0.0-beta-2)
+      Fable.Core (>= 1.3.8) - restriction: >= netstandard2.0
+      Fable.Elmish (>= 2.0.0-beta-1) - restriction: >= netstandard2.0
+      Fable.PowerPack (>= 1.3.4) - restriction: >= netstandard2.0
+      Fable.React (>= 2.1) - restriction: >= netstandard2.0
+      FSharp.Core (>= 4.3.3) - restriction: >= netstandard2.0
+    Fable.Import.Browser (1.1.1) - restriction: >= netstandard2.0
       Fable.Core (>= 1.3.7) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
     Fable.JsonConverter (1.0.7)
       FSharp.Core (>= 4.2.3) - restriction: || (>= net45) (>= netstandard1.6)
       Newtonsoft.Json (>= 10.0.3) - restriction: || (>= net45) (>= netstandard1.6)
-    Fable.PowerPack (1.3.5) - restriction: >= netstandard1.6
+    Fable.PowerPack (1.3.5) - restriction: >= netstandard2.0
       Fable.Core (>= 1.3.8) - restriction: >= netstandard1.6
       Fable.Import.Browser (>= 1.0) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
-    Fable.React (2.1) - restriction: >= netstandard1.6
+    Fable.React (3.0.0-alpha-002)
       Fable.Core (>= 1.3.7) - restriction: >= netstandard1.6
       Fable.Import.Browser (>= 0.1) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
