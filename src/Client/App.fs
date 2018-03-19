@@ -1,47 +1,28 @@
 module Client.App
 
 open Fable.Core
+open Fable.Core.JsInterop
 
 open Fable.Import
 open Fable.PowerPack
 open Elmish
 open Elmish.React
-open Fable.Import.Browser
 open Elmish.Browser.Navigation
 open Elmish.HMR
+open Client.Shared
 open Client.Pages
 open ServerCode.Domain
 
 JsInterop.importSideEffects "whatwg-fetch"
 JsInterop.importSideEffects "babel-polyfill"
 
-/// The composed model for the different possible page states of the application
-type PageModel =
-    | HomePageModel
-    | LoginModel of Login.Model
-    | WishListModel of WishList.Model
-
-/// The composed model for the application, which is a single page state plus login information
-type Model =
-    { User : UserData option
-      PageModel : PageModel }
-
-/// The composed set of messages that update the state of the application
-type Msg =
-    | LoggedIn of UserData
-    | LoggedOut
-    | StorageFailure of exn
-    | LoginMsg of Login.Msg
-    | WishListMsg of WishList.Msg
-    | Logout of unit
-
-/// The navigation logic of the application given a page identity parsed from the .../#info 
+/// The navigation logic of the application given a page identity parsed from the .../#info
 /// information in the URL.
-let urlUpdate (result:Page option) model =
+let urlUpdate (result:Page option) (model: Model) =
     match result with
     | None ->
         Browser.console.error("Error parsing url: " + Browser.window.location.href)
-        ( model, Navigation.modifyUrl (toHash Page.Home) )
+        ( model, Navigation.modifyUrl (toPath Page.Home) )
 
     | Some Page.Login ->
         let m, cmd = Login.init model.User
@@ -64,18 +45,30 @@ let loadUser () : UserData option =
 let saveUserCmd user =
     Cmd.ofFunc (BrowserLocalStorage.save "user") user (fun _ -> LoggedIn user) StorageFailure
 
+let deleteUserCookie name =
+    Browser.document.cookie <- name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
+
 let deleteUserCmd =
-    Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
+    Cmd.batch [
+        Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
+        Cmd.ofFunc  deleteUserCookie "jwt" (fun _ -> LoggedOut) StorageFailure
+    ]
 
 let init result =
-    let user = loadUser ()
-    let model =
-        { User = user
-          PageModel = HomePageModel }
+    let stateJson: string option = !!Browser.window?__INIT_MODEL__
+    match stateJson with
+    | Some json ->
+        let model: Model = ofJson json
+        model, Cmd.none
+    | _ ->
+        let user = loadUser ()
+        let model =
+            { User = user
+              PageModel = HomePageModel }
 
-    urlUpdate result model
+        urlUpdate result model
 
-let update msg model =
+let update model msg =
     match msg, model.PageModel with
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
@@ -89,7 +82,7 @@ let update msg model =
             | Login.ExternalMsg.NoOp ->
                 Cmd.none
             | Login.ExternalMsg.UserLoggedIn newUser ->
-                Cmd.ofMsg (LoggedIn newUser)
+                saveUserCmd newUser
 
         { model with
             PageModel = LoginModel m },
@@ -104,53 +97,34 @@ let update msg model =
         { model with
             PageModel = WishListModel m }, Cmd.map WishListMsg cmd
 
-    | WishListMsg _, _ -> 
+    | WishListMsg _, _ ->
         model, Cmd.none
 
     | LoggedIn newUser, _ ->
         let nextPage = Page.WishList
         { model with User = Some newUser },
             Cmd.batch [
-                saveUserCmd newUser
-                Navigation.newUrl (toHash nextPage) ]
+                Navigation.newUrl (toPath nextPage) ]
 
     | LoggedOut, _ ->
         { model with
             User = None
-            PageModel = HomePageModel }, 
-        Navigation.newUrl (toHash Page.Home)
+            PageModel = HomePageModel },
+        Cmd.batch [
+            Navigation.newUrl (toPath Page.Home) ]
 
     | Logout(), _ ->
         model, deleteUserCmd
 
-// VIEW
-
-open Fable.Helpers.React
-open Fable.Helpers.React.Props
-open Client.Style
-
-/// Constructs the view for a page given the model and dispatcher.
-let viewPage model dispatch =
-    match model.PageModel with
-    | HomePageModel ->
-        Home.view ()
-
-    | LoginModel m ->
-        [ Login.view m (LoginMsg >> dispatch) ]
-
-    | WishListModel m ->
-        [ WishList.view m (WishListMsg >> dispatch) ]
-
-/// Constructs the view for the application given the model.
-let view model dispatch =
-    div [] [ 
-        Menu.view (Logout >> dispatch) model.User
-        hr []
-        div [ centerStyle "column" ] (viewPage model dispatch)
-    ]
 
 open Elmish.React
 open Elmish.Debug
+
+let withReact =
+    if (!!Browser.window?__INIT_MODEL__)
+    then Program.withReactHydrate
+    else Program.withReact
+
 
 // App
 Program.mkProgram init update view
@@ -159,7 +133,7 @@ Program.mkProgram init update view
 |> Program.withConsoleTrace
 |> Program.withHMR
 #endif
-|> Program.withReact "elmish-app"
+|> withReact "elmish-app"
 #if DEBUG
 |> Program.withDebugger
 #endif

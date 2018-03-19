@@ -2,6 +2,7 @@
 module ServerCode.WebServer
 
 open ServerCode
+open ServerCode.ServerUrls
 open Giraffe
 open Giraffe.TokenRouter
 open RequestErrors
@@ -16,13 +17,16 @@ let webApp databaseType root =
 
     router notfound [
         GET [
-            route "/" (htmlFile (System.IO.Path.Combine(root,"index.html")))
-            route ServerUrls.WishList => Auth.requiresJwtToken (WishList.getWishList db.LoadWishList)
-            route ServerUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
+            route PageUrls.Home => Auth.addUserDataForPage Pages.home
+            route PageUrls.Login => Auth.addUserDataForPage Pages.login
+            route PageUrls.WishList => Auth.requiresLoginForPage Pages.wishList
+
+            route APIUrls.WishList => Auth.requiresJwtTokenForAPI (WishList.getWishList db.LoadWishList)
+            route APIUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
         ]
 
         POST [
-            route ServerUrls.Login Auth.login
-            route ServerUrls.WishList => Auth.requiresJwtToken (WishList.postWishList db.SaveWishList)
+            route APIUrls.Login Auth.login
+            route APIUrls.WishList => Auth.requiresJwtTokenForAPI (WishList.postWishList db.SaveWishList)
         ]
     ]
