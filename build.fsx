@@ -138,7 +138,7 @@ Target "InstallClient" (fun _ ->
 
 Target "BuildClient" (fun _ ->
     runDotnet clientPath "restore"
-    runDotnet clientPath "fable webpack --port free -- -p"
+    runDotnet clientPath "fable webpack --port free -- -p --mode production"
 )
 
 // --------------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ Target "Run" (fun _ ->
 
         if result <> 0 then failwith "Website shut down." }
 
-    let fablewatch = async { runDotnet clientPath "fable webpack-dev-server --port free" }
+    let fablewatch = async { runDotnet clientPath "fable webpack-dev-server --port free -- --mode development" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
@@ -226,11 +226,11 @@ Target "RunSSR" (fun _ ->
             ExecProcess (fun info ->
                 info.FileName <- dotnetExePath
                 info.WorkingDirectory <- serverTestsPath
-                info.Arguments <- sprintf "watch msbuild /t:TestAndRun /p:DotNetHost=%s /p:Configuration=DebugSSR" dotnetExePath) TimeSpan.MaxValue
+                info.Arguments <- sprintf "watch msbuild /t:TestAndRun /p:DotNetHost=%s /p:DebugSSR=true" dotnetExePath) TimeSpan.MaxValue
 
         if result <> 0 then failwith "Website shut down." }
 
-    let fablewatch = async { runDotnet clientPath "fable webpack-dev-server --port free" }
+    let fablewatch = async { runDotnet clientPath "fable webpack --port free -- -w --mode development" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(10000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" serverPort) |> ignore }

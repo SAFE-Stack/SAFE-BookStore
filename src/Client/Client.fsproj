@@ -4,6 +4,7 @@
   </PropertyGroup>
   <Import Project="../Shared/Shared.props" />
   <ItemGroup>
+    <Compile Include="withHydrate.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

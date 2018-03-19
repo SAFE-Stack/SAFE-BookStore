@@ -8,11 +8,6 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
-
-  <PropertyGroup Condition="'$(Configuration)'=='DebugSSR'">
-    <DefineConstants>TRACE;DEBUG;DEBUG_SSR</DefineConstants>
-  </PropertyGroup>
-
   <Import Project="../Shared/Shared.props" />
 
   <ItemGroup>

@@ -7,6 +7,7 @@ open Fable.Import
 open Fable.PowerPack
 open Elmish
 open Elmish.React
+open Elmish.React.Extension
 open Elmish.Browser.Navigation
 open Elmish.HMR
 open Client.Shared
@@ -68,7 +69,7 @@ let init result =
 
         urlUpdate result model
 
-let update model msg =
+let update msg model =
     match msg, model.PageModel with
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
@@ -117,7 +118,6 @@ let update model msg =
         model, deleteUserCmd
 
 
-open Elmish.React
 open Elmish.Debug
 
 let withReact =

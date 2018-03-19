@@ -13,12 +13,12 @@ nuget System.Net.NetworkInformation
 nuget jose-jwt
 
 nuget Fable.Core
-nuget Fable.React 3.0.0-alpha-002
-nuget Fable.Elmish 2.0.0-beta-2
-nuget Fable.Elmish.React 2.0.0-beta-2
-nuget Fable.Elmish.Browser 2.0.0-beta-1
-nuget Fable.Elmish.Debugger 2.0.0-beta-1
-nuget Fable.Elmish.HMR 2.0.0-beta-1
+nuget Fable.React 3.0.0
+nuget Fable.Elmish
+nuget Fable.Elmish.React
+nuget Fable.Elmish.Browser
+nuget Fable.Elmish.Debugger
+nuget Fable.Elmish.HMR
 nuget Microsoft.Azure.WebJobs prerelease
 nuget Microsoft.Azure.WebJobs.Extensions prerelease
 
