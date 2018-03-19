@@ -3,9 +3,19 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+
+
+  <PropertyGroup Condition="'$(Configuration)'=='DebugSSR'">
+    <DefineConstants>TRACE;DEBUG;DEBUG_SSR</DefineConstants>
+  </PropertyGroup>
+
+  <Import Project="../Shared/Shared.props" />
+
   <ItemGroup>
-    <Compile Include="Shared/Domain.fs" />
-    <Compile Include="Shared/ServerUrls.fs" />
     <Compile Include="ServerTypes.fs" />
     <Compile Include="JsonWebToken.fs" />
     <Compile Include="FableJson.fs" />
@@ -16,6 +26,8 @@
     <Compile Include="Storage/AzureTable.fs" />
     <Compile Include="Storage/WebJobs.fs" />
     <Compile Include="Database.fs" />
+    <Compile Include="Templates.fs" />
+    <Compile Include="Pages.fs" />
     <Compile Include="WebServer.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

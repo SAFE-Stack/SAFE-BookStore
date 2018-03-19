@@ -41,7 +41,7 @@ type Msg =
 /// Get the wish list from the server, used to populate the model
 let getWishList token =
     promise {
-        let url = ServerUrls.WishList
+        let url = ServerUrls.APIUrls.WishList
         let props =
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
@@ -51,7 +51,7 @@ let getWishList token =
 
 let getResetTime token =
     promise {
-        let url = ServerUrls.ResetTime
+        let url = ServerUrls.APIUrls.ResetTime
         let props =
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
@@ -69,7 +69,7 @@ let loadResetTimeCmd token =
 
 let postWishList (token,wishList) =
     promise {
-        let url = ServerUrls.WishList
+        let url = ServerUrls.APIUrls.WishList
         let body = toJson wishList
         let props =
             [ RequestProperties.Method HttpMethod.POST
@@ -83,6 +83,7 @@ let postWishList (token,wishList) =
 
 let postWishListCmd (token,wishList) =
     Cmd.ofPromise postWishList (token,wishList) FetchedWishList FetchError
+
 
 let init (user:UserData) =
     { WishList = WishList.New user.UserName
@@ -135,7 +136,7 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
         { model with
             WishList = wishList
-            ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBook }, 
+            ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBook },
                 postWishListCmd(model.Token,wishList)
 
     | AddBook ->
@@ -145,7 +146,7 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
                 { model with ErrorMsg = Some err }, Cmd.none
             | None ->
                 let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
-                { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid(); ErrorMsg = None }, 
+                { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid(); ErrorMsg = None },
                     postWishListCmd(model.Token,wishList)
         else
             { model with
