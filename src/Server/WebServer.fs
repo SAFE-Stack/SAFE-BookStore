@@ -17,16 +17,16 @@ let webApp databaseType root =
 
     router notfound [
         GET [
-            route PageUrls.Home => Auth.addUserDataForPage Pages.home
-            route PageUrls.Login => Auth.addUserDataForPage Pages.login
-            route PageUrls.WishList => Auth.requiresLoginForPage Pages.wishList
+            route PageUrls.Home (Auth.addUserDataForPage Pages.home)
+            route PageUrls.Login (Auth.addUserDataForPage Pages.login)
+            route PageUrls.WishList (Auth.requiresLoginForPage Pages.wishList)
 
-            route APIUrls.WishList => Auth.requiresJwtTokenForAPI (WishList.getWishList db.LoadWishList)
+            route APIUrls.WishList (Auth.requiresJwtTokenForAPI (WishList.getWishList db.LoadWishList))
             route APIUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
         ]
 
         POST [
             route APIUrls.Login Auth.login
-            route APIUrls.WishList => Auth.requiresJwtTokenForAPI (WishList.postWishList db.SaveWishList)
+            route APIUrls.WishList (Auth.requiresJwtTokenForAPI (WishList.postWishList db.SaveWishList))
         ]
     ]
