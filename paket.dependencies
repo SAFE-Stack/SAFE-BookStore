@@ -13,7 +13,7 @@ nuget System.Net.NetworkInformation
 nuget jose-jwt
 
 nuget Fable.Core
-nuget Fable.React 3.0.0-alpha-002
+nuget Fable.React 
 nuget Fable.Elmish 2.0.0-beta-2
 nuget Fable.Elmish.React 2.0.0-beta-2
 nuget Fable.Elmish.Browser 2.0.0-beta-1
