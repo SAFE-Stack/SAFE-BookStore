@@ -35,7 +35,7 @@ let index (model: Model) =
           attr "integrity" "sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
           _crossorigin "anonymous" ]
       link [ _rel "stylesheet"; _href "css/site.css" ]
-      link [ _rel "shortcut icon"; _type "image/png"; _href "/images/safe_favicon.png" ]
+      link [ _rel "shortcut icon"; _type "image/png"; _href "/Images/safe_favicon.png" ]
       body [ _class "app-container" ] [
         div [ _id "elmish-app"; _class "elmish-app" ] [
           rawText htmlStr
