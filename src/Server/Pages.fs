@@ -41,3 +41,12 @@ let wishList (getWishListFromDB : string -> Task<WishList>) (user: UserData): Ht
         }
         return! ctx.WriteHtmlViewAsync (Templates.index model)
     }
+
+let notfound: HttpHandler = fun _ ctx ->
+    task {
+        let model: Model = {
+            User = None
+            PageModel = PageModel.HomePageModel
+        }
+        return! ctx.WriteHtmlViewAsync (Templates.index model)
+    }

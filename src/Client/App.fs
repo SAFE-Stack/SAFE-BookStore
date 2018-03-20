@@ -17,13 +17,16 @@ open ServerCode.Domain
 JsInterop.importSideEffects "whatwg-fetch"
 JsInterop.importSideEffects "babel-polyfill"
 
+let handleNotFount (model: Model) =
+    Browser.console.error("Error parsing url: " + Browser.window.location.href)
+    ( model, Navigation.modifyUrl (toPath Page.Home) )
+
 /// The navigation logic of the application given a page identity parsed from the .../#info
 /// information in the URL.
 let urlUpdate (result:Page option) (model: Model) =
     match result with
     | None ->
-        Browser.console.error("Error parsing url: " + Browser.window.location.href)
-        ( model, Navigation.modifyUrl (toPath Page.Home) )
+        handleNotFount model
 
     | Some Page.Login ->
         let m, cmd = Login.init model.User
@@ -60,7 +63,9 @@ let init result =
     match stateJson with
     | Some json ->
         let model: Model = ofJson json
-        model, Cmd.none
+        match result with
+        | Some _ -> model, Cmd.none
+        | None -> handleNotFount model
     | _ ->
         let user = loadUser ()
         let model =
