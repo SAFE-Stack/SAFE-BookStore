@@ -30,9 +30,11 @@ let login (user: UserData option): HttpHandler = fun _ ctx ->
         return! ctx.WriteHtmlViewAsync (Templates.index model)
     }
 
-let wishList (user: UserData): HttpHandler = fun _ ctx ->
+let wishList (getWishListFromDB : string -> Task<WishList>) (user: UserData): HttpHandler = fun _ ctx ->
     task {
+        let! wishListFromDb = getWishListFromDB user.UserName
         let wishList, _ = Client.WishList.init user
+        let wishList = { wishList with WishList = wishListFromDb }
         let model: Model = {
             User = Some user
             PageModel = PageModel.WishListModel wishList

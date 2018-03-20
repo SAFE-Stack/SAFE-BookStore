@@ -19,7 +19,7 @@ let webApp databaseType root =
         GET [
             route PageUrls.Home (Auth.addUserDataForPage Pages.home)
             route PageUrls.Login (Auth.addUserDataForPage Pages.login)
-            route PageUrls.WishList (Auth.requiresLoginForPage Pages.wishList)
+            route PageUrls.WishList (Auth.requiresLoginForPage (Pages.wishList db.LoadWishList))
 
             route APIUrls.WishList (Auth.requiresJwtTokenForAPI (WishList.getWishList db.LoadWishList))
             route APIUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
