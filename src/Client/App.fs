@@ -100,15 +100,13 @@ let update msg model =
     | LoggedIn newUser, _ ->
         let nextPage = Page.WishList
         { model with User = Some newUser },
-            Cmd.batch [
-                Navigation.newUrl (toPath nextPage) ]
+        Navigation.newUrl (toPath nextPage)
 
     | LoggedOut, _ ->
         { model with
             User = None
             PageModel = HomePageModel },
-        Cmd.batch [
-            Navigation.newUrl (toPath Page.Home) ]
+        Navigation.newUrl (toPath Page.Home)
 
     | Logout(), _ ->
         model, deleteUserCmd
