@@ -37,6 +37,7 @@ group UITests
   nuget Canopy
   nuget Expecto
   nuget phantomjs
+  nuget Selenium.WebDriver.ChromeDriver
 
 group Build
   source https://nuget.org/api/v2
