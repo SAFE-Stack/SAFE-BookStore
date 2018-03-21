@@ -17,7 +17,7 @@ open ServerCode.Domain
 JsInterop.importSideEffects "whatwg-fetch"
 JsInterop.importSideEffects "babel-polyfill"
 
-let handleNotFount (model: Model) =
+let handleNotFound (model: Model) =
     Browser.console.error("Error parsing url: " + Browser.window.location.href)
     ( model, Navigation.modifyUrl (toPath Page.Home) )
 
@@ -26,7 +26,7 @@ let handleNotFount (model: Model) =
 let urlUpdate (result:Page option) (model: Model) =
     match result with
     | None ->
-        handleNotFount model
+        handleNotFound model
 
     | Some Page.Login ->
         let m, cmd = Login.init model.User
@@ -65,7 +65,7 @@ let init result =
         let model: Model = ofJson json
         match result with
         | Some _ -> model, Cmd.none
-        | None -> handleNotFount model
+        | None -> handleNotFound model
     | _ ->
         let user = loadUser ()
         let model =
