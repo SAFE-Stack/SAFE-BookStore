@@ -48,25 +48,17 @@ let loadUser () : UserData option =
 let saveUserCmd user =
     Cmd.ofFunc (BrowserLocalStorage.save "user") user (fun _ -> LoggedIn user) StorageFailure
 
-let deleteUserCookie name =
-    Browser.document.cookie <- name + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;"
-
 let deleteUserCmd =
-    Cmd.batch [
-        Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
-        Cmd.ofFunc  deleteUserCookie "jwt" (fun _ -> LoggedOut) StorageFailure
-    ]
+    Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
 
 let init result =
+    let user = loadUser ()
     let stateJson: string option = !!Browser.window?__INIT_MODEL__
-    match stateJson with
-    | Some json ->
+    match stateJson, result with
+    | Some json, Some Page.Home ->
         let model: Model = ofJson json
-        match result with
-        | Some _ -> model, Cmd.none
-        | None -> handleNotFound model
+        { model with User = user }, Cmd.none
     | _ ->
-        let user = loadUser ()
         let model =
             { User = user
               PageModel = HomePageModel }

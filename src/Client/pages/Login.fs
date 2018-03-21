@@ -43,7 +43,6 @@ let authUser (login:Login) =
 
         let props =
             [ RequestProperties.Method HttpMethod.POST
-              RequestProperties.Credentials RequestCredentials.Sameorigin
               Fetch.requestHeaders [
                   HttpRequestHeaders.ContentType "application/json" ]
               RequestProperties.Body !^body ]

@@ -12,14 +12,19 @@ open Client.Shared
 open Giraffe.GiraffeViewEngine
 open Fable.Helpers.ReactServer
 
-let index (model: Model) =
-  // Note we call ofJson twice here,
-  // because Elmish's model can be some complicated type instead of pojo.
-  // The first one will seriallize the state to a json string,
-  // and the second one will seriallize the json string to a js string,
-  // so we can deseriallize it by Fable's ofJson and get the correct types.
-  let jsonState = toJson (toJson model)
-  let htmlStr = Client.Shared.view model ignore |> renderToString
+let index (model: Model option) =
+  let jsonState, htmlStr =
+    match model with
+    | Some model ->
+        // Note we call ofJson twice here,
+        // because Elmish's model can be some complicated type instead of pojo.
+        // The first one will seriallize the state to a json string,
+        // and the second one will seriallize the json string to a js string,
+        // so we can deseriallize it by Fable's ofJson and get the correct types.
+        toJson (toJson model),
+        Client.Shared.view model ignore |> renderToString
+    | None ->
+        "null", ""
   html []
     [ head [] [ meta [ _httpEquiv "Content-Type"; _content "text/html"; _charset "utf-8" ] ]
       title [] [ rawText "SAFE-Stack sample" ]

@@ -5,10 +5,6 @@ module ServerCode.ServerUrls
 module PageUrls =
   [<Literal>]
   let Home = "/"
-  [<Literal>]
-  let WishList = "/wishlist"
-  [<Literal>]
-  let Login = "/login"
 
 [<RequireQualifiedAccess>]
 module APIUrls =
