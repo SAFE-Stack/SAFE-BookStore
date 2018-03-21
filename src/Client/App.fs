@@ -7,7 +7,6 @@ open Fable.Import
 open Fable.PowerPack
 open Elmish
 open Elmish.React
-open Elmish.React.Extension
 open Elmish.Browser.Navigation
 open Elmish.HMR
 open Client.Shared
