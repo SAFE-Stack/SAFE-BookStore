@@ -39,7 +39,7 @@ group UITests
   nuget Canopy
   nuget Expecto
   nuget phantomjs
-  nuget Selenium.WebDriver.ChromeDriver ~> 2.36
+  nuget Selenium.WebDriver.ChromeDriver = 2.36
 
 group Build
   source https://nuget.org/api/v2
