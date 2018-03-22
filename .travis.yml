@@ -9,7 +9,7 @@ addons:
     packages:
       - libstdc++-4.9-dev
       - libunwind8-dev
-    chrome: stable
+    chrome: beta
 
 before_install:
   - chmod +x build.sh
