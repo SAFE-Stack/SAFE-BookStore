@@ -4,7 +4,7 @@ The following document describes the [SAFE-Stack](https://safe-stack.github.io/)
 SAFE is a technology stack that brings together several technologies into a single, coherent stack for typesafe,
 flexible end-to-end web-enabled applications that are written entirely in F#.
 
-![SAFE-Stack](src/Client/images/safe_logo.png "SAFE-Stack")
+![SAFE-Stack](src/Client/Images/safe_logo.png "SAFE-Stack")
 
 You can see it running on Microsoft Azure at http://fable-suave.azurewebsites.net.
 
@@ -206,7 +206,7 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
 4. Change the `Tomato.view` function (and add in required packages):
 
     ```fsharp
-    
+
     open Fable.Helpers.React
     open Fable.Helpers.React.Props
     //...
@@ -264,6 +264,15 @@ The [Fable](http://fable.io/) compiler is used to compile the F# client code to 
 "Isomorphic F#" started a bit as a joke about [Isomorphic JavaScript](http://isomorphic.net/). The naming is really bad, but the idea to have the same code running on client and server is really interesting.
 If you look at `src/Server/Shared/Domain.fs` then you will see code that is shared between client and server. On the server it is compiled to .NET core and for the client the Fable compiler is translating it into JavaScript.
 This is a really convenient technique for a shared domain model.
+
+
+### Server-Side Rendering
+
+This sample uses Server-Side Rendering (SSR) with [fable-react](https://github.com/fable-compiler/fable-react). This means the starting page is rendered on the ASP.NET Core server and sent as HTML to the client.
+This allows for better Search Engine Optimization and gives faster initial response, especially on mobile devices. Everything else is then rendered via [React](https://reactjs.org/) on the client.
+
+More info can be found in the [SSR tutorial](https://github.com/fable-compiler/fable-react/blob/master/docs/server-side-rendering.md).
+
 
 ## Testing
 
@@ -416,14 +425,6 @@ After that, deploying as described above should work just fine.
 
 - Or install the [Redux DevTools](http://extension.remotedev.io/) as a Chrome Extensions (recommended)
 Only one error remains, when visiting the WebApp the first time.
-
-### TypeProviders in the backend
-
-Sadly, .NET Core 2.0 currently does not support Type Providers, so you can not just add the NuGet packages like FSharp.Data to your backend project.
-
-### Additional Notes
-
-- You can not call the functions of Fable inside the F# interactive.
 
 ## Maintainer(s)
 

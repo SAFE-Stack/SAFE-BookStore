@@ -2,27 +2,35 @@
 module ServerCode.WebServer
 
 open ServerCode
+open ServerCode.ServerUrls
 open Giraffe
 open Giraffe.TokenRouter
 open RequestErrors
+open Microsoft.AspNetCore.Http
 
 /// Start the web server and connect to database
 let webApp databaseType root =
     let startupTime = System.DateTime.UtcNow
 
     let db = Database.getDatabase databaseType startupTime
-
-    let notfound = NOT_FOUND "Page not found"
+    let apiPathPrefix = PathString("/api")
+    let notfound: HttpHandler =
+        fun next ctx ->
+            if ctx.Request.Path.StartsWithSegments(apiPathPrefix) then
+                NOT_FOUND "Page not found" next ctx
+            else
+                Pages.notfound next ctx
 
     router notfound [
         GET [
-            route "/" (htmlFile (System.IO.Path.Combine(root,"index.html")))
-            route ServerUrls.WishList => Auth.requiresJwtToken (WishList.getWishList db.LoadWishList)
-            route ServerUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
+            route PageUrls.Home Pages.home
+
+            route APIUrls.WishList (Auth.requiresJwtTokenForAPI (WishList.getWishList db.LoadWishList))
+            route APIUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
         ]
 
         POST [
-            route ServerUrls.Login Auth.login
-            route ServerUrls.WishList => Auth.requiresJwtToken (WishList.postWishList db.SaveWishList)
+            route APIUrls.Login Auth.login
+            route APIUrls.WishList (Auth.requiresJwtTokenForAPI (WishList.postWishList db.SaveWishList))
         ]
     ]

@@ -4,6 +4,7 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Style
 open Pages
+open Client
 
 let view () =
     [
