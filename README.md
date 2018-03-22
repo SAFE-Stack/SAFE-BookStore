@@ -265,6 +265,15 @@ The [Fable](http://fable.io/) compiler is used to compile the F# client code to 
 If you look at `src/Server/Shared/Domain.fs` then you will see code that is shared between client and server. On the server it is compiled to .NET core and for the client the Fable compiler is translating it into JavaScript.
 This is a really convenient technique for a shared domain model.
 
+
+### Server-Side Rendering
+
+This sample uses Server-Side Rendering (SSR) with [fable-react](https://github.com/fable-compiler/fable-react). This means the starting page is rendered on the ASP.NET Core server and sent as HTML to the client.
+This allows for better Search Engine Optimization and gives faster initial response, especially on mobile devices. Everything else is then rendered via [React](https://reactjs.org/) on the client.
+
+More info can be found in the [SSR tutorial](https://github.com/fable-compiler/fable-react/blob/master/docs/server-side-rendering.md).
+
+
 ## Testing
 
 Start the full build (incl. UI tests) with:
@@ -416,14 +425,6 @@ After that, deploying as described above should work just fine.
 
 - Or install the [Redux DevTools](http://extension.remotedev.io/) as a Chrome Extensions (recommended)
 Only one error remains, when visiting the WebApp the first time.
-
-### TypeProviders in the backend
-
-Sadly, .NET Core 2.0 currently does not support Type Providers, so you can not just add the NuGet packages like FSharp.Data to your backend project.
-
-### Additional Notes
-
-- You can not call the functions of Fable inside the F# interactive.
 
 ## Maintainer(s)
 
