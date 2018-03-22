@@ -36,7 +36,8 @@ group UITests
   nuget FSharp.Core redirects: force
   nuget Canopy
   nuget Expecto
-  nuget phantomjs
+  nuget Selenium.WebDriver.ChromeDriver
+  nuget Selenium.WebDriver.GeckoDriver
 
 group Build
   source https://nuget.org/api/v2

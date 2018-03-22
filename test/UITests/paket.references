@@ -2,3 +2,5 @@ group UITests
 Canopy
 Expecto
 FSharp.Core
+Selenium.WebDriver.ChromeDriver
+Selenium.WebDriver.GeckoDriver
