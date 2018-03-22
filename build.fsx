@@ -145,8 +145,9 @@ Target "BuildClient" (fun _ ->
 // Rename driver for macOS or Linux
 
 Target "RenameDrivers" (fun _ ->
-    if not isWindows then
-        run yarnTool "add phantomjs-prebuilt" ""
+    ()
+    //if not isWindows then
+    //    run yarnTool "add phantomjs-prebuilt" ""
 )
 
 Target "RunServerTests" (fun _ ->
