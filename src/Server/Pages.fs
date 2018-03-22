@@ -18,6 +18,4 @@ let home: HttpHandler = fun _ ctx ->
     }
 
 let notfound: HttpHandler = fun _ ctx ->
-    task {
-        return! ctx.WriteHtmlViewAsync (Templates.index None)
-    }
+    ctx.WriteHtmlViewAsync (Templates.index None)
