@@ -4,7 +4,7 @@ The following document describes the [SAFE-Stack](https://safe-stack.github.io/)
 SAFE is a technology stack that brings together several technologies into a single, coherent stack for typesafe,
 flexible end-to-end web-enabled applications that are written entirely in F#.
 
-![SAFE-Stack](src/Client/images/safe_logo.png "SAFE-Stack")
+![SAFE-Stack](src/Client/Images/safe_logo.png "SAFE-Stack")
 
 You can see it running on Microsoft Azure at http://fable-suave.azurewebsites.net.
 
@@ -206,7 +206,7 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
 4. Change the `Tomato.view` function (and add in required packages):
 
     ```fsharp
-    
+
     open Fable.Helpers.React
     open Fable.Helpers.React.Props
     //...

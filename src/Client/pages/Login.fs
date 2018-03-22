@@ -12,17 +12,17 @@ open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open ServerCode
 open Client.Style
-    
+
 type LoginState =
     | LoggedOut
     | LoggedIn of UserData
 
-type Model = { 
+type Model = {
     State : LoginState
     Login : Login
     ErrorMsg : string }
 
-/// The messages processed during login 
+/// The messages processed during login
 type Msg =
     | LoginSuccess of UserData
     | SetUserName of string
@@ -41,22 +41,22 @@ let authUser (login:Login) =
 
         let body = toJson login
 
-        let props = 
+        let props =
             [ RequestProperties.Method HttpMethod.POST
               Fetch.requestHeaders [
                   HttpRequestHeaders.ContentType "application/json" ]
               RequestProperties.Body !^body ]
-        
+
         try
-            return! Fetch.fetchAs<UserData> ServerUrls.Login props
-        with _ -> 
+            return! Fetch.fetchAs<UserData> ServerUrls.APIUrls.Login props
+        with _ ->
             return! failwithf "Could not authenticate user."
     }
 
-let authUserCmd login = 
+let authUserCmd login =
     Cmd.ofPromise authUser login LoginSuccess AuthError
 
-let init (user:UserData option) = 
+let init (user:UserData option) =
     match user with
     | None ->
         { Login = { UserName = ""; Password = ""; PasswordId = Guid.NewGuid() }
@@ -67,7 +67,7 @@ let init (user:UserData option) =
           State = LoggedIn user
           ErrorMsg = "" }, Cmd.none
 
-let update (msg:Msg) model : Model*Cmd<Msg>*ExternalMsg = 
+let update (msg:Msg) model : Model*Cmd<Msg>*ExternalMsg =
     match msg with
     | LoginSuccess user ->
         { model with State = LoggedIn user; Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none, ExternalMsg.UserLoggedIn user
@@ -80,10 +80,10 @@ let update (msg:Msg) model : Model*Cmd<Msg>*ExternalMsg =
     | AuthError exn ->
         { model with ErrorMsg = string (exn.Message) }, Cmd.none, NoOp
 
-let view model (dispatch: Msg -> unit) = 
+let view model (dispatch: Msg -> unit) =
     let showErrorClass = if String.IsNullOrEmpty model.ErrorMsg then "hidden" else ""
     let buttonActive = if String.IsNullOrEmpty model.Login.UserName || String.IsNullOrEmpty model.Login.Password then "btn-disabled" else "btn-primary"
-    
+
     match model.State with
     | LoggedIn user ->
         div [ Id "greeting"] [
@@ -93,7 +93,7 @@ let view model (dispatch: Msg -> unit) =
     | LoggedOut ->
         div [ ClassName "signInBox" ] [
             h3 [ ClassName "text-center" ] [ str "Log in with 'test' / 'test'."]
-           
+
             div [ ClassName showErrorClass ] [
                 div [ ClassName "alert alert-danger" ] [ str model.ErrorMsg ]
              ]
@@ -102,14 +102,14 @@ let view model (dispatch: Msg -> unit) =
                 span [ClassName "input-group-addon" ] [
                     span [ClassName "glyphicon glyphicon-user"] []
                 ]
-                input [ 
+                input [
                     Id "username"
                     HTMLAttr.Type "text"
                     ClassName "form-control input-lg"
                     Placeholder "Username"
                     DefaultValue model.Login.UserName
                     OnChange (fun ev -> dispatch (SetUserName !!ev.target?value))
-                    AutoFocus true 
+                    AutoFocus true
                 ]
             ]
 
@@ -117,7 +117,7 @@ let view model (dispatch: Msg -> unit) =
                 span [ClassName "input-group-addon" ] [
                     span [ClassName "glyphicon glyphicon-asterisk"] []
                 ]
-                input [ 
+                input [
                     Id "password"
                     Key ("password_" + model.Login.PasswordId.ToString())
                     HTMLAttr.Type "password"
@@ -125,14 +125,13 @@ let view model (dispatch: Msg -> unit) =
                     Placeholder "Password"
                     DefaultValue model.Login.Password
                     OnChange (fun ev -> dispatch (SetPassword !!ev.target?value))
-                    onEnter ClickLogIn dispatch 
+                    onEnter ClickLogIn dispatch
                 ]
-            ]    
-           
+            ]
+
             div [ ClassName "text-center" ] [
                 button [ ClassName ("btn " + buttonActive);
-                         OnClick (fun _ -> dispatch ClickLogIn) ] 
+                         OnClick (fun _ -> dispatch ClickLogIn) ]
                        [ str "Log In" ]
-            ]                   
-        ]    
- 
+            ]
+        ]

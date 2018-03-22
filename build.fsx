@@ -138,7 +138,7 @@ Target "InstallClient" (fun _ ->
 
 Target "BuildClient" (fun _ ->
     runDotnet clientPath "restore"
-    runDotnet clientPath "fable webpack --port free -- -p"
+    runDotnet clientPath "fable webpack --port free -- -p --mode production"
 )
 
 // --------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ Target "BuildClient" (fun _ ->
 
 Target "RenameDrivers" (fun _ ->
     if not isWindows then
-        run npmTool "install phantomjs-prebuilt" ""
+        run yarnTool "add phantomjs-prebuilt" ""
     try
         if isMacOS && not <| File.Exists "test/UITests/bin/Debug/net461/chromedriver" then
             Fake.FileHelper.Rename "test/UITests/bin/Debug/net461/chromedriver" "test/UITests/bin/Debug/net461/chromedriver_macOS"
@@ -185,6 +185,7 @@ Target "RunClientTests" (fun _ ->
 
 let ipAddress = "localhost"
 let port = 8080
+let serverPort = 8085
 
 FinalTarget "KillProcess" (fun _ ->
     killProcess "dotnet"
@@ -209,6 +210,30 @@ Target "Run" (fun _ ->
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
+
+    Async.Parallel [| unitTestsWatch; fablewatch; openBrowser |]
+    |> Async.RunSynchronously
+    |> ignore
+)
+
+
+Target "RunSSR" (fun _ ->
+    runDotnet clientPath "restore"
+    runDotnet serverTestsPath "restore"
+
+    let unitTestsWatch = async {
+        let result =
+            ExecProcess (fun info ->
+                info.FileName <- dotnetExePath
+                info.WorkingDirectory <- serverTestsPath
+                info.Arguments <- sprintf "watch msbuild /t:TestAndRun /p:DotNetHost=%s /p:DebugSSR=true" dotnetExePath) TimeSpan.MaxValue
+
+        if result <> 0 then failwith "Website shut down." }
+
+    let fablewatch = async { runDotnet clientPath "fable webpack --port free -- -w --mode development" }
+    let openBrowser = async {
+        System.Threading.Thread.Sleep(10000)
+        Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" serverPort) |> ignore }
 
     Async.Parallel [| unitTestsWatch; fablewatch; openBrowser |]
     |> Async.RunSynchronously
@@ -353,5 +378,8 @@ Target "All" DoNothing
 
 "InstallClient"
   ==> "Run"
+
+"InstallClient"
+  ==> "RunSSR"
 
 RunTargetOrDefault "All"

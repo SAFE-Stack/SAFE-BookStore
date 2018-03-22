@@ -1,7 +1,7 @@
 // Place your settings in this file to overwrite default and user settings.
 {
 	"files.exclude": {
-	"*.suo":true, 
+	"*.suo":true,
 	"*.user":true,
 	"*.sln.docstates":true,
 	"*.userprefs":true,
