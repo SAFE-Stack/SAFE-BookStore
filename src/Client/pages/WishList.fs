@@ -15,6 +15,12 @@ open Style
 open System
 open Client
 
+
+type Fable.Import.React.FormEvent with
+    member this.Value =
+        unbox<string> this.target?value
+
+
 type Model =
   { WishList : WishList
     Token : string
@@ -190,7 +196,7 @@ let newBookForm (model:Model) dispatch =
                                      ClassName "form-control"
                                      Placeholder "Please insert book title"
                                      Required true
-                                     OnChange (fun (ev:React.FormEvent) -> dispatch (TitleChanged !!ev.target?value)) ]
+                                     OnChange (fun ev -> dispatch (TitleChanged ev.Value)) ]
                              match model.TitleErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
@@ -210,7 +216,7 @@ let newBookForm (model:Model) dispatch =
                                      ClassName "form-control"
                                      Placeholder "Please insert authors"
                                      Required true
-                                     OnChange (fun (ev:React.FormEvent) -> dispatch (AuthorsChanged !!ev.target?value))]
+                                     OnChange (fun ev -> dispatch (AuthorsChanged ev.Value))]
                              match model.AuthorsErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
@@ -230,7 +236,7 @@ let newBookForm (model:Model) dispatch =
                                     ClassName "form-control"
                                     Placeholder "Please insert link"
                                     Required true
-                                    OnChange (fun (ev:React.FormEvent) -> dispatch (LinkChanged !!ev.target?value))]
+                                    OnChange (fun ev -> dispatch (LinkChanged ev.Value))]
                              match model.LinkErrorText with
                              | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
                              | _ -> ()
