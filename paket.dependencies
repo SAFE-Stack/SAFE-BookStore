@@ -13,7 +13,7 @@ nuget System.Net.NetworkInformation
 nuget jose-jwt
 
 nuget Fable.Core
-nuget Fable.React 3.0.0
+nuget Fable.React
 nuget Fable.Elmish
 nuget Fable.Elmish.React
 nuget Fable.Elmish.Browser
@@ -36,7 +36,7 @@ group UITests
   source https://nuget.org/api/v2
   framework >= net461
   nuget FSharp.Core redirects: force
-  nuget Canopy
+  nuget Canopy 1.6.2
   nuget Expecto
   nuget phantomjs
 

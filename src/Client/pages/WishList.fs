@@ -13,13 +13,6 @@ open ServerCode
 open ServerCode.Domain
 open Style
 open System
-open Client
-
-
-type Fable.Import.React.FormEvent with
-    member this.Value =
-        unbox<string> this.target?value
-
 
 type Model =
   { WishList : WishList
