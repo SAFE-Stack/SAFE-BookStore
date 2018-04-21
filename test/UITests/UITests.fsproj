@@ -10,10 +10,6 @@
     <Compile Include="Tests.fs" />
     <Compile Include="Runner.fs" />
     <None Include="paket.references" />
-    <Content Include="App.config" />
-    <None Include="geckodriver.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Content Include="App.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

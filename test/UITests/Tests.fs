@@ -1,6 +1,8 @@
 module UITests.Tests
 
 open canopy
+open canopy.classic
+open canopy.types
 open System.IO
 open Expecto
 open System
@@ -14,13 +16,16 @@ let password = "test"
 
 let startApp () =
     url serverUrl
-    waitForElement ".elmish-app"
+    //canopy.classic.waitForElement(".elmish-app")
+    canopy.parallell.functions.waitForElement ".elmish-app" browser
 
 let login () =
     let logout = someElement logoutLinkSelector 
     if logout.IsSome then
         click logoutLinkSelector 
-        waitForElement loginLinkSelector
+        
+        //waitForElement loginLinkSelector
+        canopy.parallell.functions.waitForElement loginLinkSelector browser
 
     click loginLinkSelector
 

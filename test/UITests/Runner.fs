@@ -2,37 +2,15 @@
 
 open System.IO
 open canopy
+open canopy.classic
+open canopy.runner.classic
+open canopy.types
 open Expecto
 open System.Diagnostics
 open System
 
-let rec findPackages (di:DirectoryInfo) =
-    if isNull di then failwith "Could not find packages folder"
-    let packages = DirectoryInfo(Path.Combine(di.FullName,"packages"))
-    if packages.Exists then di else
-    findPackages di.Parent
-
-let rootDir = findPackages (DirectoryInfo (Directory.GetCurrentDirectory()))
-
-let executingDir () = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
-
-let isWindows =
-    match Environment.OSVersion.Platform with
-    | PlatformID.Win32NT
-    | PlatformID.Win32S
-    | PlatformID.Win32Windows
-    | PlatformID.WinCE -> true
-    | _ -> false
-
 let startBrowser() =
-    canopy.configuration.chromeDir <- executingDir()
-    if isWindows then
-        canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"packages/uitests/PhantomJS/tools/phantomjs")
-    else
-        canopy.configuration.phantomJSDir <- Path.Combine(rootDir.FullName,"node_modules/phantomjs-prebuilt/bin")
-
-
-    //start phantomJS //Use 'start chrome' if you want to see your tests in the browser
+    //start Chrome // Use this if you want to see your tests in the browser
     start ChromeHeadless
     resize (1280, 960)
 
