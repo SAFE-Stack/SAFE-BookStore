@@ -16,17 +16,13 @@ let password = "test"
 
 let startApp () =
     url serverUrl
-    //https://github.com/lefthandedgoat/canopy/pull/428
-    //canopy.classic.waitForElement(".elmish-app")
-    canopy.parallell.functions.waitForElement ".elmish-app" browser
+    waitForElement(".elmish-app")
 
 let login () =
     let logout = someElement logoutLinkSelector 
     if logout.IsSome then
         click logoutLinkSelector 
-        //https://github.com/lefthandedgoat/canopy/pull/428
-        //waitForElement loginLinkSelector
-        canopy.parallell.functions.waitForElement loginLinkSelector browser
+        waitForElement loginLinkSelector
 
     click loginLinkSelector
 
@@ -34,9 +30,7 @@ let login () =
     "#password" << password
 
     click "Log In"
-    //https://github.com/lefthandedgoat/canopy/pull/428
-    //waitForElement logoutLinkSelector
-    canopy.parallell.functions.waitForElement logoutLinkSelector browser
+    waitForElement logoutLinkSelector
 
 let logout () =
     click logoutLinkSelector
