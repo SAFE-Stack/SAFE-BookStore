@@ -141,21 +141,6 @@ Target "BuildClient" (fun _ ->
     runDotnet clientPath "fable webpack --port free -- -p --mode production"
 )
 
-// --------------------------------------------------------------------------------------
-// Rename driver for macOS or Linux
-
-Target "RenameDrivers" (fun _ ->
-    if not isWindows then
-        run yarnTool "add phantomjs-prebuilt" ""
-    try
-        if isMacOS && not <| File.Exists "test/UITests/bin/Debug/net461/chromedriver" then
-            Fake.FileHelper.Rename "test/UITests/bin/Debug/net461/chromedriver" "test/UITests/bin/Debug/net461/chromedriver_macOS"
-        elif isLinux && not <| File.Exists "test/UITests/bin/Debug/net461/chromedriver" then
-            Fake.FileHelper.Rename "test/UITests/bin/Debug/net461/chromedriver" "test/UITests/bin/Debug/net461/chromedriver_linux64"
-    with
-    | exn -> failwithf "Could not rename chromedriver at test/UITests/bin/Debug/net461/chromedriver. Message: %s" exn.Message
-)
-
 Target "RunServerTests" (fun _ ->
     runDotnet serverTestsPath "run"
 )
@@ -364,7 +349,6 @@ Target "All" DoNothing
   ==> "BuildServerTests"
   ==> "RunServerTests"
   ==> "BuildClientTests"
-  ==> "RenameDrivers"
   ==> "RunClientTests"
   ==> "BundleClient"
   ==> "All"
