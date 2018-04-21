@@ -34,7 +34,9 @@ let login () =
     "#password" << password
 
     click "Log In"
-    waitForElement logoutLinkSelector
+    //https://github.com/lefthandedgoat/canopy/pull/428
+    //waitForElement logoutLinkSelector
+    canopy.parallell.functions.waitForElement logoutLinkSelector browser
 
 let logout () =
     click logoutLinkSelector
