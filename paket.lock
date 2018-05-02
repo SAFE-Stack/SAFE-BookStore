@@ -1391,7 +1391,7 @@ GROUP Build
 RESTRICTION: >= net461
 NUGET
   remote: https://www.nuget.org/api/v2
-    FAKE (4.64.12)
+    FAKE (4.64.13)
 
 GROUP ServerTests
 STORAGE: NONE
