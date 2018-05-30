@@ -193,3 +193,5 @@ docs/tools/FSharp.Formatting.svclog
 node_modules
 src/Client/public/
 deploy
+
+.idea/

@@ -5,10 +5,12 @@ jose-jwt
 Microsoft.DotNet.Watcher.Tools
 Microsoft.Azure.WebJobs
 Microsoft.Azure.WebJobs.Extensions
-Giraffe
-Giraffe.TokenRouter
+TaskBuilder.fs
+Freya
 Microsoft.AspNetCore.StaticFiles
 Microsoft.AspNetCore
+Microsoft.AspNetCore.Owin
+Microsoft.AspNetCore.Server.Kestrel
 Microsoft.AspNetCore.WebSockets
 Microsoft.AspNetCore.WebSockets.Server
 

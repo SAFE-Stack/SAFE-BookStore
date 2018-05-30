@@ -4,13 +4,13 @@ module ServerCode.Templates
 
 open System.Threading.Tasks
 open Microsoft.AspNetCore.Http
-open Giraffe
 open ServerCode.Domain
 open ServerCode.FableJson
 open ServerTypes
 open Client.Shared
-open Giraffe.GiraffeViewEngine
 open Fable.Helpers.ReactServer
+open Fable.Helpers.React
+open Fable.Helpers.React.Props
 
 let index (model: Model option) =
   let jsonState, htmlStr =
@@ -21,33 +21,31 @@ let index (model: Model option) =
         // The first one will seriallize the state to a json string,
         // and the second one will seriallize the json string to a js string,
         // so we can deseriallize it by Fable's ofJson and get the correct types.
-        toJson (toJson model),
+        toJson model,
         Client.Shared.view model ignore |> renderToString
     | None ->
         "null", ""
   html []
     [ head [] [ 
-        meta [ _httpEquiv "Content-Type"; _content "text/html"; _charset "utf-8" ]
-        title [] [ rawText "SAFE-Stack sample" ]
+        meta [ HttpEquiv "Content-Type"; Props.Content "text/html"; CharSet "utf-8" ]
+        title [] [ str "SAFE-Stack sample" ]
         link
-          [ _rel "stylesheet"
-            _href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";
-            attr "integrity" "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-            _crossorigin "anonymous"
+          [ Rel "stylesheet"
+            Href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";
+            Integrity "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+            CrossOrigin "anonymous"
           ]
         link
-          [ _rel "stylesheet"
-            _href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-            attr "integrity" "sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-            _crossorigin "anonymous" ]
-        link [ _rel "stylesheet"; _href "css/site.css" ]
-        link [ _rel "shortcut icon"; _type "image/png"; _href "/Images/safe_favicon.png" ]
+          [ Rel "stylesheet"
+            Href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+            Integrity "sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+            CrossOrigin "anonymous" ]
+        link [ Rel "stylesheet"; Href "css/site.css" ]
+        link [ Rel "shortcut icon"; Type "image/png"; Href "/Images/safe_favicon.png" ]
       ]
-      body [ _class "app-container" ] [
-        div [ _id "elmish-app"; _class "elmish-app" ] [
-          rawText htmlStr
-        ]
-        script [ ] [ rawText (sprintf "var __INIT_MODEL__ = %s" jsonState) ]
-        script [ _src "/public/bundle.js" ] []
+      body [ ClassName "app-container" ] [
+        div [ Id "elmish-app"; ClassName "elmish-app"; DangerouslySetInnerHTML { __html = htmlStr} ] []
+        script [ DangerouslySetInnerHTML { __html = (sprintf "var __INIT_MODEL__ = %s" jsonState) } ] [ ]
+        script [ Src "/public/bundle.js" ] []
       ]
     ]
