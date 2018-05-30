@@ -5,8 +5,27 @@ open System.Threading.Tasks
 open Microsoft.AspNetCore.Http
 open ServerCode.Domain
 open ServerTypes
+open Freya.Core
+open Freya.Machines
+open ServerCode.Database
+
+let getUser = 
+    freya {
+        // TODO: get username from token
+        return "John Doe"
+    } |> Freya.memo
 
 /// Handle the GET on /api/wishlist
+let getWishlist (db:IDatabaseFunctions) =
+    freya {
+        let! user = getUser
+        let! wishlist = 
+            db.LoadWishList user
+            |> Async.AwaitTask
+            |> Freya.fromAsync
+        return Server.Represent.json wishlist
+    }
+
 //let getWishList (getWishListFromDB : string -> Task<WishList>) (token : UserRights) : HttpHandler =
 //     fun (next : HttpFunc) (ctx : HttpContext) ->
 //        task {

@@ -2,7 +2,6 @@
 module KestrelInterop
 
 open Freya.Core
-open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 
