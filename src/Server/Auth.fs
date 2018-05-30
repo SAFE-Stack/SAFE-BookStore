@@ -1,6 +1,10 @@
 /// Login web part and functions for API web part request authorisation with JWT.
 module ServerCode.Auth
+open Freya.Machines
 
+open System
+open Freya.Core
+open Freya.Machines.Http
 //open System
 //open Giraffe
 //open RequestErrors
@@ -43,3 +47,30 @@ module ServerCode.Auth
 //            | Some token -> f token
 //            | None -> invalidToken
 //        | None -> missingToken) next ctx
+
+let getUserFromAuthToken =
+    freya {
+        let! authHeader = 
+            Freya.Optics.Http.Request.header_ "Authorization"
+            |> Freya.Optic.get
+
+        let user =
+            authHeader
+            |> Option.bind (fun (header:string) ->
+                let jwt = header.Replace("Bearer ", "")
+                JsonWebToken.isValid jwt
+            )
+
+        return user
+    } |> Freya.memo
+
+let isAuthorized =
+    freya {
+        let! user = getUserFromAuthToken
+        return user.IsSome
+    }
+
+let authMachine =
+    freyaMachine {
+        authorized isAuthorized
+    }
