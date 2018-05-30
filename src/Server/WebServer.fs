@@ -47,9 +47,12 @@ let indexMachine =
         methods [GET; HEAD; OPTIONS]
         handleOk Pages.home }
 
+
+
 let wishListMachine (db:Database.IDatabaseFunctions) =
     freyaMachine {
         methods [GET;HEAD;OPTIONS;POST]
+        including Auth.authMachine
         handleOk (WishList.getWishlist db)
     }
 
