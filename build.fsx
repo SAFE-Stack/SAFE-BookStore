@@ -341,7 +341,7 @@ Target "Build" DoNothing
 Target "All" DoNothing
 
 "Clean"
-  ==> "InstallDotNetCore"
+// ==> "InstallDotNetCore"
   ==> "InstallClient"
   ==> "SetReleaseNotes"
   ==> "BuildServer"

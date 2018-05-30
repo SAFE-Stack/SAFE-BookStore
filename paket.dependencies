@@ -3,14 +3,16 @@ storage:none
 
 nuget FSharp.Core redirects: force
 nuget Fable.JsonConverter
-nuget Giraffe
-nuget Giraffe.TokenRouter
+nuget Freya 4.0.0-alpha-170404
 nuget Microsoft.AspNetCore.StaticFiles
 nuget Microsoft.AspNetCore
+nuget Microsoft.AspNetCore.Owin
+nuget Microsoft.AspNetCore.Server.Kestrel
 nuget Microsoft.AspNetCore.WebSockets
 nuget Microsoft.AspNetCore.WebSockets.Server
 nuget System.Net.NetworkInformation
 nuget jose-jwt
+nuget TaskBuilder.fs
 
 nuget Fable.Core
 nuget Fable.React

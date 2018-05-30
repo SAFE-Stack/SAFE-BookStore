@@ -9,9 +9,8 @@ open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Newtonsoft.Json
-open Giraffe
-open Giraffe.Serialization.Json
-open Giraffe.HttpStatusCodeHandlers.ServerErrors
+open KestrelInterop
+open Microsoft.AspNetCore.Builder.Internal
 
 let GetEnvVar var =
     match Environment.GetEnvironmentVariable(var) with
@@ -23,31 +22,12 @@ let getPortsOrDefault defaultVal =
     | null -> defaultVal
     | value -> value |> uint16
 
-let errorHandler (ex : Exception) (logger : ILogger) =
-    match ex with
-    | :? Microsoft.WindowsAzure.Storage.StorageException as dbEx ->
-        let msg = sprintf "An unhandled Windows Azure Storage exception has occured: %s" dbEx.Message
-        logger.LogError (EventId(), dbEx, "An error has occured when hitting the database.")
-        SERVICE_UNAVAILABLE msg
-    | _ ->
-        logger.LogError(EventId(), ex, "An unhandled exception has occurred while executing the request.")
-        clearResponse >=> INTERNAL_ERROR ex.Message
-
 let configureApp db root (app : IApplicationBuilder) =
-    app.UseGiraffeErrorHandler(errorHandler)
-       .UseStaticFiles()
-       .UseGiraffe (WebServer.webApp db root)
+    app.UseStaticFiles() |> ignore
+    ApplicationBuilder.useFreya (ServerCode.WebServer.root db) app |> ignore
 
 let configureServices (services : IServiceCollection) =
-    // Add default Giraffe dependencies
-    services.AddGiraffe() |> ignore
-
-    // Configure JsonSerializer to use Fable.JsonConverter
-    let fableJsonSettings = JsonSerializerSettings()
-    fableJsonSettings.Converters.Add(Fable.JsonConverter())
-
-    services.AddSingleton<IJsonSerializer>(
-        NewtonsoftJsonSerializer(fableJsonSettings)) |> ignore
+    ()
 
 let configureLogging (loggerBuilder : ILoggingBuilder) =
     loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)
@@ -90,7 +70,7 @@ let main args =
             .ConfigureLogging(configureLogging)
             .ConfigureServices(configureServices)
             .Configure(Action<IApplicationBuilder> (configureApp database clientPath))
-            .UseUrls("http://0.0.0.0:" + port.ToString() + "/")
+            .UseUrls("http://localhost:" + port.ToString() + "/")
             .Build()
             .Run()
         0
