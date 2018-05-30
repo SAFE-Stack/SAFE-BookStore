@@ -37,15 +37,17 @@ let logout () =
 
 let tests = 
     testList "client tests" [
-        testCase "sound check - server is online" <| fun () ->
+        testCase "sound check - server is online" (fun () ->
             startApp ()
+        )
 
-        testCase "login with test user" <| fun () ->
+        testCase "login with test user" (fun () ->
             startApp ()
             login ()
             logout ()
+        )
 
-        testCase "validate form fields" <| fun () ->
+        testCase "validate form fields" (fun () ->
             startApp ()
             login ()
 
@@ -68,8 +70,9 @@ let tests =
             Expect.isNone linkWarnElem "should dismiss link warning"
 
             logout()
+        )
 
-        testCase "create and remove book" <| fun () ->
+        testCase "create and remove book" (fun () ->
             startApp ()
             login ()
 
@@ -110,4 +113,5 @@ let tests =
             Expect.equal currBookRows.Length initBookRows.Length "should remove the new book"
 
             logout ()
+        )
     ]
