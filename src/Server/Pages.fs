@@ -22,3 +22,7 @@ let home =
     
 //let notfound: HttpHandler = fun _ ctx ->
 //    ctx.WriteHtmlViewAsync (Templates.index None)
+let notfound =
+    freya {
+        return Server.Represent.react (Templates.index None) 
+    }
