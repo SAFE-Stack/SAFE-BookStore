@@ -14,6 +14,7 @@ open Freya.Core
 open ServerCode.Domain
 open ServerCode
 open Client
+open Server
 
 ///// Start the web server and connect to database
 //let webApp databaseType root =
@@ -42,14 +43,31 @@ open Client
 //        ]
 //    ]
 
-
-
 let indexMachine =
     freyaMachine {
         methods [GET; HEAD; OPTIONS]
         handleOk Pages.home }
 
+let apiPathPrefix = "/api"
 
+let apiNotFound =
+    freya { return Represent.text "Page not found" }
+
+let generalNotFound =
+    freya {
+        let! path = Freya.Optic.get Freya.Optics.Http.Request.path_
+        let response =
+            match path.StartsWith(apiPathPrefix) with
+            | true -> apiNotFound
+            | false -> Pages.notfound
+        return! response
+    }
+
+let notFound =
+    freyaMachine {
+        exists (Freya.init false)
+        handleNotFound generalNotFound
+    }
 
 let root (dbType:Database.DatabaseType) =
     let startupTime = System.DateTime.UtcNow
@@ -59,4 +77,5 @@ let root (dbType:Database.DatabaseType) =
         resource APIUrls.WishList (WishList.wishListMachine db)
         resource APIUrls.Login Auth.loginMachine
         resource APIUrls.ResetTime (WishList.resetTimeMachine db)
+        resource "{/path*}{?q*}" notFound
     }
