@@ -51,7 +51,6 @@ let react htmlNode =
 
 let readBody =
     freya {
-        printfn "read"
         let! body = Freya.Optic.get Request.body_
 
         let data =
@@ -63,7 +62,6 @@ let readBody =
 
 let readJson<'t> =
     freya {
-        printfn "read json"
         let! json = readBody
         return ofJson<'t> json
     }
