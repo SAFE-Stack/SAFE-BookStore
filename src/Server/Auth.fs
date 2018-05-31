@@ -53,10 +53,10 @@ let isAuthorized =
         return user.IsSome
     }
 
-let containsAuthHeader =
+let noAuthHeader =
     freya {
         let! authHeader = getAuthHeader
-        return authHeader.IsSome
+        return authHeader.IsNone
     }
 
 let missingAuthHeader =
@@ -79,7 +79,7 @@ let missingAuthHeader =
 let authMachine =
     freyaMachine {
         authorized isAuthorized
-        badRequest containsAuthHeader
+        badRequest noAuthHeader
         handleBadRequest missingAuthHeader
     }
 

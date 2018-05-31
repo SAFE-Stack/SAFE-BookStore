@@ -8,11 +8,17 @@ open ServerTypes
 open Freya.Core
 open Freya.Machines
 open ServerCode.Database
+open Freya.Machines.Http
+open Freya.Types.Http
 
 let getUser = 
     freya {
-        // TODO: get username from token
-        return "John Doe"
+        let! token = Auth.getUserFromAuthToken
+        let name =
+            token
+            |> Option.map(fun t -> t.UserName)
+            |> Option.defaultValue "???"
+        return name
     } |> Freya.memo
 
 /// Handle the GET on /api/wishlist
@@ -24,6 +30,13 @@ let getWishlist (db:IDatabaseFunctions) =
             |> Async.AwaitTask
             |> Freya.fromAsync
         return Server.Represent.json wishlist
+    }
+
+let wishListMachine (db:Database.IDatabaseFunctions) =
+    freyaMachine {
+        methods [GET;HEAD;OPTIONS;POST]
+        including Auth.authMachine
+        handleOk (getWishlist db)
     }
 
 //let getWishList (getWishListFromDB : string -> Task<WishList>) (token : UserRights) : HttpHandler =
@@ -63,3 +76,17 @@ let getWishlist (db:IDatabaseFunctions) =
 //            let! lastResetTime = getLastResetTime()
 //            return! ctx.WriteJsonAsync({ Time = lastResetTime })
 //        }
+let getResetTime (getLastResetTime: unit -> Task<System.DateTime>) =
+    freya {
+        let! lastResetTime = 
+            getLastResetTime()
+            |> Async.AwaitTask
+            |> Freya.fromAsync
+        return Server.Represent.json lastResetTime
+    }
+
+let resetTimeMachine (db:Database.IDatabaseFunctions) = 
+    freyaMachine {
+        methods [GET;HEAD;OPTIONS]
+        handleOk (getResetTime db.GetLastResetTime)
+    }
