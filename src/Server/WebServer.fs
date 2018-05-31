@@ -12,6 +12,7 @@ open Freya.Routers.Uri.Template
 open ServerCode
 open Freya.Core
 open ServerCode.Domain
+open ServerCode
 
 ///// Start the web server and connect to database
 //let webApp databaseType root =
@@ -47,8 +48,6 @@ let indexMachine =
         methods [GET; HEAD; OPTIONS]
         handleOk Pages.home }
 
-
-
 let wishListMachine (db:Database.IDatabaseFunctions) =
     freyaMachine {
         methods [GET;HEAD;OPTIONS;POST]
@@ -62,4 +61,5 @@ let root (dbType:Database.DatabaseType) =
     freyaRouter {
         resource PageUrls.Home indexMachine
         resource APIUrls.WishList (wishListMachine db)
+        resource APIUrls.Login Auth.loginMachine
     }

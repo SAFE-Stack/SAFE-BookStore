@@ -9,10 +9,10 @@
   <Import Project="../Shared/Shared.props" />
   <ItemGroup>
     <Compile Include="KestrelInterop.fs" />
+    <Compile Include="FableJson.fs" />
     <Compile Include="Represent.fs" />
     <Compile Include="ServerTypes.fs" />
     <Compile Include="JsonWebToken.fs" />
-    <Compile Include="FableJson.fs" />
     <Compile Include="Auth.fs" />
     <Compile Include="Storage/Defaults.fs" />
     <Compile Include="Storage/FileSystem.fs" />
