@@ -8,12 +8,6 @@ open Fable.Helpers.ReactServer
 open Freya.Core
 open Freya.Machines.Http
 open Freya.Types.Http
-open Freya.Types.Language
-open Freya.Core
-open Freya.Types.Http
-open Freya.Types.Http.Cors
-open Freya.Types.Language
-open Freya.Types.Uri.Template
 open Freya.Optics.Http
 open ServerCode.FableJson
 open Freya.Machines
