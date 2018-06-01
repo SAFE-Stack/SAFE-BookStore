@@ -7,10 +7,7 @@ open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Logging
-open Microsoft.Extensions.DependencyInjection
-open Newtonsoft.Json
-open KestrelInterop
-open Microsoft.AspNetCore.Builder.Internal
+open KestrelInterop.ApplicationBuilder
 
 let GetEnvVar var =
     match Environment.GetEnvironmentVariable(var) with
@@ -22,12 +19,10 @@ let getPortsOrDefault defaultVal =
     | null -> defaultVal
     | value -> value |> uint16
 
-let configureApp db root (app : IApplicationBuilder) =
+let configureApp db (app : IApplicationBuilder) =
     app.UseStaticFiles() |> ignore
-    ApplicationBuilder.useFreya (ServerCode.WebServer.root db) app |> ignore
-
-let configureServices (services : IServiceCollection) =
-    ()
+    app.UseFreya (ServerCode.WebServer.root db) |> ignore
+    
 
 let configureLogging (loggerBuilder : ILoggingBuilder) =
     loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)
@@ -68,8 +63,7 @@ let main args =
             .UseWebRoot(clientPath)
             .UseContentRoot(clientPath)
             .ConfigureLogging(configureLogging)
-            .ConfigureServices(configureServices)
-            .Configure(Action<IApplicationBuilder> (configureApp database clientPath))
+            .Configure(Action<IApplicationBuilder> (configureApp database))
             .UseUrls("http://localhost:" + port.ToString() + "/")
             .Build()
             .Run()

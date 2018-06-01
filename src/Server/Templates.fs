@@ -1,12 +1,6 @@
 module ServerCode.Templates
 
-
-
-open System.Threading.Tasks
-open Microsoft.AspNetCore.Http
-open ServerCode.Domain
 open ServerCode.FableJson
-open ServerTypes
 open Client.Shared
 open Fable.Helpers.ReactServer
 open Fable.Helpers.React
@@ -16,11 +10,6 @@ let index (model: Model option) =
   let jsonState, htmlStr =
     match model with
     | Some model ->
-        // Note we call ofJson twice here,
-        // because Elmish's model can be some complicated type instead of pojo.
-        // The first one will seriallize the state to a json string,
-        // and the second one will seriallize the json string to a js string,
-        // so we can deseriallize it by Fable's ofJson and get the correct types.
         toJson model,
         Client.Shared.view model ignore |> renderToString
     | None ->
