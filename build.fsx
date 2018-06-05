@@ -90,9 +90,6 @@ let releaseNotesData =
 
 let release = List.head releaseNotesData
 
-let packageVersion = SemVerHelper.parse release.NugetVersion
-
-
 // --------------------------------------------------------------------------------------
 // Clean build results
 
