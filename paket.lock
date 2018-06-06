@@ -497,8 +497,6 @@ NUGET
       System.Runtime.Extensions (>= 4.1) - restriction: && (< net45) (>= netstandard1.3)
       System.Runtime.InteropServices (>= 4.1) - restriction: && (< net45) (>= netstandard1.3)
       System.Runtime.InteropServices.RuntimeInformation (>= 4.0) - restriction: || (>= net45) (>= netstandard1.3)
-    Microsoft.DotNet.Watcher.Tools (2.0.2) - clitool: true
-      Microsoft.NETCore.App (>= 2.0.7) - restriction: >= netcoreapp2.0
     Microsoft.Extensions.Caching.Abstractions (2.1) - restriction: >= netstandard2.0
       Microsoft.Extensions.Primitives (>= 2.1) - restriction: >= netstandard2.0
     Microsoft.Extensions.Caching.Memory (2.1) - restriction: >= netstandard2.0

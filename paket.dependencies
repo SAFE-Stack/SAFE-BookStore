@@ -23,7 +23,6 @@ nuget Microsoft.Azure.WebJobs prerelease
 nuget Microsoft.Azure.WebJobs.Extensions prerelease
 
 clitool dotnet-fable
-clitool Microsoft.DotNet.Watcher.Tools
 
 group ServerTests
   source https://nuget.org/api/v2
