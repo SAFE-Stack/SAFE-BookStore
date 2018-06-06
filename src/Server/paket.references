@@ -2,7 +2,6 @@ FSharp.Core
 System.Net.NetworkInformation
 Fable.JsonConverter
 jose-jwt
-Microsoft.DotNet.Watcher.Tools
 Microsoft.Azure.WebJobs
 Microsoft.Azure.WebJobs.Extensions
 Giraffe
