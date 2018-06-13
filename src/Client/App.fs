@@ -7,6 +7,7 @@ open Fable.Import
 open Fable.PowerPack
 open Elmish
 open Elmish.React
+open Elmish.Remoting
 open Elmish.Browser.Navigation
 open Elmish.HMR
 open Client.Shared
@@ -35,7 +36,7 @@ let urlUpdate (result:Page option) (model: Model) =
         match model.User with
         | Some user ->
             let m, cmd = WishList.init user
-            { model with PageModel = WishListModel m }, Cmd.map WishListMsg cmd
+            { model with PageModel = WishListModel m }, Cmd.map (function C msg -> WishListMsg msg | S _ -> NoOp) cmd
         | None ->
             model, Cmd.ofMsg (Logout ())
 
@@ -62,11 +63,17 @@ let init result =
         let model =
             { User = user
               PageModel = HomePageModel }
-
-        urlUpdate result model
+        let model,cmd = urlUpdate result model
+        model, Cmd.map C cmd
 
 let update msg model =
     match msg, model.PageModel with
+    | Connected, _ ->
+        model,
+            match model.User with
+            |Some {Token=token} -> Cmd.ofMsg (S (SendToken token))
+            |None -> Cmd.none
+    | NoOp, _ -> model, Cmd.none
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
         model, Cmd.none
@@ -84,15 +91,15 @@ let update msg model =
         { model with
             PageModel = LoginModel m },
                 Cmd.batch [
-                    Cmd.map LoginMsg cmd
-                    cmd2 ]
+                    Cmd.remoteMap LoginServerMsg LoginMsg cmd
+                    Cmd.map C cmd2 ]
 
     | LoginMsg _, _ -> model, Cmd.none
 
     | WishListMsg msg, WishListModel m ->
         let m, cmd = WishList.update msg m
         { model with
-            PageModel = WishListModel m }, Cmd.map WishListMsg cmd
+            PageModel = WishListModel m }, Cmd.remoteMap WishListServerMsg WishListMsg cmd
 
     | WishListMsg _, _ ->
         model, Cmd.none
@@ -109,7 +116,7 @@ let update msg model =
         Navigation.newUrl (toPath Page.Home)
 
     | Logout(), _ ->
-        model, deleteUserCmd
+        model, Cmd.map C deleteUserCmd
 
 
 open Elmish.Debug
@@ -121,14 +128,14 @@ let withReact =
 
 
 // App
-Program.mkProgram init update view
-|> Program.toNavigable Pages.urlParser urlUpdate
+RemoteProgram.mkProgram init update view
+|> RemoteProgram.programBridgeWithMap UserMsg (Program.toNavigable Pages.urlParser urlUpdate)
 #if DEBUG
-|> Program.withConsoleTrace
-|> Program.withHMR
+|> RemoteProgram.programBridge Program.withConsoleTrace
+|> RemoteProgram.programBridgeWithMap Program.UserMsg Program.withHMR
 #endif
-|> withReact "elmish-app"
+|> RemoteProgram.programBridge (withReact "elmish-app")
 #if DEBUG
-|> Program.withDebugger
+|> RemoteProgram.programBridge Program.withDebugger
 #endif
-|> Program.run
+|> RemoteProgram.runAt "/socket"

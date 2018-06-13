@@ -1,5 +1,5 @@
 module Client.Shared
-
+open Elmish.Remoting
 open ServerCode.Domain
 /// The composed model for the different possible page states of the application
 type PageModel =
@@ -12,11 +12,17 @@ type Model =
     { User : UserData option
       PageModel : PageModel }
 
+type ServerMsg =
+    | SendToken of JWT
+    | WishListServerMsg of WishList.ServerMsg
+    | LoginServerMsg of Login.ServerMsg
 /// The composed set of messages that update the state of the application
 type Msg =
+    | Connected
     | LoggedIn of UserData
     | LoggedOut
     | StorageFailure of exn
+    | NoOp
     | LoginMsg of Login.Msg
     | WishListMsg of WishList.Msg
     | Logout of unit
@@ -43,7 +49,7 @@ let viewPage model dispatch =
 /// Constructs the view for the application given the model.
 let view model dispatch =
     div [] [
-        Menu.view (Logout >> dispatch) model.User
+        Menu.view (Logout >> C >> dispatch) model.User
         hr []
-        div [ centerStyle "column" ] (viewPage model dispatch)
+        div [ centerStyle "column" ] (viewPage model (C >> dispatch))
     ]

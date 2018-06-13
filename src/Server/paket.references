@@ -16,3 +16,4 @@ Fable.React
 Fable.Import.Browser
 Fable.Elmish.Browser
 Fable.Elmish.React
+Fable.Elmish.Remoting.Giraffe

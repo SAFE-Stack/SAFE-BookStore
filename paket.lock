@@ -43,6 +43,20 @@ NUGET
       Fable.PowerPack (>= 1.3.2) - restriction: >= netstandard1.6
       Fable.React (>= 2.0) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
+    Fable.Elmish.Remoting.Client (0.7.1)
+      Fable.Elmish (>= 1.0.3) - restriction: >= netstandard2.0
+      Fable.Elmish.Remoting.Shared (>= 0.7.1) - restriction: >= netstandard2.0
+    Fable.Elmish.Remoting.Giraffe (0.7)
+      Fable.Elmish.Remoting.Server (>= 0.7) - restriction: >= netstandard2.0
+      Giraffe (>= 1.1) - restriction: >= netstandard2.0
+      Microsoft.AspNetCore.WebSockets (>= 2.1) - restriction: >= netstandard2.0
+    Fable.Elmish.Remoting.Server (0.7) - restriction: >= netstandard2.0
+      Fable.Elmish (>= 1.0.3) - restriction: >= netstandard2.0
+      Fable.Elmish.Remoting.Shared (>= 0.7) - restriction: >= netstandard2.0
+      Fable.JsonConverter (>= 1.0.8) - restriction: >= netstandard2.0
+    Fable.Elmish.Remoting.Shared (0.7.1) - restriction: >= netstandard2.0
+      Fable.Elmish (>= 1.0.3) - restriction: >= netstandard2.0
+      FSharp.Core (>= 4.5) - restriction: >= netstandard2.0
     Fable.Import.Browser (1.1.2) - restriction: >= netstandard1.6
       Fable.Core (>= 1.3.8) - restriction: >= netstandard1.6
     Fable.JsonConverter (1.0.8)
@@ -52,7 +66,7 @@ NUGET
       Fable.Core (>= 1.3.8) - restriction: >= netstandard1.6
       Fable.Import.Browser (>= 1.0) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
-    Fable.React (3.1.2)
+    Fable.React (3.1.3)
       Fable.Core (>= 1.3.12) - restriction: >= netstandard1.6
       Fable.Import.Browser (>= 1.1.1) - restriction: >= netstandard1.6
     FSharp.Compiler.Service (23.0.3) - restriction: >= netcoreapp2.0
@@ -65,7 +79,7 @@ NUGET
       System.Reflection.TypeExtensions (>= 4.3) - restriction: && (< net45) (>= netstandard2.0)
       System.Runtime.Loader (>= 4.0) - restriction: && (< net45) (>= netstandard2.0)
       System.Security.Cryptography.Algorithms (>= 4.3) - restriction: && (< net45) (>= netstandard2.0)
-    FSharp.Core (4.3.4) - redirects: force
+    FSharp.Core (4.5) - redirects: force
       System.Collections (>= 4.0.11) - restriction: && (< net45) (>= netstandard1.6) (< netstandard2.0)
       System.Console (>= 4.0) - restriction: && (< net45) (>= netstandard1.6) (< netstandard2.0)
       System.Diagnostics.Debug (>= 4.0.11) - restriction: && (< net45) (>= netstandard1.6) (< netstandard2.0)
@@ -435,7 +449,7 @@ NUGET
     Microsoft.Azure.WebJobs.Extensions (3.0.0-beta5)
       Microsoft.Azure.WebJobs (>= 3.0.0-beta5) - restriction: >= netstandard2.0
       ncrontab (>= 3.3) - restriction: >= netstandard2.0
-    Microsoft.CodeAnalysis.Analyzers (2.6) - restriction: >= netstandard2.0
+    Microsoft.CodeAnalysis.Analyzers (2.6.1) - restriction: >= netstandard2.0
     Microsoft.CodeAnalysis.Common (2.8.2) - restriction: >= netstandard2.0
       Microsoft.CodeAnalysis.Analyzers (>= 1.1) - restriction: >= netstandard1.3
       System.AppContext (>= 4.3) - restriction: >= netstandard1.3
@@ -1403,7 +1417,7 @@ GROUP Build
 RESTRICTION: >= net461
 NUGET
   remote: https://www.nuget.org/api/v2
-    FAKE (4.64.13)
+    FAKE (5.0)
 
 GROUP ServerTests
 STORAGE: NONE
@@ -1413,11 +1427,11 @@ NUGET
       FSharp.Core (>= 4.0.0.1) - restriction: >= net45
       FSharp.Core (>= 4.3.2) - restriction: && (< net45) (>= netstandard2.0)
       System.Configuration.ConfigurationManager (>= 4.4) - restriction: && (< net45) (>= netstandard2.0)
-    Expecto (8.0)
+    Expecto (8.1.1)
       Argu (>= 5.1) - restriction: || (>= net461) (>= netstandard2.0)
       Mono.Cecil (>= 0.10) - restriction: || (>= net461) (>= netstandard2.0)
       System.Diagnostics.FileVersionInfo (>= 4.3) - restriction: && (< net461) (>= netstandard2.0)
-    FSharp.Core (4.3.4) - redirects: force
+    FSharp.Core (4.5) - redirects: force
       System.Collections (>= 4.0.11) - restriction: && (< net45) (>= netstandard1.6) (< netstandard2.0)
       System.Console (>= 4.0) - restriction: && (< net45) (>= netstandard1.6) (< netstandard2.0)
       System.Diagnostics.Debug (>= 4.0.11) - restriction: && (< net45) (>= netstandard1.6) (< netstandard2.0)
@@ -1891,10 +1905,10 @@ NUGET
       FSharp.Core (>= 4.3.4) - restriction: && (>= net461) (>= netstandard2.0)
       Selenium.WebDriver (>= 3.11) - restriction: && (>= net461) (>= netstandard2.0)
       System.Drawing.Common (>= 4.5.0-preview1-26216-02) - restriction: && (>= net461) (>= netstandard2.0)
-    Expecto (8.0)
+    Expecto (8.1.1)
       Argu (>= 5.1)
       Mono.Cecil (>= 0.10)
-    FSharp.Core (4.3.4) - redirects: force
+    FSharp.Core (4.5) - redirects: force
     Mono.Cecil (0.10)
     PhantomJS (2.1.1)
     Selenium.WebDriver (3.12.1) - restriction: && (>= net461) (>= netstandard2.0)
