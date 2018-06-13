@@ -13,8 +13,10 @@ type Login =
       PasswordId : Guid }
 
     member this.IsValid() =
-        not ((this.UserName <> "test"  || this.Password <> "test") &&
-             (this.UserName <> "test2" || this.Password <> "test2"))
+        match this.UserName, this.Password with
+        |"test" , "test"
+        |"test2", "test2" -> true
+        |_ -> false
 
 type UserData =
   { UserName : string

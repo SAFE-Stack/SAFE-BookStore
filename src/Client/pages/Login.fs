@@ -3,6 +3,7 @@ module Client.Login
 open Fable.Core
 open Fable.Import
 open Elmish
+open Elmish.Remoting
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open ServerCode.Domain
@@ -22,39 +23,25 @@ type Model = {
     Login : Login
     ErrorMsg : string }
 
+/// The messages sent to server during login
+type ServerMsg =
+    | SendLogin of Login
+
+
 /// The messages processed during login
 type Msg =
     | LoginSuccess of UserData
     | SetUserName of string
     | SetPassword of string
-    | AuthError of exn
+    | AuthError of string
     | ClickLogIn
 
 type ExternalMsg =
     | NoOp
     | UserLoggedIn of UserData
 
-let authUser (login:Login) =
-    promise {
-        if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
-        if String.IsNullOrEmpty login.Password then return! failwithf "You need to fill in a password." else
-
-        let body = toJson login
-
-        let props =
-            [ RequestProperties.Method HttpMethod.POST
-              Fetch.requestHeaders [
-                  HttpRequestHeaders.ContentType "application/json" ]
-              RequestProperties.Body !^body ]
-
-        try
-            return! Fetch.fetchAs<UserData> ServerUrls.APIUrls.Login props
-        with _ ->
-            return! failwithf "Could not authenticate user."
-    }
-
 let authUserCmd login =
-    Cmd.ofPromise authUser login LoginSuccess AuthError
+    Cmd.ofMsg (S (SendLogin login))
 
 let init (user:UserData option) =
     match user with
@@ -67,7 +54,7 @@ let init (user:UserData option) =
           State = LoggedIn user
           ErrorMsg = "" }, Cmd.none
 
-let update (msg:Msg) model : Model*Cmd<Msg>*ExternalMsg =
+let update (msg:Msg) model : Model*Cmd<Remoting.Msg<ServerMsg,Msg>>*ExternalMsg =
     match msg with
     | LoginSuccess user ->
         { model with State = LoggedIn user; Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none, ExternalMsg.UserLoggedIn user
@@ -78,7 +65,7 @@ let update (msg:Msg) model : Model*Cmd<Msg>*ExternalMsg =
     | ClickLogIn ->
         model, authUserCmd model.Login, NoOp
     | AuthError exn ->
-        { model with ErrorMsg = string (exn.Message) }, Cmd.none, NoOp
+        { model with ErrorMsg = exn }, Cmd.none, NoOp
 
 let view model (dispatch: Msg -> unit) =
     let showErrorClass = if String.IsNullOrEmpty model.ErrorMsg then "hidden" else ""

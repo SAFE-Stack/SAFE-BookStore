@@ -8,6 +8,7 @@ open Fable.Helpers.React.Props
 open Fable.Core.JsInterop
 
 open Elmish
+open Elmish.Remoting
 open Fetch.Fetch_types
 open ServerCode
 open ServerCode.Domain
@@ -25,9 +26,15 @@ type Model =
     LinkErrorText : string option
     ErrorMsg : string option }
 
+/// The messages passed to the server when interacting with the wish list
+type ServerMsg =
+    | FetchWishList
+    | FetchResetTime
+    | SendWishList of WishList
+
 /// The different messages processed when interacting with the wish list
 type Msg =
-    | LoadForUser of string
+    | LoadForUser of UserData
     | FetchedWishList of WishList
     | FetchedResetTime of DateTime
     | RemoveBook of Book
@@ -35,54 +42,17 @@ type Msg =
     | TitleChanged of string
     | AuthorsChanged of string
     | LinkChanged of string
-    | FetchError of exn
+    | FetchError of string
 
 /// Get the wish list from the server, used to populate the model
-let getWishList token =
-    promise {
-        let url = ServerUrls.APIUrls.WishList
-        let props =
-            [ Fetch.requestHeaders [
-                HttpRequestHeaders.Authorization ("Bearer " + token) ]]
+let loadWishListCmd _ =
+    Cmd.ofMsg (S (FetchWishList))
 
-        return! Fetch.fetchAs<WishList> url props
-    }
+let loadResetTimeCmd _ =
+    Cmd.ofMsg (S (FetchResetTime))
 
-let getResetTime token =
-    promise {
-        let url = ServerUrls.APIUrls.ResetTime
-        let props =
-            [ Fetch.requestHeaders [
-                HttpRequestHeaders.Authorization ("Bearer " + token) ]]
-
-        let! details = Fetch.fetchAs<ServerCode.Domain.WishListResetDetails> url props
-        return details.Time
-    }
-
-let loadWishListCmd token =
-    Cmd.ofPromise getWishList token FetchedWishList FetchError
-
-let loadResetTimeCmd token =
-    Cmd.ofPromise getResetTime token FetchedResetTime FetchError
-
-
-let postWishList (token,wishList) =
-    promise {
-        let url = ServerUrls.APIUrls.WishList
-        let body = toJson wishList
-        let props =
-            [ RequestProperties.Method HttpMethod.POST
-              Fetch.requestHeaders [
-                HttpRequestHeaders.Authorization ("Bearer " + token)
-                HttpRequestHeaders.ContentType "application/json" ]
-              RequestProperties.Body !^body ]
-
-        return! Fetch.fetchAs<WishList> url props
-    }
-
-let postWishListCmd (token,wishList) =
-    Cmd.ofPromise postWishList (token,wishList) FetchedWishList FetchError
-
+let postWishListCmd (_,wishList) =
+    Cmd.ofMsg (S(SendWishList wishList))
 
 let init (user:UserData) =
     { WishList = WishList.New user.UserName
@@ -94,14 +64,15 @@ let init (user:UserData) =
       ResetTime = None
       LinkErrorText = None
       ErrorMsg = None },
+        Cmd.ofMsg (C(LoadForUser user))
+
+let update (msg:Msg) model : Model*Cmd<Remoting.Msg<_,_>> =
+    match msg with
+    | LoadForUser user ->
+        model,
         Cmd.batch [
             loadWishListCmd user.Token
             loadResetTimeCmd user.Token ]
-
-let update (msg:Msg) model : Model*Cmd<Msg> =
-    match msg with
-    | LoadForUser user ->
-        model, Cmd.none
 
     | FetchedWishList wishList ->
         let wishList = { wishList with Books = wishList.Books |> List.sortBy (fun b -> b.Title) }
@@ -155,7 +126,7 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
                 ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList model.NewBook }, Cmd.none
 
     | FetchError e ->
-        { model with ErrorMsg = Some e.Message }, Cmd.none
+        { model with ErrorMsg = Some e }, Cmd.none
 
 let newBookForm (model:Model) dispatch =
     let buttonInactive =

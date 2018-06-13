@@ -4,8 +4,16 @@ module ServerCode.WishList
 open System.Threading.Tasks
 open Microsoft.AspNetCore.Http
 open Giraffe
+open Elmish
+open Elmish.Remoting
 open ServerCode.Domain
 open ServerTypes
+open Client.Shared
+open Client.WishList
+
+let update msg model =
+    match msg, model with
+    |_,None -> model, Cmd.ofMsg (C (Logout()))
 
 /// Handle the GET on /api/wishlist
 let getWishList (getWishListFromDB : string -> Task<WishList>) (token : UserRights) : HttpHandler =
