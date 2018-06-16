@@ -4,18 +4,15 @@ open Client.Shared
 open Freya.Core
 
 let home = 
-    freya {
-        let model: Model = {
+    let model: Model = {
             User = None
             PageModel = PageModel.HomePageModel
         }
         
-        let view = Templates.index (Some model)
-    
-        return Server.Represent.react view 
-    }
-    
+    let view = Templates.index (Some model)
+    Server.Represent.react view
+    |> Freya.init
+
 let notfound =
-    freya {
-        return Server.Represent.react (Templates.index None) 
-    }
+    Server.Represent.react (Templates.index None)
+    |> Freya.init

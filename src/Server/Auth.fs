@@ -5,6 +5,9 @@ open Freya.Machines
 open Freya.Core
 open Freya.Machines.Http
 open Freya.Types.Http
+open Freya.Optics.Http
+open Freya.Core.Operators
+
 open ServerCode.Domain
 open Server.Represent
 open Server
@@ -21,42 +24,29 @@ let createUserData (login : Domain.Login) =
 ///// On success it will invoke the given `f` function by passing in the valid token.
 
 let getAuthHeader =
-    freya {
-        let header =
-            Freya.Optics.Http.Request.header_ "Authorization"
-            |> Freya.Optic.get
-        return! header
-    } |> Freya.memo
+    Request.Headers.authorization_
+    |> Freya.Optic.get
+    |> Freya.memo
 
+let validateAuthHeader (header:string) =
+    let jwt = header.Replace("Bearer ", "")
+    JsonWebToken.isValid jwt
+
+// Operators: https://github.com/xyncro/freya-core/blob/master/src/Freya.Core/Operators.fs
 let getUserFromAuthToken =
-    freya {
-        let! authHeader = getAuthHeader
-        let user =
-            authHeader
-            |> Option.bind (fun (header:string) ->
-                let jwt = header.Replace("Bearer ", "")
-                JsonWebToken.isValid jwt
-            )
-
-        return user
-    } |> Freya.memo
+    Option.bind validateAuthHeader <!> getAuthHeader
+    |> Freya.memo
 
 let isAuthorized =
-    freya {
-        let! user = getUserFromAuthToken
-        return user.IsSome
-    }
+    Option.isSome <!> getUserFromAuthToken 
 
 let noAuthHeader =
-    freya {
-        let! authHeader = getAuthHeader
-        return authHeader.IsNone
-    }
+    getAuthHeader
+    |> Freya.map (Option.isNone)
 
 let missingAuthHeader =
-    freya {
-        return Represent.text "Request doesn't contain a JSON Web Token"
-    }
+    Represent.text "Request doesn't contain a JSON Web Token"
+    |> Freya.init
 
 let authMachine =
     freyaMachine {
@@ -67,26 +57,23 @@ let authMachine =
 
 ///// Authenticates a user and returns a token in the HTTP body.
 
-let loginModel = freya { return! readJson<Domain.Login> } |> Freya.memo
+let loginModel =
+    readJson<Domain.Login> 
+    |> Freya.memo
 
 let loginResponse = 
-    freya {
-        let! login =loginModel
-        let data = createUserData login
-        return Represent.json data
-    }
+    loginModel
+    |> Freya.map (createUserData >> Represent.json)
 
 let invalidLogin =
-    freya {
-        let! login = loginModel
-        return Represent.text (sprintf "User '%s' can't be logged in." login.UserName)
-    }
+    let invalidText (login:Login) = sprintf "User '%s' can't be logged in." login.UserName
+
+    loginModel
+    |> Freya.map (invalidText >> Represent.text)
 
 let isLoginValid =
-    freya {
-        let! model = loginModel
-        return model.IsValid()
-    }
+    loginModel
+    |> Freya.map (fun m -> m.IsValid())
 
 let loginMachine =
     freyaMachine {
