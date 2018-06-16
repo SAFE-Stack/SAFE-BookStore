@@ -44,18 +44,13 @@ let react htmlNode =
     |> html
 
 let readBody =
-    freya {
-        let! body = Freya.Optic.get Request.body_
-
-        let data =
-            using(new StreamReader (body))(fun reader -> 
-                reader.ReadToEnd ()
-            )
-        return data
-    }
+    Freya.Optic.get Request.body_
+    |> Freya.map (fun body ->
+        using(new StreamReader (body))(fun reader -> 
+            reader.ReadToEnd ()
+        )
+    )
 
 let readJson<'t> =
-    freya {
-        let! json = readBody
-        return ofJson<'t> json
-    }
+    readBody
+    |> Freya.map (ofJson<'t>)

@@ -4,6 +4,7 @@ module ServerCode.WebServer
 open ServerCode
 open ServerCode.ServerUrls
 open Freya.Core
+open Freya.Core.Operators
 open Freya.Machines.Http
 open Freya.Types.Http
 open Freya.Routers.Uri.Template
@@ -20,17 +21,16 @@ let indexMachine =
 let apiPathPrefix = "/api"
 
 let apiNotFound =
-    freya { return Represent.text "Page not found" }
+    Represent.text "Page not found"
+    |> Freya.init
 
 let generalNotFound =
-    freya {
-        let! path = Freya.Optic.get Freya.Optics.Http.Request.path_
-        let response =
-            match path.StartsWith(apiPathPrefix) with
-            | true -> apiNotFound
-            | false -> Pages.notfound
-        return! response
-    }
+    Freya.Optic.get Freya.Optics.Http.Request.path_
+    |> Freya.bind (fun path ->
+        match path.StartsWith(apiPathPrefix) with
+        | true -> apiNotFound
+        | false -> Pages.notfound
+    )
 
 let notFound =
     freyaMachine {
@@ -38,7 +38,7 @@ let notFound =
         handleNotFound generalNotFound
     }
 
-let root (dbType:Database.DatabaseType) =
+let router (dbType:Database.DatabaseType) =
     let startupTime = System.DateTime.UtcNow
     let db = Database.getDatabase dbType startupTime
     freyaRouter {
@@ -46,5 +46,7 @@ let root (dbType:Database.DatabaseType) =
         resource APIUrls.WishList (WishList.wishListMachine db)
         resource APIUrls.Login Auth.loginMachine
         resource APIUrls.ResetTime (WishList.resetTimeMachine db)
-        resource "{/path*}{?q*}" notFound
     }
+
+let root (dbType:Database.DatabaseType) =
+    router dbType >?= notFound

@@ -12,36 +12,36 @@ open Server
 open Freya.Optics.Http
 open Server.Represent
 open Freya.Optics.Http.Cors
+open Freya.Core.Operators
+open ServerCode.ServerTypes
 
 /// Handle the GET on /api/wishlist
 
 let getUser = 
-    freya {
-        let! token = Auth.getUserFromAuthToken
-        let name =
-            token
-            |> Option.map(fun t -> t.UserName)
-            |> Option.defaultValue "???"
-        return name
-    } |> Freya.memo
+    Auth.getUserFromAuthToken
+    |> Freya.map (Option.map(fun t -> t.UserName) >> Option.defaultValue "???")
+    |> Freya.memo
 
 let getWishlist (db:IDatabaseFunctions) =
-    freya {
-        let! user = getUser
-        let! wishlist = 
-            db.LoadWishList user
-            |> Async.AwaitTask
-            |> Freya.fromAsync
-        return Server.Represent.json wishlist
-    }
+    getUser
+    |> Freya.bind (fun user ->
+        db.LoadWishList user
+        |> (Async.AwaitTask >> Freya.fromAsync)
+    )
+    |> Freya.map Server.Represent.json
 
 let wishLisPostModel =
-    freya {
-        return! readJson<Domain.WishList>
-    } |> Freya.memo
+    readJson<Domain.WishList>
+    |> Freya.memo
 
+let whenPost altValue fn =
+    Freya.Optic.get Request.method_ 
+    |> Freya.bind (function 
+        | POST -> fn
+        | _ -> Freya.init altValue)
 let isAllowedPostWishListRequest = 
-    freya {
+    whenPost true 
+    <| (freya {
         let! wishList = wishLisPostModel
         let! token = Auth.getUserFromAuthToken
         let sameUser =
@@ -49,41 +49,20 @@ let isAllowedPostWishListRequest =
             |> Option.map (fun t -> (t.UserName = wishList.UserName))
             |> Option.defaultValue false
         return sameUser
-    }
+    })
 
 let forbiddenPostList =
-    freya {
-        let! token = Auth.getUserFromAuthToken
-        let content =
-            token
-            |> Option.map (fun t ->
-                sprintf "WishList is not matching user %s" t.UserName
-            )
-            |> Option.defaultValue "WishList not ok"
+    let text (token:UserRights) = sprintf "WishList is not matching user %s" token.UserName
 
-        return Represent.text content
-    }  
-
-let whenPost altValue fn =
-    freya {
-        let! verb = Freya.Optic.get Request.method_
-        let! res =
-            match verb = POST with
-            | true -> fn
-            | false -> Freya.init altValue
-        return res
-    }
-
+    Auth.getUserFromAuthToken
+    |> Freya.map ( Option.map text >> Option.defaultValue "WishList not ok" >> Represent.text)
+    
 let isPostWishlistValid =
-    freya {
-        let! model = wishLisPostModel
-        return not(Validation.verifyWishList model)
-    }
+    whenPost false ((Validation.verifyWishList >> not) <!> wishLisPostModel)
 
 let badPostWishlist =
-    freya {
-        return Represent.text "WishList is not valid"
-    }
+    Represent.text "WishList is not valid"
+    |> Freya.init
 
 let postWishlist (saveWishListToDB: WishList -> Task<unit>) =
     freya {
@@ -96,10 +75,8 @@ let postWishlist (saveWishListToDB: WishList -> Task<unit>) =
     }    
 
 let wishListCreated = 
-    freya {
-        let! wishList = wishLisPostModel
-        return Represent.json wishList
-    }
+    wishLisPostModel
+    |> Freya.map (Represent.json)
 
 let wishListMachine (db:Database.IDatabaseFunctions) =
     freyaMachine {
@@ -107,10 +84,10 @@ let wishListMachine (db:Database.IDatabaseFunctions) =
         including Auth.authMachine
         handleOk (getWishlist db)
         
-        allowed (whenPost true isAllowedPostWishListRequest)
+        allowed isAllowedPostWishListRequest
         handleForbidden forbiddenPostList
 
-        badRequest (whenPost false isPostWishlistValid)
+        badRequest isPostWishlistValid
         handleBadRequest badPostWishlist
 
         doPost (postWishlist db.SaveWishList)
