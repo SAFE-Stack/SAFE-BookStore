@@ -10,12 +10,4 @@ module PageUrls =
 module APIUrls =
 
   [<Literal>]
-  let Socket = "/api/socket"
-  (*
-  [<Literal>]
-  let WishList = "/api/wishlist/"
-  [<Literal>]
-  let ResetTime = "/api/wishlist/resetTime/"
-  [<Literal>]
-  let Login = "/api/users/login/"
-  *)
+  let Socket = "/socket"

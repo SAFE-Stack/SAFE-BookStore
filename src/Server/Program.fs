@@ -35,6 +35,7 @@ let errorHandler (ex : Exception) (logger : ILogger) =
 
 let configureApp db root (app : IApplicationBuilder) =
     app.UseGiraffeErrorHandler(errorHandler)
+       .UseWebSockets()
        .UseStaticFiles()
        .UseGiraffe (WebServer.webApp db root)
 

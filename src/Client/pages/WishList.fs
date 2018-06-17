@@ -45,14 +45,14 @@ type Msg =
     | FetchError of string
 
 /// Get the wish list from the server, used to populate the model
-let loadWishListCmd _ =
+let loadWishListCmd : Cmd<Msg<ServerMsg,Msg>> =
     Cmd.ofMsg (S (FetchWishList))
 
-let loadResetTimeCmd _ =
+let loadResetTimeCmd =
     Cmd.ofMsg (S (FetchResetTime))
 
-let postWishListCmd (_,wishList) =
-    Cmd.ofMsg (S(SendWishList wishList))
+let postWishListCmd wishList =
+    Cmd.ofMsg (S (SendWishList wishList))
 
 let init (user:UserData) =
     { WishList = WishList.New user.UserName
@@ -71,8 +71,8 @@ let update (msg:Msg) model : Model*Cmd<Remoting.Msg<_,_>> =
     | LoadForUser user ->
         model,
         Cmd.batch [
-            loadWishListCmd user.Token
-            loadResetTimeCmd user.Token ]
+            loadWishListCmd
+            loadResetTimeCmd ]
 
     | FetchedWishList wishList ->
         let wishList = { wishList with Books = wishList.Books |> List.sortBy (fun b -> b.Title) }
@@ -107,7 +107,7 @@ let update (msg:Msg) model : Model*Cmd<Remoting.Msg<_,_>> =
         { model with
             WishList = wishList
             ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBook },
-                postWishListCmd(model.Token,wishList)
+                postWishListCmd wishList
 
     | AddBook ->
         if Validation.verifyBook model.NewBook then
@@ -117,7 +117,7 @@ let update (msg:Msg) model : Model*Cmd<Remoting.Msg<_,_>> =
             | None ->
                 let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
                 { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid(); ErrorMsg = None },
-                    postWishListCmd(model.Token,wishList)
+                    postWishListCmd wishList
         else
             { model with
                 TitleErrorText = Validation.verifyBookTitle model.NewBook.Title
