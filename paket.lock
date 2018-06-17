@@ -43,18 +43,18 @@ NUGET
       Fable.PowerPack (>= 1.3.2) - restriction: >= netstandard1.6
       Fable.React (>= 2.0) - restriction: >= netstandard1.6
       FSharp.Core (>= 4.2.3) - restriction: >= netstandard1.6
-    Fable.Elmish.Remoting.Client (0.7.1)
+    Fable.Elmish.Remoting.Client (0.7.2)
       Fable.Elmish (>= 1.0.3) - restriction: >= netstandard2.0
-      Fable.Elmish.Remoting.Shared (>= 0.7.1) - restriction: >= netstandard2.0
-    Fable.Elmish.Remoting.Giraffe (0.7)
-      Fable.Elmish.Remoting.Server (>= 0.7) - restriction: >= netstandard2.0
+      Fable.Elmish.Remoting.Shared (>= 0.7.2) - restriction: >= netstandard2.0
+    Fable.Elmish.Remoting.Giraffe (0.7.2)
+      Fable.Elmish.Remoting.Server (>= 0.7.2) - restriction: >= netstandard2.0
       Giraffe (>= 1.1) - restriction: >= netstandard2.0
       Microsoft.AspNetCore.WebSockets (>= 2.1) - restriction: >= netstandard2.0
-    Fable.Elmish.Remoting.Server (0.7) - restriction: >= netstandard2.0
+    Fable.Elmish.Remoting.Server (0.7.2) - restriction: >= netstandard2.0
       Fable.Elmish (>= 1.0.3) - restriction: >= netstandard2.0
-      Fable.Elmish.Remoting.Shared (>= 0.7) - restriction: >= netstandard2.0
+      Fable.Elmish.Remoting.Shared (>= 0.7.2) - restriction: >= netstandard2.0
       Fable.JsonConverter (>= 1.0.8) - restriction: >= netstandard2.0
-    Fable.Elmish.Remoting.Shared (0.7.1) - restriction: >= netstandard2.0
+    Fable.Elmish.Remoting.Shared (0.7.2) - restriction: >= netstandard2.0
       Fable.Elmish (>= 1.0.3) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.5) - restriction: >= netstandard2.0
     Fable.Import.Browser (1.1.2) - restriction: >= netstandard1.6

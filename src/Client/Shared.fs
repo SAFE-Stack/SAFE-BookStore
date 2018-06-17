@@ -14,6 +14,7 @@ type Model =
 
 type ServerMsg =
     | SendToken of JWT
+    | ClearUser
     | WishListServerMsg of WishList.ServerMsg
     | LoginServerMsg of Login.ServerMsg
 /// The composed set of messages that update the state of the application

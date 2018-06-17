@@ -50,8 +50,10 @@ let saveUserCmd user =
     Cmd.ofFunc (BrowserLocalStorage.save "user") user (fun _ -> LoggedIn user) StorageFailure
 
 let deleteUserCmd =
-    Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
-
+  Cmd.batch [
+    Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> C LoggedOut) (StorageFailure>>C)
+    Cmd.ofMsg (S ClearUser)
+    ]
 let init result =
     let user = loadUser ()
     let stateJson: string option = !!Browser.window?__INIT_MODEL__
@@ -116,10 +118,11 @@ let update msg model =
         Navigation.newUrl (toPath Page.Home)
 
     | Logout(), _ ->
-        model, Cmd.map C deleteUserCmd
+        model, deleteUserCmd
 
 
 open Elmish.Debug
+open ServerCode.ServerUrls
 
 let withReact =
     if (!!Browser.window?__INIT_MODEL__)
@@ -138,4 +141,4 @@ RemoteProgram.mkProgram init update view
 #if DEBUG
 |> RemoteProgram.programBridge Program.withDebugger
 #endif
-|> RemoteProgram.runAt "/socket"
+|> RemoteProgram.runAt APIUrls.Socket
