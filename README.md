@@ -317,6 +317,33 @@ testCase "login with test user" <| fun () ->
 
 [Paket](https://fsprojects.github.io/Paket/) is a dependency manager and allows easier management of the NuGet packages.
 
+## Docker
+
+The project can be executed in [docker](https://www.docker.com/) and can even be built there.
+
+### Running in docker
+
+It is possible to build the project locally and run it in a docker container. While it isn't really useful in itself (It's easier to run it locally without docker) it allow you to test the docker images that will later be [deployed](#Deployment) without needing a full deployment.
+
+```bash
+./build.sh BundleClient
+docker build -t bookstore .
+docker run -it --rm -p 127.0.0.1:8085:8085 --name bookstore bookstore
+```
+
+It will start the container and the BookStore app will be accessible at `http://127.0.0.1:8085`.
+
+### Building in docker
+
+The project also contains a configuration in `Dockerfile.WithBuild` that can build inside a docker container. In this configuration nothing is needed on the host machine except docker itself.
+
+```bash
+docker build -f build.Dockerfile -t bookstore .
+docker run -it --rm -p 127.0.0.1:8085:8085 --name bookstore bookstore
+```
+
+Exactly as before it will start the container and the BookStore app will be accessible at `http://127.0.0.1:8085`.
+
 ## Deployment
 
 The deployment for this repo works via [docker](https://www.docker.com/) with Linux containers and therefore you need docker installed on your machine.

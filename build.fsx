@@ -347,8 +347,13 @@ Target "All" DoNothing
   ==> "RunServerTests"
   ==> "BuildClientTests"
   ==> "RunClientTests"
+  ==> "All"
+
+"BuildClient"
   ==> "BundleClient"
   ==> "All"
+
+"All"
   ==> "CreateDockerImage"
   ==> "TestDockerImage"
   ==> "PrepareRelease"
