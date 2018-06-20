@@ -5,7 +5,7 @@ set -eu
 cd "$(dirname "$0")"
 
 PAKET_EXE=.paket/paket.exe
-FAKE_EXE=packages/build/FAKE/tools/FAKE.exe
+FAKE_EXE=.fake/FAKE.exe
 
 FSIARGS=""
 FSIARGS2=""
@@ -18,6 +18,8 @@ then
   FSIARGS2="-d:MONO"
 fi
 
+OS=${OS:-"unknown"}
+
 run() {
   if [ "$OS" != "Windows_NT" ]
   then
@@ -28,5 +30,6 @@ run() {
 }
 
 run $PAKET_EXE restore
-run $FAKE_EXE "$@" $FSIARGS $FSIARGS2 build.fsx
 
+dotnet tool install fake-cli --tool-path .\.fake
+run $FAKE_EXE build build.fsx

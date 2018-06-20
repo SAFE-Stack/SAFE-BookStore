@@ -42,5 +42,12 @@ group UITests
 
 group Build
   source https://nuget.org/api/v2
-  framework >= net461
-  nuget FAKE
+  storage none
+  framework netstandard2.0
+
+  nuget Fake.Core.Target
+  nuget Fake.Core.ReleaseNotes
+  nuget Fake.DotNet.Cli
+  nuget Fake.DotNet.Testing.Expecto
+  nuget Fake.Tools.Git
+  nuget FSharp.Core 4.3.4 // Must be same version as FAKE -> https://github.com/fsharp/FAKE/issues/2001
