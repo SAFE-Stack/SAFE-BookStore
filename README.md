@@ -4,7 +4,7 @@ The following document describes the [SAFE-Stack](https://safe-stack.github.io/)
 SAFE is a technology stack that brings together several technologies into a single, coherent stack for typesafe,
 flexible end-to-end web-enabled applications that are written entirely in F#.
 
-![SAFE-Stack](src/Client/images/safe_logo.png "SAFE-Stack")
+![SAFE-Stack](src/Client/Images/safe_logo.png "SAFE-Stack")
 
 You can see it running on Microsoft Azure at http://fable-suave.azurewebsites.net.
 
@@ -17,7 +17,7 @@ You can see it running on Microsoft Azure at http://fable-suave.azurewebsites.ne
 - [.NET Framework 4.6.2](https://support.microsoft.com/en-us/help/3151800/the--net-framework-4-6-2-offline-installer-for-windows) on Windows
 - [node.js](https://nodejs.org/) - JavaScript runtime
 - [yarn](https://yarnpkg.com/) - Package manager for npm modules
-- [dotnet SDK 2.0.3](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.3.md) The .NET Core SDK
+- [dotnet SDK 2.1.300](https://github.com/dotnet/cli/releases/tag/v2.1.300) The .NET Core SDK
 - Other tools like [Paket](https://fsprojects.github.io/Paket/) or [FAKE](https://fake.build/) will also be installed by the build script.
 - For [deployment](#deployment) you need to have [docker](https://www.docker.com/) installed.
 
@@ -32,7 +32,7 @@ Start the development mode with:
 
 This command will call the target "Run" in **build.fsx**. This will start in parallel:
 - **dotnet fable webpack-dev-server** in [src/Client](src/Client) (note: the Webpack development server will serve files on http://localhost:8080)
-- **dotnet watch msbuild /t:TestAndRun** in [test/serverTests](src/ServerTests) to run unit tests and then server (note: Suave is launched on port **8085**)
+- **dotnet watch msbuild /t:TestAndRun** in [test/serverTests](src/ServerTests) to run unit tests and then server (note: Giraffe is launched on port **8085**)
 
 You can now edit files in `src/Server` or `src/Client` and recompile + browser refresh will be triggered automatically.
 For the case of the client ["Hot Module Replacement"](https://webpack.js.org/concepts/hot-module-replacement/) is supported, which means your app state is kept over recompile.
@@ -56,12 +56,12 @@ Let's say we want to call our new page *Tomato*
         | WishList
         | Tomato // <- our page
 
-    let toHash =
+    let toPath =
         function
-        | Home -> "#home"
-        | Login -> "#login"
-        | WishList -> "#wishlist"
-        | Tomato -> "#tomato" // <- our page
+        | Page.Home -> "/"
+        | Page.Login -> "/login"
+        | Page.WishList -> "/wishlist"
+        | Page.Tomato -> "/tomato" // <- our page
 
     let pageParser : Parser<Page->_,_> =
         oneOf
@@ -71,15 +71,16 @@ Let's say we want to call our new page *Tomato*
               map Page.Tomato (s "tomato") ] // <- our page
     ```
 
-2. Adjust the `PageModel` type and the following functions inside the `src/Client/App.fs`:
+2. Adjust the model, update and view:
 
-    - `PageModel`
+    - `PageModel` type inside `src/Client/Shared.fs`
         ```fsharp
         type PageModel =
             //...
             | TomatoModel
         ```
-    - urlUpdate function
+
+    - `urlUpdate` function inside `src/Client/App.fs`
         ```fsharp
         let urlUpdate (result:Page option) model =
             match result with
@@ -87,7 +88,7 @@ Let's say we want to call our new page *Tomato*
             | Some Page.Tomato ->
                 { model with PageModel = TomatoModel }, []
         ```
-    - viewPage function
+    - viewPage function insdie `src/Client/Shared.fs`
         ```fsharp
         let viewPage model dispatch =
             match model.Page with
@@ -95,7 +96,7 @@ Let's say we want to call our new page *Tomato*
             | TomatoModel ->
                 [ words 60 "Tomatoes taste good!"]
         ```
-3. Try it out by navigating to `http://localhost:8080/#tomato`
+3. Try it out by navigating to `http://localhost:8080/tomato`
 
 You should see `Tomatoes taste good!`
 
@@ -196,16 +197,20 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
 3. Adjust the match pattern in the `update` function of `src/Client/App.fs`
     ```fsharp
     | TomatoMsg msg, TomatoModel tm ->
-        let color = match msg with ChangeColor c -> c
+        let color = match msg with Tomato.Msg.ChangeColor c -> c
         let tm = { tm with Color = color }
         { model with PageModel = TomatoModel tm }, Cmd.none
 
     | TomatoMsg msg, _ -> model, Cmd.none // in case we receive a delayed message originating from the previous page
     ```
 
-4. Change the `Tomato.view` function to:
+4. Change the `Tomato.view` function (and add in required packages):
 
     ```fsharp
+
+    open Fable.Helpers.React
+    open Fable.Helpers.React.Props
+    //...
     let view model dispatch =
         [
             words 60 "Tomatoes taste VERY good!"
@@ -239,9 +244,9 @@ Also, we additionally suggest installing React-devtools (for better UI debugging
 
 ## Technology stack
 
-### Suave on .NET Core
+### Giraffe on .NET Core
 
-The webserver backend is running as a [Suave.io](https://suave.io/) service on .NET Core.
+The webserver backend is running as a [Giraffe](https://github.com/giraffe-fsharp/Giraffe) service on ASP.NET Core.
 
 In development mode the server is automatically restarted whenever a file in `src/Server` is saved.
 
@@ -260,6 +265,15 @@ The [Fable](http://fable.io/) compiler is used to compile the F# client code to 
 "Isomorphic F#" started a bit as a joke about [Isomorphic JavaScript](http://isomorphic.net/). The naming is really bad, but the idea to have the same code running on client and server is really interesting.
 If you look at `src/Server/Shared/Domain.fs` then you will see code that is shared between client and server. On the server it is compiled to .NET core and for the client the Fable compiler is translating it into JavaScript.
 This is a really convenient technique for a shared domain model.
+
+
+### Server-Side Rendering
+
+This sample uses Server-Side Rendering (SSR) with [fable-react](https://github.com/fable-compiler/fable-react). This means the starting page is rendered on the ASP.NET Core server and sent as HTML to the client.
+This allows for better Search Engine Optimization and gives faster initial response, especially on mobile devices. Everything else is then rendered via [React](https://reactjs.org/) on the client.
+
+More info can be found in the [SSR tutorial](https://github.com/fable-compiler/fable-react/blob/master/docs/server-side-rendering.md).
+
 
 ## Testing
 
@@ -306,7 +320,7 @@ testCase "login with test user" <| fun () ->
 
 ## Deployment
 
-The deployment for this repo works via [docker](https://www.docker.com/) and therefore you need docker installed on your machine.
+The deployment for this repo works via [docker](https://www.docker.com/) with Linux containers and therefore you need docker installed on your machine.
 
 ### Microsoft Azure
 
@@ -337,7 +351,7 @@ Don't worry the file is already in `.gitignore` so your password will not be com
 #### Initial docker push
 
 In order to release a container you need to create a new entry in [RELEASE_NOTES.md] and run `release.cmd`.
-This will build the server and client, run all test, put the app into a docker container and push it to your docker hub repro.
+This will build the server and client, run all test, put the app into a docker container and push it to your docker hub repo.
 
 #### Azure Portal
 
@@ -350,7 +364,7 @@ Also look for the "WebHook Url" on the portal, copy that url and set it as new t
 
 *Note that entering a Startup File is not necessary.*
 
-The `Dockerfile` used to create the docker image exposes port 8085 for the Suave server application. This port needs to be mapped to port 80 within the Azure App Service for the application to receive http traffic.
+The `Dockerfile` used to create the docker image exposes port 8085 for the Giraffe server application. This port needs to be mapped to port 80 within the Azure App Service for the application to receive http traffic.
 
 Presently this can only be done using the Azure CLI. You can do this easily in Azure Cloud Shell (accessible from the Azure Portal in the top menu bar) using the following command:
 
@@ -384,6 +398,20 @@ The `version` and `verbosity` flag isn't need, but it is recommended to use the 
 
 Deploy to the flex environment with a custom runtime like this is might take some time, but the instructions here should work.
 
+#### Workaround for Split Health Checks
+
+Newly created projects have [Split Health Checks](https://cloud.google.com/appengine/docs/flexible/python/configuring-your-app-with-app-yaml#updated_health_checks) enabled by default, which causes the deployment to fail. This can be resolved by disabling them on the project.
+
+First install the beta components if you don't already have them:
+
+    gcloud components install beta
+
+then run the following command on your project:
+
+    gcloud beta app update --no-split-health-checks --project <YOUR PROJECT ID>
+
+After that, deploying as described above should work just fine.
+
 ## Known Issues
 
 ### Getting rid of errors in chrome
@@ -398,14 +426,6 @@ Deploy to the flex environment with a custom runtime like this is might take som
 
 - Or install the [Redux DevTools](http://extension.remotedev.io/) as a Chrome Extensions (recommended)
 Only one error remains, when visiting the WebApp the first time.
-
-### TypeProviders in the backend
-
-Sadly, .NET Core 2.0 currently does not support Type Providers, so you can not just add the NuGet packages like FSharp.Data to your backend project.
-
-### Additional Notes
-
-- You can not call the functions of Fable inside the F# interactive.
 
 ## Maintainer(s)
 
