@@ -249,6 +249,15 @@ The webserver backend is running as a [Giraffe](https://github.com/giraffe-fshar
 
 In development mode the server is automatically restarted whenever a file in `src/Server` is saved.
 
+### Freya on .NET Core
+
+The SAFE stack does not force you to use Giraffe/Saturn. Check out the [freya branch](https://github.com/SAFE-Stack/SAFE-BookStore/tree/freya) for an alternative implementation of the backend. 
+
+If you are new to Freya, you can find an introduction at:
+- [Freya website](https://docs.freya.io/en/latest/tutorials/getting-started-netcore.html)
+- [Building a Highly Concurrent, Functional Web Server on .NET Core](https://skillsmatter.com/skillscasts/9887-building-a-highly-concurrent-functional-web-server-on-dot-net-core)
+- [Freya F# for HTTP Systems](https://www.youtube.com/watch?v=Cu10EoxRz_s)
+
 ### React/Elmish client
 
 The client is [React](https://facebook.github.io/react/) single page application that uses [fable-elmish](https://github.com/fable-compiler/fable-elmish).
