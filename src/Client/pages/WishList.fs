@@ -13,6 +13,11 @@ open ServerCode
 open ServerCode.Domain
 open Style
 open System
+#if FABLE_COMPILER
+open Thoth.Json
+#else
+open Thoth.Json.Net
+#endif
 
 type Model =
   { WishList : WishList
@@ -37,6 +42,17 @@ type Msg =
     | LinkChanged of string
     | FetchError of exn
 
+// We use this alias as a temporary solution
+// I need to release a new version of Fable.PowerPack that's include Thoth.Json for JSON parsing
+module Temporary =
+
+    let inline fetchAs<'T> url props =
+        promise {
+            let! res = Fetch.fetch url props
+            let! json = res.text()
+            return Decode.Auto.unsafeFromString<'T> json
+        }
+
 /// Get the wish list from the server, used to populate the model
 let getWishList token =
     promise {
@@ -45,7 +61,7 @@ let getWishList token =
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
 
-        return! Fetch.fetchAs<WishList> url props
+        return! Temporary.fetchAs<WishList> url props
     }
 
 let getResetTime token =
@@ -55,7 +71,8 @@ let getResetTime token =
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
 
-        let! details = Fetch.fetchAs<ServerCode.Domain.WishListResetDetails> url props
+        // let! details = Fetch.fetchAs<ServerCode.Domain.WishListResetDetails> url props
+        let! details = Temporary.fetchAs<ServerCode.Domain.WishListResetDetails> url props
         return details.Time
     }
 
@@ -65,11 +82,10 @@ let loadWishListCmd token =
 let loadResetTimeCmd token =
     Cmd.ofPromise getResetTime token FetchedResetTime FetchError
 
-
 let postWishList (token,wishList) =
     promise {
         let url = ServerUrls.APIUrls.WishList
-        let body = toJson wishList
+        let body = Encode.Auto.toString 0 wishList
         let props =
             [ RequestProperties.Method HttpMethod.POST
               Fetch.requestHeaders [
@@ -77,7 +93,7 @@ let postWishList (token,wishList) =
                 HttpRequestHeaders.ContentType "application/json" ]
               RequestProperties.Body !^body ]
 
-        return! Fetch.fetchAs<WishList> url props
+        return! Temporary.fetchAs<WishList> url props
     }
 
 let postWishListCmd (token,wishList) =
@@ -252,7 +268,7 @@ let newBookForm (model:Model) dispatch =
         ]
     ]
 
-type [<Pojo>] BookProps = { key: string; book: Book; removeBook: unit -> unit }
+type BookProps = { key: string; book: Book; removeBook: unit -> unit }
 
 let bookComponent { book = book; removeBook = removeBook } =
   tr [] [
@@ -268,6 +284,8 @@ let bookComponent { book = book; removeBook = removeBook } =
 let inline BookComponent props = (ofFunction bookComponent) props []
 
 let view (model:Model) (dispatch: Msg -> unit) =
+    Browser.console.log model.ResetTime
+    Browser.console.log model
     div [] [
         h4 [] [
             let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""

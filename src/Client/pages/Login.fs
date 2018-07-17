@@ -12,6 +12,11 @@ open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open ServerCode
 open Client.Style
+#if FABLE_COMPILER
+open Thoth.Json
+#else
+open Thoth.Json.Net
+#endif
 
 type LoginState =
     | LoggedOut
@@ -39,7 +44,7 @@ let authUser (login:Login) =
         if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
         if String.IsNullOrEmpty login.Password then return! failwithf "You need to fill in a password." else
 
-        let body = toJson login
+        let body = Encode.Auto.toString 0 login
 
         let props =
             [ RequestProperties.Method HttpMethod.POST

@@ -11,6 +11,7 @@ open ServerTypes
 open Client.Shared
 open Giraffe.GiraffeViewEngine
 open Fable.Helpers.ReactServer
+open Thoth.Json.Net
 
 let index (model: Model option) =
   let jsonState, htmlStr =
@@ -21,12 +22,12 @@ let index (model: Model option) =
         // The first one will seriallize the state to a json string,
         // and the second one will seriallize the json string to a js string,
         // so we can deseriallize it by Fable's ofJson and get the correct types.
-        toJson (toJson model),
+        Encode.Auto.toString 0 (Encode.Auto.toString 0 model),
         Client.Shared.view model ignore |> renderToString
     | None ->
         "null", ""
   html []
-    [ head [] [ 
+    [ head [] [
         meta [ _httpEquiv "Content-Type"; _content "text/html"; _charset "utf-8" ]
         title [] [ rawText "SAFE-Stack sample" ]
         link
@@ -48,6 +49,7 @@ let index (model: Model option) =
           rawText htmlStr
         ]
         script [ ] [ rawText (sprintf "var __INIT_MODEL__ = %s" jsonState) ]
-        script [ _src "/public/bundle.js" ] []
+        script [ _src "/public/vendors.js" ] []
+        script [ _src "/public/main.js" ] []
       ]
     ]

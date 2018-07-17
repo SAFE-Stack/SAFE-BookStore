@@ -12,6 +12,7 @@ open Elmish.HMR
 open Client.Shared
 open Client.Pages
 open ServerCode.Domain
+open Thoth.Json
 
 JsInterop.importSideEffects "whatwg-fetch"
 JsInterop.importSideEffects "babel-polyfill"
@@ -56,7 +57,7 @@ let init result =
     let stateJson: string option = !!Browser.window?__INIT_MODEL__
     match stateJson, result with
     | Some json, Some Page.Home ->
-        let model: Model = ofJson json
+        let model: Model = Decode.Auto.unsafeFromString(json)
         { model with User = user }, Cmd.none
     | _ ->
         let model =
@@ -66,6 +67,7 @@ let init result =
         urlUpdate result model
 
 let update msg model =
+    printfn "update"
     match msg, model.PageModel with
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
@@ -129,6 +131,7 @@ Program.mkProgram init update view
 #endif
 |> withReact "elmish-app"
 #if DEBUG
-|> Program.withDebugger
+// The debugger isn't support yet for Fable 2
+// |> Program.withDebugger
 #endif
 |> Program.run

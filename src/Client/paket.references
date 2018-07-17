@@ -6,3 +6,4 @@ Fable.Elmish.React
 Fable.Elmish.HMR
 Fable.Core
 dotnet-fable
+Thoth.Json

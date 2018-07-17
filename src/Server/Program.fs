@@ -12,6 +12,7 @@ open Newtonsoft.Json
 open Giraffe
 open Giraffe.Serialization.Json
 open Giraffe.HttpStatusCodeHandlers.ServerErrors
+open Thoth.Json.Net
 
 let GetEnvVar var =
     match Environment.GetEnvironmentVariable(var) with
@@ -38,16 +39,32 @@ let configureApp db root (app : IApplicationBuilder) =
        .UseStaticFiles()
        .UseGiraffe (WebServer.webApp db root)
 
+type ThothSerializer () =
+    interface IJsonSerializer with
+        member __.Serialize (o : obj) =
+            Encode.Auto.toString 0 o
+
+        member __.Deserialize<'T> (json : string) =
+            Decode.Auto.unsafeFromString<'T>(json)
+
+        member __.Deserialize<'T> (stream : Stream) =
+            use sr = new StreamReader(stream, true)
+            let str = sr.ReadToEnd()
+            Decode.Auto.unsafeFromString<'T>(str)
+
+        member __.DeserializeAsync<'T> (stream : Stream) =
+            task {
+                use sr = new StreamReader(stream, true)
+                let str = sr.ReadToEnd()
+                return Decode.Auto.unsafeFromString<'T>(str)
+            }
+
 let configureServices (services : IServiceCollection) =
     // Add default Giraffe dependencies
     services.AddGiraffe() |> ignore
 
-    // Configure JsonSerializer to use Fable.JsonConverter
-    let fableJsonSettings = JsonSerializerSettings()
-    fableJsonSettings.Converters.Add(Fable.JsonConverter())
-
-    services.AddSingleton<IJsonSerializer>(
-        NewtonsoftJsonSerializer(fableJsonSettings)) |> ignore
+    services.AddSingleton<IJsonSerializer>(ThothSerializer())
+    |> ignore
 
 let configureLogging (loggerBuilder : ILoggingBuilder) =
     loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)
@@ -67,7 +84,7 @@ let main args =
                 if Directory.Exists devPath then devPath
                 else
                     // maybe we are in root of project?
-                    let devPath = Path.Combine("src","Client")
+                    let devPath = Path.Combine("src", "Client")
                     if Directory.Exists devPath then devPath
                     else @"./client"
             |> Path.GetFullPath

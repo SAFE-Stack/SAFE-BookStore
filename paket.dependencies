@@ -2,7 +2,6 @@ source https://nuget.org/api/v2
 storage:none
 
 nuget FSharp.Core redirects: force
-nuget Fable.JsonConverter
 nuget Giraffe
 nuget Giraffe.TokenRouter
 nuget Microsoft.AspNetCore.StaticFiles
@@ -11,9 +10,10 @@ nuget Microsoft.AspNetCore.WebSockets
 nuget Microsoft.AspNetCore.WebSockets.Server
 nuget System.Net.NetworkInformation
 nuget jose-jwt
+nuget Thoth.Json.Net prerelease
 
-nuget Fable.Core
-nuget Fable.React
+nuget Fable.Core prerelease
+nuget Fable.React prerelease
 nuget Fable.Elmish
 nuget Fable.Elmish.React
 nuget Fable.Elmish.Browser
@@ -21,8 +21,9 @@ nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.HMR
 nuget Microsoft.Azure.WebJobs prerelease
 nuget Microsoft.Azure.WebJobs.Extensions prerelease
+nuget Thoth.Json prerelease
 
-clitool dotnet-fable
+clitool dotnet-fable prerelease
 
 group ServerTests
   source https://nuget.org/api/v2
