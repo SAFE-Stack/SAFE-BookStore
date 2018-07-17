@@ -18,7 +18,7 @@ var CONFIG = {
     historyApiFallback: {
         index: resolve("./index.html")
     },
-    contentBase: resolve("./static"),
+    contentBase: __dirname,
     // Use babel-preset-env to generate JS compatible with most-used browsers.
     // More info at https://github.com/babel/babel/blob/master/packages/babel-preset-env/README.md
     babel: {
