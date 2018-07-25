@@ -74,7 +74,6 @@ let update (db:#IDatabaseFunctions) clientDispatch msg model =
 
 let remote db =
     Bridge.mkServer APIUrls.Socket init (update db)
-    |> Bridge.withConsoleTrace
     |> Bridge.register WishListServerMsg
     |> Bridge.register LoginServerMsg
     |> Bridge.run Giraffe.server
