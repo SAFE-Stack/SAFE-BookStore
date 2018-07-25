@@ -8,7 +8,7 @@ open Fable.Helpers.React.Props
 open Fable.Core.JsInterop
 
 open Elmish
-open Elmish.Remoting
+open Elmish.Bridge
 open Fetch.Fetch_types
 open ServerCode
 open ServerCode.Domain
@@ -30,6 +30,9 @@ type Model =
 type ServerMsg =
     | FetchWishList
     | FetchResetTime
+    | FetchWishListSuccess of WishList
+    | FetchResetTimeSuccess of DateTime
+    | FetchFailure of string
     | SendWishList of WishList
 
 /// The different messages processed when interacting with the wish list
@@ -44,16 +47,6 @@ type Msg =
     | LinkChanged of string
     | FetchError of string
 
-/// Get the wish list from the server, used to populate the model
-let loadWishListCmd : Cmd<Msg<ServerMsg,Msg>> =
-    Cmd.ofMsg (S (FetchWishList))
-
-let loadResetTimeCmd =
-    Cmd.ofMsg (S (FetchResetTime))
-
-let postWishListCmd wishList =
-    Cmd.ofMsg (S (SendWishList wishList))
-
 let init (user:UserData) =
     { WishList = WishList.New user.UserName
       Token = user.Token
@@ -64,15 +57,14 @@ let init (user:UserData) =
       ResetTime = None
       LinkErrorText = None
       ErrorMsg = None },
-        Cmd.ofMsg (C(LoadForUser user))
+        Cmd.ofMsg (LoadForUser user)
 
-let update (msg:Msg) model : Model*Cmd<Remoting.Msg<_,_>> =
+let update (msg:Msg) model : Model*Cmd<Msg> =
     match msg with
     | LoadForUser user ->
-        model,
-        Cmd.batch [
-            loadWishListCmd
-            loadResetTimeCmd ]
+        Bridge.Send FetchWishList
+        Bridge.Send FetchResetTime
+        model,Cmd.none
 
     | FetchedWishList wishList ->
         let wishList = { wishList with Books = wishList.Books |> List.sortBy (fun b -> b.Title) }
@@ -104,10 +96,11 @@ let update (msg:Msg) model : Model*Cmd<Remoting.Msg<_,_>> =
 
     | RemoveBook book ->
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
+        Bridge.Send(SendWishList wishList)
         { model with
             WishList = wishList
             ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBook },
-                postWishListCmd wishList
+                Cmd.none
 
     | AddBook ->
         if Validation.verifyBook model.NewBook then
@@ -116,8 +109,9 @@ let update (msg:Msg) model : Model*Cmd<Remoting.Msg<_,_>> =
                 { model with ErrorMsg = Some err }, Cmd.none
             | None ->
                 let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
+                Bridge.Send(SendWishList wishList)
                 { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid(); ErrorMsg = None },
-                    postWishListCmd wishList
+                    Cmd.none
         else
             { model with
                 TitleErrorText = Validation.verifyBookTitle model.NewBook.Title

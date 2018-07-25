@@ -1,5 +1,4 @@
 module Client.Shared
-open Elmish.Remoting
 open ServerCode.Domain
 /// The composed model for the different possible page states of the application
 type PageModel =
@@ -50,7 +49,7 @@ let viewPage model dispatch =
 /// Constructs the view for the application given the model.
 let view model dispatch =
     div [] [
-        Menu.view (Logout >> C >> dispatch) model.User
+        Menu.view (Logout >> dispatch) model.User
         hr []
-        div [ centerStyle "column" ] (viewPage model (C >> dispatch))
+        div [ centerStyle "column" ] (viewPage model dispatch)
     ]

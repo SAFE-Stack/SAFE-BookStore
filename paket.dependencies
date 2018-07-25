@@ -12,13 +12,13 @@ nuget Microsoft.AspNetCore.WebSockets.Server
 nuget System.Net.NetworkInformation
 nuget jose-jwt
 
+nuget Elmish.Bridge.Giraffe
+nuget Elmish.Bridge.Client
 nuget Fable.Core
 nuget Fable.React
 nuget Fable.Elmish
 nuget Fable.Elmish.React
 nuget Fable.Elmish.Browser
-nuget Fable.Elmish.Remoting.Giraffe
-nuget Fable.Elmish.Remoting.Client
 nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.HMR
 nuget Microsoft.Azure.WebJobs prerelease
