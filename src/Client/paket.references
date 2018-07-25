@@ -1,7 +1,7 @@
+Elmish.Bridge.Client
 FSharp.Core
 Fable.React
 Fable.Elmish.Browser
-Fable.Elmish.Remoting.Client
 Fable.Elmish.Debugger
 Fable.Elmish.React
 Fable.Elmish.HMR

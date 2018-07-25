@@ -3,7 +3,7 @@ module Client.Login
 open Fable.Core
 open Fable.Import
 open Elmish
-open Elmish.Remoting
+open Elmish.Bridge
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open ServerCode.Domain
@@ -40,9 +40,6 @@ type ExternalMsg =
     | NoOp
     | UserLoggedIn of UserData
 
-let authUserCmd login =
-    Cmd.ofMsg (S (SendLogin login))
-
 let init (user:UserData option) =
     match user with
     | None ->
@@ -54,7 +51,7 @@ let init (user:UserData option) =
           State = LoggedIn user
           ErrorMsg = "" }, Cmd.none
 
-let update (msg:Msg) model : Model*Cmd<Remoting.Msg<ServerMsg,Msg>>*ExternalMsg =
+let update (msg:Msg) model : Model*Cmd<Msg>*ExternalMsg =
     match msg with
     | LoginSuccess user ->
         { model with State = LoggedIn user; Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none, ExternalMsg.UserLoggedIn user
@@ -63,7 +60,8 @@ let update (msg:Msg) model : Model*Cmd<Remoting.Msg<ServerMsg,Msg>>*ExternalMsg 
     | SetPassword pw ->
         { model with Login = { model.Login with Password = pw }}, Cmd.none, NoOp
     | ClickLogIn ->
-        model, authUserCmd model.Login, NoOp
+        Bridge.Send(SendLogin model.Login)
+        model, Cmd.none, NoOp
     | AuthError exn ->
         { model with ErrorMsg = exn }, Cmd.none, NoOp
 
