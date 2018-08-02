@@ -56,12 +56,12 @@ Let's say we want to call our new page *Tomato*
         | WishList
         | Tomato // <- our page
 
-    let toHash =
+    let toPath =
         function
-        | Home -> "/"
-        | Login -> "/login"
-        | WishList -> "/wishlist"
-        | Tomato -> "/tomato" // <- our page
+        | Page.Home -> "/"
+        | Page.Login -> "/login"
+        | Page.WishList -> "/wishlist"
+        | Page.Tomato -> "/tomato" // <- our page
 
     let pageParser : Parser<Page->_,_> =
         oneOf
