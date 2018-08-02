@@ -47,7 +47,7 @@ This topic will guide you through creating a new page. After every section you s
 #### Minimal setup
 Let's say we want to call our new page *Tomato*
 
-1. Adjust the `src/Client/Pages.fs` and register our Tomato page as a page and define the corresponding hash value.
+1. Adjust the `src/Client/Pages.fs` and register our Tomato page as a page and define the corresponding path.
 
     ```fsharp
     type Page =
@@ -58,10 +58,10 @@ Let's say we want to call our new page *Tomato*
 
     let toHash =
         function
-        | Home -> "#home"
-        | Login -> "#login"
-        | WishList -> "#wishlist"
-        | Tomato -> "#tomato" // <- our page
+        | Home -> "/"
+        | Login -> "/login"
+        | WishList -> "/wishlist"
+        | Tomato -> "/tomato" // <- our page
 
     let pageParser : Parser<Page->_,_> =
         oneOf
@@ -71,21 +71,13 @@ Let's say we want to call our new page *Tomato*
               map Page.Tomato (s "tomato") ] // <- our page
     ```
 
-2. Adjust the `PageModel` type and the following functions inside the `src/Client/App.fs`:
+2. Adjust the `PageModel` type and the `viewPage` function in `src/Client/Shared.fs`:
 
     - `PageModel`
         ```fsharp
         type PageModel =
             //...
             | TomatoModel
-        ```
-    - urlUpdate function
-        ```fsharp
-        let urlUpdate (result:Page option) model =
-            match result with
-            //...
-            | Some Page.Tomato ->
-                { model with PageModel = TomatoModel }, []
         ```
     - viewPage function
         ```fsharp
@@ -94,8 +86,20 @@ Let's say we want to call our new page *Tomato*
             //...
             | TomatoModel ->
                 [ words 60 "Tomatoes taste good!"]
+        ```    
+
+3. Adjust the `urlUpdate` function inside the `src/Client/App.fs`:
+
+    - urlUpdate function
+        ```fsharp
+        let urlUpdate (result:Page option) model =
+            match result with
+            //...
+            | Some Page.Tomato ->
+                { model with PageModel = TomatoModel }, Cmd.none
         ```
-3. Try it out by navigating to `http://localhost:8080/#tomato`
+
+4. Try it out by navigating to `http://localhost:8080/tomato`
 
 You should see `Tomatoes taste good!`
 
@@ -104,7 +108,7 @@ You should see `Tomatoes taste good!`
 Inside `src/Client/views/Menu.fs`:
 
 ```fsharp
-let view (model:Model) dispatch =
+let inline private clientView onLogout (model:Model) =
     div [ centerStyle "row" ] [
         //...
         yield viewLink Page.Tomato "Tomato"
@@ -114,10 +118,10 @@ let view (model:Model) dispatch =
 #### Move code to separate Tomato.fs files
 
 1. Add a new .fs file to the pages folder: `src/Client/pages/Tomato.fs`.
-Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App.fs`.
+Add the `src/Client/pages/Tomato.fs` to your `Client.props` file and move it above `Shared.fs`.
 
-        <Compile Include="pages/Tomato.fs" />
-        <Compile Include="App.fs" />
+    <Compile Include="../Client/pages/Tomato.fs" Watch="false" />
+    <Compile Include="../Client/Shared.fs" Watch="false" />
 
 2. Place following code in the `src/Client/pages/Tomato.fs`:
 
@@ -128,7 +132,7 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
         [ words 60 "Tomatoes taste VERY good!"]
     ```
 
-3. Remove old 'view' code from the `viewPage` function in `src/Client/App.fs` and replace it
+3. Remove old 'view' code from the `viewPage` function in `src/Client/Shared.fs` and replace it
     with:
     ```fsharp
     | TomatoModel ->
@@ -155,7 +159,7 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
         ]
     ```
 
-2. Adjust the `PageModel` DU
+2. Adjust the `PageModel` discriminated union in `Shared.fs`
 
     ```fsharp
     type PageModel =
@@ -186,7 +190,7 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
         | ChangeColor of string
     ```
 
-2. Add a message to the `Msg` DU in `src/Client/App.fs`
+2. Add a message to the `Msg` DU in `src/Client/Shared.fs`
     ```fsharp
     type Msg =
         //...
@@ -222,7 +226,7 @@ Add the `src/Client/pages/Tomato.fs` to your .fsproj file and move it above `App
         ]
     ```
 
-5. Edit `App.viewPage` and pass the `dispatch` function to `Tomato.view`, remapping `Tomato.Msg` onto `App.Msg`
+5. Edit `Shared.viewPage` and pass the `dispatch` function to `Tomato.view`, remapping `Tomato.Msg` onto `App.Msg`
 
     ```fsharp
     | TomatoModel m ->
