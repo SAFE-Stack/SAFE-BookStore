@@ -42,7 +42,7 @@ let configureApp db root (app : IApplicationBuilder) =
 type ThothSerializer () =
     interface IJsonSerializer with
         member __.Serialize (o : obj) =
-            Encode.Auto.toString 0 o
+            Encode.Auto.toString(0, o)
 
         member __.Deserialize<'T> (json : string) =
             Decode.Auto.unsafeFromString<'T>(json)

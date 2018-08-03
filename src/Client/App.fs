@@ -44,7 +44,10 @@ let urlUpdate (result:Page option) (model: Model) =
         { model with PageModel = HomePageModel }, Cmd.none
 
 let loadUser () : UserData option =
-    BrowserLocalStorage.load "user"
+    let userDecoder = Decode.Auto.generateDecoder<UserData>()
+    match BrowserLocalStorage.load userDecoder "user" with
+    | Ok user -> Some user
+    | Error _ -> None
 
 let saveUserCmd user =
     Cmd.ofFunc (BrowserLocalStorage.save "user") user (fun _ -> LoggedIn user) StorageFailure

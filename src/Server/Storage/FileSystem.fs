@@ -19,4 +19,4 @@ let saveWishListToDB wishList =
     let fi = FileInfo(getJSONFileName wishList.UserName)
     if not fi.Directory.Exists then
         fi.Directory.Create()
-    File.WriteAllText(fi.FullName, Encode.Auto.toString 4 wishList)
+    File.WriteAllText(fi.FullName, Encode.Auto.toString(4, wishList))

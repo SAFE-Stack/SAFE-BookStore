@@ -44,7 +44,7 @@ let authUser (login:Login) =
         if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
         if String.IsNullOrEmpty login.Password then return! failwithf "You need to fill in a password." else
 
-        let body = Encode.Auto.toString 0 login
+        let body = Encode.Auto.toString(0, login)
 
         let props =
             [ RequestProperties.Method HttpMethod.POST
@@ -53,7 +53,9 @@ let authUser (login:Login) =
               RequestProperties.Body !^body ]
 
         try
-            return! Fetch.fetchAs<UserData> ServerUrls.APIUrls.Login props
+            let! res = Fetch.fetch ServerUrls.APIUrls.Login props
+            let! txt = res.text()
+            return Decode.Auto.unsafeFromString<UserData> txt
         with _ ->
             return! failwithf "Could not authenticate user."
     }

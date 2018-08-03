@@ -42,17 +42,6 @@ type Msg =
     | LinkChanged of string
     | FetchError of exn
 
-// We use this alias as a temporary solution
-// I need to release a new version of Fable.PowerPack that's include Thoth.Json for JSON parsing
-module Temporary =
-
-    let inline fetchAs<'T> url props =
-        promise {
-            let! res = Fetch.fetch url props
-            let! json = res.text()
-            return Decode.Auto.unsafeFromString<'T> json
-        }
-
 /// Get the wish list from the server, used to populate the model
 let getWishList token =
     promise {
@@ -61,7 +50,9 @@ let getWishList token =
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
 
-        return! Temporary.fetchAs<WishList> url props
+        let! res = Fetch.fetch url props
+        let! txt = res.text()
+        return Decode.Auto.unsafeFromString<WishList> txt
     }
 
 let getResetTime token =
@@ -71,8 +62,9 @@ let getResetTime token =
             [ Fetch.requestHeaders [
                 HttpRequestHeaders.Authorization ("Bearer " + token) ]]
 
-        // let! details = Fetch.fetchAs<ServerCode.Domain.WishListResetDetails> url props
-        let! details = Temporary.fetchAs<ServerCode.Domain.WishListResetDetails> url props
+        let! res = Fetch.fetch url props
+        let! txt = res.text()
+        let details = Decode.Auto.unsafeFromString<ServerCode.Domain.WishListResetDetails> txt
         return details.Time
     }
 
@@ -85,7 +77,7 @@ let loadResetTimeCmd token =
 let postWishList (token,wishList) =
     promise {
         let url = ServerUrls.APIUrls.WishList
-        let body = Encode.Auto.toString 0 wishList
+        let body = Encode.Auto.toString(0, wishList)
         let props =
             [ RequestProperties.Method HttpMethod.POST
               Fetch.requestHeaders [
@@ -93,7 +85,9 @@ let postWishList (token,wishList) =
                 HttpRequestHeaders.ContentType "application/json" ]
               RequestProperties.Body !^body ]
 
-        return! Temporary.fetchAs<WishList> url props
+        let! res = Fetch.fetch url props
+        let! txt = res.text()
+        return Decode.Auto.unsafeFromString<WishList> txt
     }
 
 let postWishListCmd (token,wishList) =

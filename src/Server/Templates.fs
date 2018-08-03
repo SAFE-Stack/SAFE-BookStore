@@ -22,7 +22,7 @@ let index (model: Model option) =
         // The first one will seriallize the state to a json string,
         // and the second one will seriallize the json string to a js string,
         // so we can deseriallize it by Fable's ofJson and get the correct types.
-        Encode.Auto.toString 0 (Encode.Auto.toString 0 model),
+        Encode.Auto.toString(0, (Encode.Auto.toString(0, model))),
         Client.Shared.view model ignore |> renderToString
     | None ->
         "null", ""
