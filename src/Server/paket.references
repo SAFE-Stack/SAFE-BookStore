@@ -16,3 +16,4 @@ Fable.Import.Browser
 Fable.Elmish.Browser
 Fable.Elmish.React
 Thoth.Json.Net
+Thoth.Json.Giraffe

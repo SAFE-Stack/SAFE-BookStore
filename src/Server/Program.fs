@@ -12,7 +12,7 @@ open Newtonsoft.Json
 open Giraffe
 open Giraffe.Serialization.Json
 open Giraffe.HttpStatusCodeHandlers.ServerErrors
-open Thoth.Json.Net
+open Thoth.Json.Giraffe
 
 let GetEnvVar var =
     match Environment.GetEnvironmentVariable(var) with
@@ -38,26 +38,6 @@ let configureApp db root (app : IApplicationBuilder) =
     app.UseGiraffeErrorHandler(errorHandler)
        .UseStaticFiles()
        .UseGiraffe (WebServer.webApp db root)
-
-type ThothSerializer () =
-    interface IJsonSerializer with
-        member __.Serialize (o : obj) =
-            Encode.Auto.toString(0, o)
-
-        member __.Deserialize<'T> (json : string) =
-            Decode.Auto.unsafeFromString<'T>(json)
-
-        member __.Deserialize<'T> (stream : Stream) =
-            use sr = new StreamReader(stream, true)
-            let str = sr.ReadToEnd()
-            Decode.Auto.unsafeFromString<'T>(str)
-
-        member __.DeserializeAsync<'T> (stream : Stream) =
-            task {
-                use sr = new StreamReader(stream, true)
-                let str = sr.ReadToEnd()
-                return Decode.Auto.unsafeFromString<'T>(str)
-            }
 
 let configureServices (services : IServiceCollection) =
     // Add default Giraffe dependencies

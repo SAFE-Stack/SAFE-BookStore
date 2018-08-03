@@ -11,6 +11,7 @@ nuget Microsoft.AspNetCore.WebSockets.Server
 nuget System.Net.NetworkInformation
 nuget jose-jwt
 nuget Thoth.Json.Net prerelease
+nuget Thoth.Json.Giraffe
 
 nuget Fable.Core prerelease
 nuget Fable.React prerelease

@@ -1286,6 +1286,10 @@ NUGET
     Thoth.Json (2.0.0-beta-004)
       Fable.Core (>= 2.0.0-alpha-011) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.5) - restriction: >= netstandard2.0
+    Thoth.Json.Giraffe (1.0)
+      FSharp.Core (>= 4.5.2) - restriction: >= netstandard2.0
+      Giraffe (>= 1.1) - restriction: >= netstandard2.0
+      Thoth.Json.Net (>= 2.0.0-beta-004) - restriction: >= netstandard2.0
     Thoth.Json.Net (2.0.0-beta-004)
       FSharp.Core (>= 4.5) - restriction: || (>= net46) (>= netstandard2.0)
       Newtonsoft.Json (>= 11.0.2) - restriction: || (>= net46) (>= netstandard2.0)
