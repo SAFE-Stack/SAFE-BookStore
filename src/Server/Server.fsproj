@@ -13,7 +13,6 @@
   <ItemGroup>
     <Compile Include="ServerTypes.fs" />
     <Compile Include="JsonWebToken.fs" />
-    <Compile Include="FableJson.fs" />
     <Compile Include="Auth.fs" />
     <Compile Include="WishList.fs" />
     <Compile Include="Storage/Defaults.fs" />

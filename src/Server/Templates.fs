@@ -6,7 +6,6 @@ open System.Threading.Tasks
 open Microsoft.AspNetCore.Http
 open Giraffe
 open ServerCode.Domain
-open ServerCode.FableJson
 open ServerTypes
 open Client.Shared
 open Giraffe.GiraffeViewEngine

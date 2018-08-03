@@ -278,8 +278,6 @@ let bookComponent { book = book; removeBook = removeBook } =
 let inline BookComponent props = (ofFunction bookComponent) props []
 
 let view (model:Model) (dispatch: Msg -> unit) =
-    Browser.console.log model.ResetTime
-    Browser.console.log model
     div [] [
         h4 [] [
             let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
