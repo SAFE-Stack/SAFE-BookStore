@@ -71,15 +71,15 @@ Let's say we want to call our new page *Tomato*
               map Page.Tomato (s "tomato") ] // <- our page
     ```
 
-2. Adjust the `PageModel` type and the `viewPage` function in `src/Client/Shared.fs`:
+2. Adjust the model, update and view:
 
-    - `PageModel`
+    - `PageModel` type inside `src/Client/Shared.fs`
         ```fsharp
         type PageModel =
             //...
             | TomatoModel
         ```
-    - viewPage function
+    - viewPage function inside `src/Client/Shared.fs`
         ```fsharp
         let viewPage model dispatch =
             match model.Page with
