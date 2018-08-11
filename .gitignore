@@ -6,6 +6,9 @@
 *.user
 *.sln.docstates
 
+# Rider specific
+.idea/
+
 # Xamarin Studio / monodevelop user-specific
 *.userprefs
 *.dll.mdb
