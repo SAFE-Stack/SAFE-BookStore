@@ -27,8 +27,8 @@ This development stack is designed to be used with minimal tooling. An instance 
 
 Start the development mode with:
 
-    > build.cmd run // on windows
-    $ ./build.sh run // on unix
+    > build.cmd target run // on windows
+    $ ./build.sh target run // on unix
 
 This command will call the target "Run" in **build.fsx**. This will start in parallel:
 - **dotnet fable webpack-dev-server** in [src/Client](src/Client) (note: the Webpack development server will serve files on http://localhost:8080)
