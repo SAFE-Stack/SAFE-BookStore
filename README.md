@@ -17,7 +17,7 @@ You can see it running on Microsoft Azure at http://fable-suave.azurewebsites.ne
 - [.NET Framework 4.6.2](https://support.microsoft.com/en-us/help/3151800/the--net-framework-4-6-2-offline-installer-for-windows) on Windows
 - [node.js](https://nodejs.org/) - JavaScript runtime
 - [yarn](https://yarnpkg.com/) - Package manager for npm modules
-- [dotnet SDK 2.1.300](https://github.com/dotnet/cli/releases/tag/v2.1.300) The .NET Core SDK
+- [dotnet SDK 2.1.302](https://github.com/dotnet/cli/releases/tag/v2.1.302) The .NET Core SDK
 - Other tools like [Paket](https://fsprojects.github.io/Paket/) or [FAKE](https://fake.build/) will also be installed by the build script.
 - For [deployment](#deployment) you need to have [docker](https://www.docker.com/) installed.
 
@@ -71,15 +71,15 @@ Let's say we want to call our new page *Tomato*
               map Page.Tomato (s "tomato") ] // <- our page
     ```
 
-2. Adjust the `PageModel` type and the `viewPage` function in `src/Client/Shared.fs`:
+2. Adjust the model, update and view:
 
-    - `PageModel`
+    - `PageModel` type inside `src/Client/Shared.fs`
         ```fsharp
         type PageModel =
             //...
             | TomatoModel
         ```
-    - viewPage function
+    - viewPage function inside `src/Client/Shared.fs`
         ```fsharp
         let viewPage model dispatch =
             match model.Page with
