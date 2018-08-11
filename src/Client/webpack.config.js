@@ -33,6 +33,7 @@ module.exports = {
     filename: "bundle.js"
   },
   resolve: {
+    symlinks: false,
     modules: [ resolve("../../node_modules/")]
   },
   devServer: {
