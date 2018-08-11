@@ -30,4 +30,4 @@ cache:
   - $HOME/.yarn-cache
 
 script:
-  - ./build.sh All
+  - ./build.sh target All
