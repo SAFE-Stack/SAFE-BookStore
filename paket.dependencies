@@ -3,8 +3,8 @@ storage:none
 
 nuget FSharp.Core redirects: force
 nuget Fable.JsonConverter
-nuget Giraffe
-nuget Giraffe.TokenRouter
+nuget Giraffe ~> 1.1
+nuget Giraffe.TokenRouter ~> 0.1 prerelease
 nuget Microsoft.AspNetCore.StaticFiles
 nuget Microsoft.AspNetCore
 nuget Microsoft.AspNetCore.WebSockets
@@ -21,6 +21,8 @@ nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.HMR
 nuget Microsoft.Azure.WebJobs prerelease
 nuget Microsoft.Azure.WebJobs.Extensions prerelease
+
+nuget Saturn
 
 clitool dotnet-fable
 
