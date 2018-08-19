@@ -3,15 +3,12 @@ module ServerCode.Program
 
 open System
 open System.IO
-open Microsoft.AspNetCore
-open Microsoft.AspNetCore.Builder
-open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Logging
-open Microsoft.Extensions.DependencyInjection
 open Newtonsoft.Json
 open Giraffe
-open Giraffe.Serialization.Json
 open Giraffe.HttpStatusCodeHandlers.ServerErrors
+
+open Saturn
 
 let GetEnvVar var =
     match Environment.GetEnvironmentVariable(var) with
@@ -33,21 +30,6 @@ let errorHandler (ex : Exception) (logger : ILogger) =
         logger.LogError(EventId(), ex, "An unhandled exception has occurred while executing the request.")
         clearResponse >=> INTERNAL_ERROR ex.Message
 
-let configureApp db root (app : IApplicationBuilder) =
-    app.UseGiraffeErrorHandler(errorHandler)
-       .UseStaticFiles()
-       .UseGiraffe (WebServer.webApp db root)
-
-let configureServices (services : IServiceCollection) =
-    // Add default Giraffe dependencies
-    services.AddGiraffe() |> ignore
-
-    // Configure JsonSerializer to use Fable.JsonConverter
-    let fableJsonSettings = JsonSerializerSettings()
-    fableJsonSettings.Converters.Add(Fable.JsonConverter())
-
-    services.AddSingleton<IJsonSerializer>(
-        NewtonsoftJsonSerializer(fableJsonSettings)) |> ignore
 
 let configureLogging (loggerBuilder : ILoggingBuilder) =
     loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)
@@ -83,16 +65,21 @@ let main args =
 
         let port = getPortsOrDefault 8085us
 
-        WebHost
-            .CreateDefaultBuilder()
-            .UseWebRoot(clientPath)
-            .UseContentRoot(clientPath)
-            .ConfigureLogging(configureLogging)
-            .ConfigureServices(configureServices)
-            .Configure(Action<IApplicationBuilder> (configureApp database clientPath))
-            .UseUrls("http://0.0.0.0:" + port.ToString() + "/")
-            .Build()
-            .Run()
+        let fableJsonSettings = JsonSerializerSettings()
+        fableJsonSettings.Converters.Add(Fable.JsonConverter())
+
+        let app = application {
+            url ("http://0.0.0.0:" + port.ToString() + "/")
+            use_router (WebServer.webApp database clientPath)
+
+            use_static clientPath
+            error_handler errorHandler
+            use_json_settings fableJsonSettings
+            logging configureLogging
+
+        }
+
+        run app
         0
     with
     | exn ->
