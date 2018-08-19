@@ -9,7 +9,7 @@ open RequestErrors
 open Microsoft.AspNetCore.Http
 
 /// Start the web server and connect to database
-let webApp databaseType root =
+let webApp databaseType =
     let startupTime = System.DateTime.UtcNow
 
     let db = Database.getDatabase databaseType startupTime

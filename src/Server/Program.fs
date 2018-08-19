@@ -70,7 +70,7 @@ let main args =
 
         let app = application {
             url ("http://0.0.0.0:" + port.ToString() + "/")
-            use_router (WebServer.webApp database clientPath)
+            use_router (WebServer.webApp database)
 
             use_static clientPath
             error_handler errorHandler
