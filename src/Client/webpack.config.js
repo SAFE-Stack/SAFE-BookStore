@@ -58,6 +58,10 @@ module.exports = {
             define: isProduction ? [] : ["DEBUG"]
           }
         }
+      },      
+      {
+          test: /\.tsx?$/,
+          loader: 'awesome-typescript-loader'
       },
       {
         test: /\.js$/,

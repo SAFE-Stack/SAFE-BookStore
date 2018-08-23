@@ -9,6 +9,7 @@
     "remotedev": "0.2.7"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^5.2.0",
     "babel-core": "6.26.3",
     "babel-loader": "7.1.5",
     "babel-plugin-transform-runtime": "6.23.0",
@@ -16,6 +17,7 @@
     "concurrently": "3.6.1",
     "fable-loader": "1.1.6",
     "fable-utils": "1.0.6",
+    "typescript": "^3.0.1",
     "webpack": "4.16.5",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "3.1.5"
