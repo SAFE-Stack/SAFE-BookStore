@@ -13,6 +13,9 @@ open Client.Shared
 open Client.Pages
 open ServerCode.Domain
 
+// this should print 'hello world from tsx' on load
+JsInterop.importSideEffects "./test.tsx"
+
 JsInterop.importSideEffects "whatwg-fetch"
 JsInterop.importSideEffects "babel-polyfill"
 
