@@ -6,6 +6,7 @@ open Microsoft.AspNetCore.Http
 open Giraffe
 open ServerCode.Domain
 open ServerTypes
+open FSharp.Control.Tasks.V2
 
 /// Handle the GET on /api/wishlist
 let getWishList (getWishListFromDB : string -> Task<WishList>) (token : UserRights) : HttpHandler =
