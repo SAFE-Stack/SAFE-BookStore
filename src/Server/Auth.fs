@@ -6,6 +6,7 @@ open Giraffe
 open RequestErrors
 open Microsoft.AspNetCore.Http
 open ServerCode.Domain
+open FSharp.Control.Tasks.V2
 
 let createUserData (login : Domain.Login) =
     {
