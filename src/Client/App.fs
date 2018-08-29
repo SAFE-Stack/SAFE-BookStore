@@ -56,7 +56,11 @@ let hydrateModel (json:string) : Model * Cmd<_> =
     // The page was rendered server-side and now react client-side kicks in.
     // If needed, the model could be fixed up here.
     // In this case we just deserialize the model from the json and don't need to to anything special.
-    ofJson json, Cmd.none
+    let model : Model = ofJson json
+    match model.PageModel with
+    | HomePageModel -> model, Cmd.none
+    | LoginModel _ -> model, Cmd.none
+    | WishListModel _ -> model, Cmd.none
 
 let init result =
     let user = loadUser ()
