@@ -5,6 +5,7 @@ module ServerCode.ServerUrls
 module PageUrls =
   [<Literal>]
   let Home = "/"
+  let Login = "/login"
 
 [<RequireQualifiedAccess>]
 module APIUrls =
