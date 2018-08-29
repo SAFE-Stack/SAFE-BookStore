@@ -67,7 +67,8 @@ let init result =
     // was the page rendered server-side?
     let stateJson: string option = !!Browser.window?__INIT_MODEL__
     match stateJson, result with
-    | Some json, Some Page.Home ->
+    | Some json, Some Page.Home
+    | Some json, Some Page.Login ->
         // SSR -> hydrate the model
         let model, cmd = hydrateModel json
         { model with User = user }, cmd
