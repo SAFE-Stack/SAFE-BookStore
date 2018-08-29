@@ -51,14 +51,24 @@ let saveUserCmd user =
 let deleteUserCmd =
     Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
 
+
+let hydrateModel (json:string) : Model * Cmd<_> =
+    // The page was rendered server-side and now react client-side kicks in.
+    // If needed, the model could be fixed up here.
+    // In this case we just deserialize the model from the json and don't need to to anything special.
+    ofJson json, Cmd.none
+
 let init result =
     let user = loadUser ()
+    // was the page rendered server-side?
     let stateJson: string option = !!Browser.window?__INIT_MODEL__
     match stateJson, result with
     | Some json, Some Page.Home ->
-        let model: Model = ofJson json
-        { model with User = user }, Cmd.none
+        // SSR -> hydrate the model
+        let model, cmd = hydrateModel json
+        { model with User = user }, cmd
     | _ ->
+        // no SSR -> show home page
         let model =
             { User = user
               PageModel = HomePageModel }
