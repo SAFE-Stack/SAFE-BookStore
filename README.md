@@ -264,7 +264,7 @@ If you are new to Freya, you can find an introduction at:
 
 ### React/Elmish client
 
-The client is [React](https://facebook.github.io/react/) single page application that uses [fable-elmish](https://github.com/fable-compiler/fable-elmish).
+The client is [React](https://facebook.github.io/react/) single page application that uses [fable-elmish](https://elmish.github.io/).
 
 The communication to the server is done via HTTPS calls to `/api/*`. If a user is logged in then a [JSON Web Token](https://jwt.io/) is sent to the server with every request.
 
