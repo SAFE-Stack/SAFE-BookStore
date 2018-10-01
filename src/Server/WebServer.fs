@@ -24,6 +24,7 @@ let webApp databaseType root =
     router notfound [
         GET [
             route PageUrls.Home Pages.home
+            route PageUrls.Login Pages.login
 
             route APIUrls.WishList (Auth.requiresJwtTokenForAPI (WishList.getWishList db.LoadWishList))
             route APIUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)

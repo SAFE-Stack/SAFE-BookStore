@@ -59,6 +59,9 @@ module.exports = {
         publicPath: "/public",
         filename: '[name].js'
     },
+    resolve: {
+        symlinks: false,
+    },
     mode: isProduction ? "production" : "development",
     devtool: isProduction ? undefined : "source-map",
     optimization: {
