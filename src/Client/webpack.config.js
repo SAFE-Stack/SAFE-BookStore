@@ -6,7 +6,11 @@ function resolve(filePath) {
 }
 
 var CONFIG = {
-    fsharpEntry: resolve("./Client.fsproj"),
+    fsharpEntry:
+        ["whatwg-fetch",
+            "@babel/polyfill",
+            resolve("./Client.fsproj")
+        ],
     outputDir: resolve("./public"),
     devServerPort: undefined,
     devServerProxy: {
@@ -23,12 +27,15 @@ var CONFIG = {
     // More info at https://github.com/babel/babel/blob/master/packages/babel-preset-env/README.md
     babel: {
         presets: [
-            ["env", {
+            ["@babel/preset-env", {
+                "targets": {
+                    "browsers": ["last 2 versions"]
+                },
                 "modules": false,
                 "useBuiltIns": "usage",
             }]
         ],
-        plugins: ["transform-runtime"]
+        plugins: ["@babel/plugin-transform-runtime"]
     }
 }
 

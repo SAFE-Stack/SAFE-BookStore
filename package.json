@@ -1,24 +1,25 @@
 {
   "private": true,
   "dependencies": {
-    "babel-polyfill": "6.26.0",
-    "babel-runtime": "6.26.0",
-    "react": "16.4.1",
-    "react-bootstrap": "0.32.1",
-    "react-dom": "16.4.1",
-    "remotedev": "0.2.7"
+    "@babel/polyfill": "^7.0.0",
+    "@babel/runtime": "^7.0.0",
+    "react": "16.5.2",
+    "react-bootstrap": "0.32.4",
+    "react-dom": "16.5.2",
+    "remotedev": "0.2.7",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "babel-core": "6.26.3",
-    "babel-loader": "7.1.5",
-    "babel-plugin-transform-runtime": "6.23.0",
-    "babel-preset-env": "1.7.0",
-    "concurrently": "3.6.0",
-    "fable-loader": "^2.0.0-alpha-003",
-    "uglifyjs-webpack-plugin": "^1.2.7",
-    "webpack": "4.16.1",
-    "webpack-cli": "^3.0.8",
-    "webpack-dev-server": "3.1.4"
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "babel-loader": "^8.0.0",
+    "concurrently": "4.0.1",
+    "fable-loader": "^2.0.0",
+    "uglifyjs-webpack-plugin": "^2.0.1",
+    "webpack": "4.20.2",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "3.1.9"
   },
   "scripts": {
     "prebuildServer": "dotnet restore src/Server/Server.fsproj",

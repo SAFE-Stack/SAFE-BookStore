@@ -14,9 +14,6 @@ open Client.Pages
 open ServerCode.Domain
 open Thoth.Json
 
-JsInterop.importSideEffects "whatwg-fetch"
-JsInterop.importSideEffects "babel-polyfill"
-
 let handleNotFound (model: Model) =
     Browser.console.error("Error parsing url: " + Browser.window.location.href)
     ( model, Navigation.modifyUrl (toPath Page.Home) )
