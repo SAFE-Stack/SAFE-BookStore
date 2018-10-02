@@ -134,6 +134,7 @@ Target "InstallClient" (fun _ ->
 )
 
 Target "BuildClient" (fun _ ->
+    runDotnet clientPath "restore"
     runDotnet clientPath "fable webpack-cli -- --config src/Client/webpack.config.js -p"
 )
 
@@ -176,6 +177,7 @@ FinalTarget "KillProcess" (fun _ ->
 
 Target "Run" (fun _ ->
     runDotnet serverTestsPath "restore"
+    runDotnet clientPath "restore"
 
     let unitTestsWatch = async {
         let result =
@@ -199,6 +201,7 @@ Target "Run" (fun _ ->
 
 Target "RunSSR" (fun _ ->
     runDotnet serverTestsPath "restore"
+    runDotnet clientPath "restore"
 
     let unitTestsWatch = async {
         let result =
