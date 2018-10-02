@@ -16,7 +16,7 @@
     "babel-loader": "^8.0.0",
     "concurrently": "4.0.1",
     "fable-loader": "^2.0.0",
-    "uglifyjs-webpack-plugin": "^2.0.1",
+    "terser-webpack-plugin": "^1.1.0",
     "webpack": "4.20.2",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "3.1.9"

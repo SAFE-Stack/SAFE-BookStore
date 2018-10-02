@@ -39,13 +39,12 @@ var CONFIG = {
     }
 }
 
-// If we're running the webpack-dev-server, assume we're in development mode
-var isProduction = !process.argv.find(v => v.indexOf('webpack-dev-server') !== -1);
+var isProduction = process.argv.indexOf("-p") >= 0;
 console.log("Bundling for " + (isProduction ? "production" : "development") + "...");
 
 var path = require("path");
 var webpack = require("webpack");
-var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+var MinifyPlugin = require("terser-webpack-plugin");
 
 var commonPlugins = [
 ];
@@ -76,6 +75,7 @@ module.exports = {
                 }
             }
         },
+        minimizer: isProduction ? [new MinifyPlugin()] : []
     },
     // Besides the HtmlPlugin, we use the following plugins:
     // PRODUCTION
@@ -83,15 +83,7 @@ module.exports = {
     // DEVELOPMENT
     //      - HotModuleReplacementPlugin: Enables hot reloading when code changes without refreshing
     plugins: isProduction ?
-        commonPlugins.concat([
-            // Inlining is causing problems in minified code
-            // See https://github.com/mishoo/UglifyJS2/issues/2842#issuecomment-359527962
-            new UglifyJSPlugin({
-                uglifyOptions: {
-                    compress: { inline: false }
-                }
-            }),
-        ])
+        commonPlugins
         : commonPlugins.concat([
             new webpack.HotModuleReplacementPlugin(),
         ]),

@@ -134,7 +134,7 @@ Target "InstallClient" (fun _ ->
 )
 
 Target "BuildClient" (fun _ ->
-    runDotnet clientPath "fable webpack-cli -- --config src/Client/webpack.config.js"
+    runDotnet clientPath "fable webpack-cli -- --config src/Client/webpack.config.js -p"
 )
 
 Target "RunServerTests" (fun _ ->
@@ -209,7 +209,7 @@ Target "RunSSR" (fun _ ->
 
         if result <> 0 then failwith "Website shut down." }
 
-    let fablewatch = async { runDotnet clientPath "fable webpack-cli -- --config src/Client/webpack.config.js" }
+    let fablewatch = async { runDotnet clientPath "fable webpack-cli -- --config src/Client/webpack.config.js -w" }
     let openBrowser = async {
         System.Threading.Thread.Sleep(10000)
         Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" serverPort) |> ignore }
