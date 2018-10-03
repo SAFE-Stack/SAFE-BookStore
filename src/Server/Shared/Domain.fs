@@ -2,6 +2,11 @@
 namespace ServerCode.Domain
 
 open System
+#if FABLE_COMPILER
+open Thoth.Json
+#else
+open Thoth.Json.Net
+#endif
 
 // Json web token type.
 type JWT = string
@@ -16,9 +21,35 @@ type Login =
         not ((this.UserName <> "test"  || this.Password <> "test") &&
              (this.UserName <> "test2" || this.Password <> "test2"))
 
+    static member Encoder (login : Login) =
+        Encode.object [
+            "username", Encode.string login.UserName
+            "password", Encode.string login.Password
+            "passwordId", Encode.guid login.PasswordId
+        ]
+
+    static member Decoder =
+        Decode.object (fun get ->
+            { UserName = get.Required.Field "username" Decode.string
+              Password = get.Required.Field "password" Decode.string
+              PasswordId = get.Required.Field "passwordId" Decode.guid }
+        )
+
 type UserData =
-  { UserName : string
-    Token    : JWT }
+    { UserName : string
+      Token    : JWT }
+
+    static member Encoder (userData : UserData) =
+        Encode.object [
+            "username", Encode.string userData.UserName
+            "token", Encode.string userData.Token
+        ]
+
+    static member Decoder =
+        Decode.object (fun get ->
+            { UserName = get.Required.Field "username" Decode.string
+              Token = get.Required.Field "token" Decode.string }
+        )
 
 /// The data for each book in /api/wishlist
 type Book =
@@ -31,6 +62,20 @@ type Book =
           Authors = ""
           Link = "" }
 
+    static member Encoder (book : Book) =
+        Encode.object [
+            "title", Encode.string book.Title
+            "authors", Encode.string book.Authors
+            "link", Encode.string book.Link
+        ]
+
+    static member Decoder =
+        Decode.object (fun get ->
+            { Title = get.Required.Field "title" Decode.string
+              Authors = get.Required.Field "authors" Decode.string
+              Link = get.Required.Field "link" Decode.string }
+        )
+
 /// The logical representation of the data for /api/wishlist
 type WishList =
     { UserName : string
@@ -42,8 +87,30 @@ type WishList =
         { UserName = userName
           Books = [] }
 
+    static member Encoder (wishList : WishList) =
+        Encode.object [
+            "username", Encode.string wishList.UserName
+            "books", wishList.Books |> List.map Book.Encoder |> Encode.list
+        ]
+
+    static member Decoder =
+        Decode.object (fun get ->
+            { UserName = get.Required.Field "username" Decode.string
+              Books = get.Required.Field "books" (Decode.list Book.Decoder) }
+        )
+
 type WishListResetDetails =
     { Time : DateTime }
+
+    static member Encoder (details :  WishListResetDetails) =
+        Encode.object [
+            "time", Encode.datetime details.Time
+        ]
+
+    static member Decoder =
+        Decode.object (fun get ->
+            { Time = get.Required.Field "time" Decode.datetime }
+        )
 
 // Model validation functions.  Write your validation functions once, for server and client!
 module Validation =

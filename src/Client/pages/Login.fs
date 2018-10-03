@@ -22,10 +22,45 @@ type LoginState =
     | LoggedOut
     | LoggedIn of UserData
 
-type Model = {
-    State : LoginState
-    Login : Login
-    ErrorMsg : string }
+    static member Encoder (state : LoginState) =
+        match state with
+        | LoggedOut ->
+            Encode.object [
+                "loggedOut", Encode.nil
+            ]
+        | LoggedIn userData ->
+            Encode.object [
+                "loggedIn", UserData.Encoder userData
+            ]
+
+    static member Decoder =
+        Decode.oneOf [
+            Decode.field "loggedIn" UserData.Decoder
+                |> Decode.map LoggedIn
+
+            Decode.field "loggedOut" (Decode.succeed LoggedOut)
+        ]
+
+type Model =
+    { State : LoginState
+      Login : Login
+      ErrorMsg : string }
+
+    static member Encoder (model : Model) =
+        Encode.object [
+            "state", LoginState.Encoder model.State
+            "login", Login.Encoder model.Login
+            "errorMsg", Encode.string model.ErrorMsg
+        ]
+
+
+    static member Decoder =
+        Decode.object (fun get ->
+            { State = get.Required.Field "state" LoginState.Decoder
+              Login = get.Required.Field "login" Login.Decoder
+              ErrorMsg = get.Required.Field "errorMsg" Decode.string
+            }
+        )
 
 /// The messages processed during login
 type Msg =
@@ -44,7 +79,8 @@ let authUser (login:Login) =
         if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
         if String.IsNullOrEmpty login.Password then return! failwithf "You need to fill in a password." else
 
-        let body = Encode.Auto.toString(0, login)
+        let body = Login.Encoder login
+                    |> Encode.toString 0
 
         let props =
             [ RequestProperties.Method HttpMethod.POST
@@ -55,7 +91,9 @@ let authUser (login:Login) =
         try
             let! res = Fetch.fetch ServerUrls.APIUrls.Login props
             let! txt = res.text()
-            return Decode.Auto.unsafeFromString<UserData> txt
+            match Decode.fromString UserData.Decoder txt with
+            | Ok wishlist -> return wishlist
+            | Error msg -> return failwith msg
         with _ ->
             return! failwithf "Could not authenticate user."
     }

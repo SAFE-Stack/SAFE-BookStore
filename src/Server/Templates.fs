@@ -16,15 +16,16 @@ let index (model: Model option) =
   let jsonState, htmlStr =
     match model with
     | Some model ->
-        // Note we call ofJson twice here,
-        // because Elmish's model can be some complicated type instead of pojo.
-        // The first one will seriallize the state to a json string,
-        // and the second one will seriallize the json string to a js string,
-        // so we can deseriallize it by Fable's ofJson and get the correct types.
-        Encode.Auto.toString(0, (Encode.Auto.toString(0, model))),
+        // We encode once as a model and second time to escape all the special chars
+        Model.Encoder model
+        |> Encode.toString 0
+        |> Encode.string
+        |> Encode.toString 0,
         Client.Shared.view model ignore |> renderToString
     | None ->
-        "null", ""
+        Encode.toString 0 Encode.nil
+        |> Encode.string
+        |> Encode.toString 0, ""
   html []
     [ head [] [
         meta [ _httpEquiv "Content-Type"; _content "text/html"; _charset "utf-8" ]

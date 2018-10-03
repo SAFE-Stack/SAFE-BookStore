@@ -11,6 +11,7 @@
   <Import Project="../Shared/Shared.props" />
 
   <ItemGroup>
+    <Compile Include="Decode.fs" />
     <Compile Include="ServerTypes.fs" />
     <Compile Include="JsonWebToken.fs" />
     <Compile Include="Auth.fs" />

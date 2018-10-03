@@ -7,6 +7,7 @@ open RequestErrors
 open Microsoft.AspNetCore.Http
 open ServerCode.Domain
 open FSharp.Control.Tasks.V2
+open Thoth.Json.Net
 
 let createUserData (login : Domain.Login) =
     {
@@ -17,17 +18,28 @@ let createUserData (login : Domain.Login) =
             )
     } : Domain.UserData
 
+let inline private invalidLoginWithMsg msg =
+    "Login is not valid.\n" + msg
+    |> RequestErrors.BAD_REQUEST
+
 /// Authenticates a user and returns a token in the HTTP body.
 let login : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         task {
-            let! login = ctx.BindJsonAsync<Domain.Login>()
-            return!
-                match login.IsValid() with
-                | true  ->
-                    let data = createUserData login
-                    ctx.WriteJsonAsync data
-                | false -> UNAUTHORIZED "Bearer" "" (sprintf "User '%s' can't be logged in." login.UserName) next ctx
+            let login = Decode.fromContext ctx Domain.Login.Decoder
+
+            match login with
+            | Ok login ->
+                return!
+                    match login.IsValid() with
+                    | true  ->
+                        createUserData login
+                        |> UserData.Encoder
+                        |> Encode.toString 0
+                        |> ctx.WriteStringAsync
+                    | false -> UNAUTHORIZED "Bearer" "" (sprintf "User '%s' can't be logged in." login.UserName) next ctx
+            | Error msg ->
+                return! invalidLoginWithMsg msg next ctx
         }
 
 let private missingToken = RequestErrors.BAD_REQUEST "Request doesn't contain a JSON Web Token"

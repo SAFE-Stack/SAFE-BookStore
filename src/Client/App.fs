@@ -12,7 +12,14 @@ open Elmish.HMR
 open Client.Shared
 open Client.Pages
 open ServerCode.Domain
+// Even if we are on the client because we are using the same file for the client and server,
+// we need to reference `Thoth.Json.Net` because Ionide isn't able yet to support setting
+// compiler directives
+#if FABLE_COMPILER
 open Thoth.Json
+#else
+open Thoth.Json.Net
+#endif
 
 let handleNotFound (model: Model) =
     Browser.console.error("Error parsing url: " + Browser.window.location.href)
@@ -41,10 +48,13 @@ let urlUpdate (result:Page option) (model: Model) =
         { model with PageModel = HomePageModel }, Cmd.none
 
 let loadUser () : UserData option =
-    let userDecoder = Decode.Auto.generateDecoder<UserData>()
-    match BrowserLocalStorage.load userDecoder "user" with
-    | Ok user -> Some user
-    | Error _ -> None
+    match Browser.localStorage.getItem("user") :?> string with
+    | null ->
+        None
+    | userData ->
+        match Decode.fromString UserData.Decoder userData with
+        | Ok user -> Some user
+        | Error _ -> None
 
 let saveUserCmd user =
     Cmd.ofFunc (BrowserLocalStorage.save "user") user (fun _ -> LoggedIn user) StorageFailure
@@ -57,13 +67,17 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
     // The page was rendered server-side and now react client-side kicks in.
     // If needed, the model could be fixed up here.
     // In this case we just deserialize the model from the json and don't need to to anything special.
-    let model: Model = Decode.Auto.unsafeFromString(json)
-    match page, model.PageModel with
-    | Some Page.Home, HomePageModel -> model, Cmd.none
-    | Some Page.Login, LoginModel _ -> model, Cmd.none
-    | Some Page.WishList, WishListModel _ -> model, Cmd.none
-    | _, HomePageModel |  _, LoginModel _ |  _, WishListModel _ ->
-        // unknown page or page does not match model -> go to home page
+    match Decode.fromString Model.Decoder json with
+    | Ok model ->
+        match page, model.PageModel with
+        | Some Page.Home, HomePageModel -> model, Cmd.none
+        | Some Page.Login, LoginModel _ -> model, Cmd.none
+        | Some Page.WishList, WishListModel _ -> model, Cmd.none
+        | _, HomePageModel |  _, LoginModel _ |  _, WishListModel _ ->
+            // unknown page or page does not match model -> go to home page
+            { User = None; PageModel = HomePageModel }, Cmd.none
+    | Error msg ->
+        Browser.console.error msg
         { User = None; PageModel = HomePageModel }, Cmd.none
 
 let init page =
@@ -73,10 +87,12 @@ let init page =
     match stateJson with
     | Some json ->
         // SSR -> hydrate the model
+        printfn "SSR found"
         let model, cmd = hydrateModel json page
         { model with User = user }, cmd
     | None ->
         // no SSR -> show home page
+        printfn "No SSR found"
         let model =
             { User = user
               PageModel = HomePageModel }

@@ -12,7 +12,6 @@ open Newtonsoft.Json
 open Giraffe
 open Giraffe.Serialization.Json
 open Giraffe.HttpStatusCodeHandlers.ServerErrors
-open Thoth.Json.Giraffe
 
 let GetEnvVar var =
     match Environment.GetEnvironmentVariable(var) with
@@ -42,9 +41,6 @@ let configureApp db root (app : IApplicationBuilder) =
 let configureServices (services : IServiceCollection) =
     // Add default Giraffe dependencies
     services.AddGiraffe() |> ignore
-
-    services.AddSingleton<IJsonSerializer>(ThothSerializer())
-    |> ignore
 
 let configureLogging (loggerBuilder : ILoggingBuilder) =
     loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)

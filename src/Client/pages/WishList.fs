@@ -20,15 +20,41 @@ open Thoth.Json.Net
 #endif
 
 type Model =
-  { WishList : WishList
-    Token : string
-    NewBook : Book
-    NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/fable-compiler/fable-suave-scaffold/issues/107#issuecomment-301312224
-    ResetTime : DateTime option
-    TitleErrorText : string option
-    AuthorsErrorText : string option
-    LinkErrorText : string option
-    ErrorMsg : string option }
+    { WishList : WishList
+      Token : string
+      NewBook : Book
+      NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/fable-compiler/fable-suave-scaffold/issues/107#issuecomment-301312224
+      ResetTime : DateTime option
+      TitleErrorText : string option
+      AuthorsErrorText : string option
+      LinkErrorText : string option
+      ErrorMsg : string option }
+
+    static member Encoder (model : Model) =
+        Encode.object [
+            "wishList", WishList.Encoder model.WishList
+            "token", Encode.string model.Token
+            "newBook", Book.Encoder model.NewBook
+            "newBookId", Encode.guid model.NewBookId
+            "resetTime", Encode.option Encode.datetime model.ResetTime
+            "titleErrorText", Encode.option Encode.string model.TitleErrorText
+            "authorsErrorText", Encode.option Encode.string model.AuthorsErrorText
+            "linkErrorText", Encode.option Encode.string model.LinkErrorText
+            "errorMsg", Encode.option Encode.string model.ErrorMsg
+        ]
+
+    static member Decoder =
+        Decode.object (fun get ->
+            { WishList = get.Required.Field "wishList" WishList.Decoder
+              Token = get.Required.Field "token" Decode.string
+              NewBook = get.Required.Field "newBook" Book.Decoder
+              NewBookId = get.Required.Field "newBookId" Decode.guid
+              ResetTime = get.Optional.Field "resetTime" Decode.datetime
+              TitleErrorText = get.Optional.Field "titleErrorText" Decode.string
+              AuthorsErrorText = get.Optional.Field "authorsErrorText" Decode.string
+              LinkErrorText = get.Optional.Field "linkErrorText" Decode.string
+              ErrorMsg = get.Optional.Field "errorMsg" Decode.string }
+        )
 
 /// The different messages processed when interacting with the wish list
 type Msg =
@@ -52,7 +78,9 @@ let getWishList token =
 
         let! res = Fetch.fetch url props
         let! txt = res.text()
-        return Decode.Auto.unsafeFromString<WishList> txt
+        match Decode.fromString WishList.Decoder txt with
+        | Ok wishlist -> return wishlist
+        | Error msg -> return failwith msg
     }
 
 let getResetTime token =
@@ -64,8 +92,9 @@ let getResetTime token =
 
         let! res = Fetch.fetch url props
         let! txt = res.text()
-        let details = Decode.Auto.unsafeFromString<ServerCode.Domain.WishListResetDetails> txt
-        return details.Time
+        match Decode.fromString WishListResetDetails.Decoder txt with
+        | Ok details -> return details.Time
+        | Error msg -> return failwith msg
     }
 
 let loadWishListCmd token =
@@ -77,7 +106,8 @@ let loadResetTimeCmd token =
 let postWishList (token,wishList) =
     promise {
         let url = ServerUrls.APIUrls.WishList
-        let body = Encode.Auto.toString(0, wishList)
+        let body = WishList.Encoder wishList
+                    |> Encode.toString 0
         let props =
             [ RequestProperties.Method HttpMethod.POST
               Fetch.requestHeaders [
@@ -87,7 +117,9 @@ let postWishList (token,wishList) =
 
         let! res = Fetch.fetch url props
         let! txt = res.text()
-        return Decode.Auto.unsafeFromString<WishList> txt
+        match Decode.fromString WishList.Decoder txt with
+        | Ok wishlist -> return wishlist
+        | Error msg -> return failwith msg
     }
 
 let postWishListCmd (token,wishList) =
