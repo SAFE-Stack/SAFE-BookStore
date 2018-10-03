@@ -87,12 +87,10 @@ let init page =
     match stateJson with
     | Some json ->
         // SSR -> hydrate the model
-        printfn "SSR found"
         let model, cmd = hydrateModel json page
         { model with User = user }, cmd
     | None ->
         // no SSR -> show home page
-        printfn "No SSR found"
         let model =
             { User = user
               PageModel = HomePageModel }
@@ -100,7 +98,6 @@ let init page =
         urlUpdate page model
 
 let update msg model =
-    printfn "update"
     match msg, model.PageModel with
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
