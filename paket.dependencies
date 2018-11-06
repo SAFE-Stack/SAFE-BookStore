@@ -21,8 +21,8 @@ nuget Fable.Elmish.Browser
 nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.HMR
 nuget Fable.PowerPack
-nuget Microsoft.Azure.WebJobs prerelease
-nuget Microsoft.Azure.WebJobs.Extensions prerelease
+nuget Microsoft.Azure.WebJobs
+nuget Microsoft.Azure.WebJobs.Extensions
 nuget Thoth.Json
 
 clitool dotnet-fable
