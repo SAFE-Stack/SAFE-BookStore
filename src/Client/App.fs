@@ -147,7 +147,6 @@ Program.mkProgram init update view
 #endif
 |> withReact "elmish-app"
 #if DEBUG
-// The debugger isn't support yet for Fable 2
-// |> Program.withDebugger
+|> Program.withDebugger
 #endif
 |> Program.run
