@@ -3,9 +3,9 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "@babel/runtime": "^7.0.0",
-    "react": "16.5.2",
+    "react": "16.6.0",
     "react-bootstrap": "0.32.4",
-    "react-dom": "16.5.2",
+    "react-dom": "16.6.0",
     "remotedev": "0.2.7",
     "whatwg-fetch": "^3.0.0"
   },
@@ -17,9 +17,9 @@
     "concurrently": "4.0.1",
     "fable-loader": "^2.0.0",
     "terser-webpack-plugin": "^1.1.0",
-    "webpack": "4.20.2",
+    "webpack": "4.25.1",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "3.1.9"
+    "webpack-dev-server": "3.1.10"
   },
   "scripts": {
     "prebuildServer": "dotnet restore src/Server/Server.fsproj",
