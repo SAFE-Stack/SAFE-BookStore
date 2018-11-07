@@ -19,9 +19,6 @@ var CONFIG = {
             changeOrigin: true
         }
     },
-    historyApiFallback: {
-        index: resolve("./index.html")
-    },
     contentBase: __dirname,
     // Use babel-preset-env to generate JS compatible with most-used browsers.
     // More info at https://github.com/babel/babel/blob/master/packages/babel-preset-env/README.md
@@ -92,7 +89,7 @@ module.exports = {
         proxy: CONFIG.devServerProxy,
         hot: true,
         inline: true,
-        historyApiFallback: CONFIG.historyApiFallback,
+        historyApiFallback: true,
         contentBase: CONFIG.contentBase
     },
     // - fable-loader: transforms F# into JS
