@@ -2,17 +2,17 @@
   "private": true,
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
-    "@babel/runtime": "^7.0.0",
-    "react": "16.6.0",
+    "@babel/runtime": "^7.1.5",
+    "react": "16.6.3",
     "react-bootstrap": "0.32.4",
-    "react-dom": "16.6.0",
+    "react-dom": "16.6.3",
     "remotedev": "0.2.7",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
+    "@babel/core": "^7.1.6",
     "@babel/plugin-transform-runtime": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-env": "^7.1.6",
     "babel-loader": "^8.0.0",
     "concurrently": "4.0.1",
     "fable-loader": "^2.0.0",
