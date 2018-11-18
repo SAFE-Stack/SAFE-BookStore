@@ -8,7 +8,6 @@ open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
-open Newtonsoft.Json
 open Giraffe
 open Giraffe.Serialization.Json
 open Giraffe.HttpStatusCodeHandlers.ServerErrors
@@ -34,10 +33,10 @@ let errorHandler (ex : Exception) (logger : ILogger) =
         logger.LogError(EventId(), ex, "An unhandled exception has occurred while executing the request.")
         clearResponse >=> INTERNAL_ERROR ex.Message
 
-let configureApp db root (app : IApplicationBuilder) =
+let configureApp db (app : IApplicationBuilder) =
     app.UseGiraffeErrorHandler(errorHandler)
        .UseStaticFiles()
-       .UseGiraffe (WebServer.webApp db root)
+       .UseGiraffe (WebServer.webApp db)
 
 let configureServices (services : IServiceCollection) =
     // Add default Giraffe dependencies
@@ -86,7 +85,7 @@ let main args =
             .UseContentRoot(clientPath)
             .ConfigureLogging(configureLogging)
             .ConfigureServices(configureServices)
-            .Configure(Action<IApplicationBuilder> (configureApp database clientPath))
+            .Configure(Action<IApplicationBuilder> (configureApp database))
             .UseUrls("http://0.0.0.0:" + port.ToString() + "/")
             .Build()
             .Run()
