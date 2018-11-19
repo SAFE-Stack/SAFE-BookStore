@@ -1,7 +1,6 @@
 /// Functions for managing the database.
 module ServerCode.Database
 
-open Microsoft.Azure.WebJobs
 open ServerCode.Storage.AzureTable
 open ServerCode
 open System.Threading.Tasks

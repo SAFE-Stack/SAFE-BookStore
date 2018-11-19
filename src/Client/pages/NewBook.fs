@@ -26,7 +26,7 @@ type Msg =
 
 
 let init () =
-    { NewBook = Book.empty
+    { NewBook = Book.Empty
       NewBookId = Guid.NewGuid()
       TitleErrorText = None
       AuthorsErrorText = None
@@ -61,7 +61,7 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
                 AuthorsErrorText = Validation.verifyBookAuthors model.NewBook.Authors
                 LinkErrorText = Validation.verifyBookLink model.NewBook.Link}
         validated, 
-            if validated.TitleErrorText = None && validated.AuthorsErrorText = None && validated.LinkErrorText = None then
+            if Validation.verifyBook model.NewBook then
                 Cmd.ofMsg AddBook
             else
                 Cmd.none

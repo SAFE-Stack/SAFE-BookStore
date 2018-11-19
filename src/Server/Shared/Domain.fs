@@ -26,7 +26,7 @@ type Book =
       Authors: string
       Link: string }
 
-    static member empty =
+    static member Empty =
         { Title = ""
           Authors = ""
           Link = "" }
@@ -36,8 +36,7 @@ type WishList =
     { UserName : string
       Books : Book list }
 
-    // Create a new WishList.  This is supported in client code too,
-    // thanks to the magic of https://www.nuget.org/packages/Fable.JsonConverter
+    // Create a new WishList.
     static member New userName =
         { UserName = userName
           Books = [] }

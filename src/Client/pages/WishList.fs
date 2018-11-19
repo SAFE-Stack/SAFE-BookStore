@@ -71,13 +71,8 @@ let postWishList (token,wishList) =
                 HttpRequestHeaders.ContentType "application/json" ]
               RequestProperties.Body !^body ]
 
-        let! res = Fetch.fetch url props
-        let! txt = res.text()
-        return Decode.Auto.unsafeFromString<WishList> txt
+        return! Fetch.fetchAs url Decode.Auto.generateDecoder<WishList> props
     }
-
-let postWishListCmd (token,wishList) =
-    Cmd.ofPromise postWishList (token,wishList) FetchedWishList FetchError
 
 
 let init (user:UserData) =
@@ -109,7 +104,7 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
         { model with
             WishList = wishList
             ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBookModel.NewBook },
-                postWishListCmd(model.Token,wishList)
+                Cmd.ofPromise postWishList (model.Token,wishList) FetchedWishList FetchError
 
     | NewBookMsg msg ->
         match msg with
@@ -124,7 +119,7 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
                     { model with WishList = wishList; NewBookModel = submodel; ErrorMsg = None },
                         Cmd.batch [
                             Cmd.map NewBookMsg cmd
-                            postWishListCmd(model.Token,wishList)
+                            Cmd.ofPromise postWishList (model.Token,wishList) FetchedWishList FetchError
                         ]
             else
                 { model with

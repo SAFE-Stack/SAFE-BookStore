@@ -1,11 +1,11 @@
 module internal ReleaseNotes
 
-let Version = "0.10.4"
+let Version = "0.10.5"
 
 let IsPrerelease = false
 
 let Notes = """
-### 0.10.4 - 2018-11-19
+### 0.10.5 - 2018-11-19
 * Updated to Fable 2.0
 * Available under https://safe-bookstore.azurewebsites.net/
 
