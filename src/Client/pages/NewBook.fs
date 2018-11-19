@@ -77,78 +77,15 @@ let view (model:Model) dispatch =
 
     let buttonTag = if buttonInactive then  "btn-disabled" else "btn-primary"
 
-    let titleStatus = if String.IsNullOrEmpty model.NewBook.Title then "" else "has-success"
-
-    let authorStatus = if String.IsNullOrEmpty model.NewBook.Authors then "" else "has-success"
-
-    let linkStatus = if String.IsNullOrEmpty model.NewBook.Link then "" else "has-success"
-
     div [] [
         h4 [] [str "New Book"]
 
         div [ClassName "container"] [
             div [ClassName "row"] [
                 div [ClassName "col-md-8"] [
-                    div [ClassName ("form-group has-feedback " + titleStatus)] [
-                        yield div [ClassName "input-group"] [
-                             yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon-pencil"] [] ]
-                             yield input [
-                                     Key ("Title_" + model.NewBookId.ToString())
-                                     HTMLAttr.Type "text"
-                                     Name "Title"
-                                     DefaultValue model.NewBook.Title
-                                     ClassName "form-control"
-                                     Placeholder "Please insert book title"
-                                     Required true
-                                     OnChange (fun ev -> dispatch (TitleChanged ev.Value)) ]
-                             match model.TitleErrorText with
-                             | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
-                             | _ -> ()
-                        ]
-                        match model.TitleErrorText with
-                        | Some e -> yield p [ClassName "text-danger"][str e]
-                        | _ -> ()
-                    ]
-                    div [ClassName ("form-group has-feedback " + authorStatus) ] [
-                         yield div [ClassName "input-group"][
-                             yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon-user"] [] ]
-                             yield input [
-                                     Key ("Author_" + model.NewBookId.ToString())
-                                     HTMLAttr.Type "text"
-                                     Name "Author"
-                                     DefaultValue model.NewBook.Authors
-                                     ClassName "form-control"
-                                     Placeholder "Please insert authors"
-                                     Required true
-                                     OnChange (fun ev -> dispatch (AuthorsChanged ev.Value))]
-                             match model.AuthorsErrorText with
-                             | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
-                             | _ -> ()
-                         ]
-                         match model.AuthorsErrorText with
-                         | Some e -> yield p [ClassName "text-danger"][str e]
-                         | _ -> ()
-                    ]
-                    div [ClassName ("form-group has-feedback " + linkStatus)] [
-                         yield div [ClassName "input-group"] [
-                             yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon glyphicon-pencil"] [] ]
-                             yield input [
-                                    Key ("Link_" + model.NewBookId.ToString())
-                                    HTMLAttr.Type "text"
-                                    Name "Link"
-                                    DefaultValue model.NewBook.Link
-                                    ClassName "form-control"
-                                    Placeholder "Please insert link"
-                                    Required true
-                                    OnChange (fun ev -> dispatch (LinkChanged ev.Value))]
-                             match model.LinkErrorText with
-                             | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
-                             | _ -> ()
-                         ]
-                         match model.LinkErrorText with
-                         | Some e -> yield p [ClassName "text-danger"][str e]
-                         | _ -> ()
-                    ]
+                    Style.validatedTextBox (dispatch << TitleChanged) model.TitleErrorText ("Title_" + model.NewBookId.ToString()) "Please insert book title" model.NewBook.Title
+                    Style.validatedTextBox (dispatch << AuthorsChanged) model.AuthorsErrorText ("Author_" + model.NewBookId.ToString()) "Please insert authors" model.NewBook.Authors
+                    Style.validatedTextBox (dispatch << LinkChanged) model.LinkErrorText ("Link_" + model.NewBookId.ToString()) "Please insert link" model.NewBook.Link
                     div [] [
                         yield button [ ClassName ("btn " + buttonTag); OnClick (fun _ -> dispatch ValidateBook)] [
                                   i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []

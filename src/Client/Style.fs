@@ -1,7 +1,7 @@
 module Client.Style
 
 open Fable.Helpers.React.Props
-open Fable.Core
+open System
 open Fable.Core.JsInterop
 open Fable.Import
 open Fable.PowerPack
@@ -37,29 +37,6 @@ let buttonLink cssClass onClick elements =
           OnTouchStart (fun _ -> onClick())
           Style [ Cursor "pointer" ] ] elements
 
-// let validatedTextBox errorText key =
-//     R.div [ClassName ("form-group has-feedback " + linkStatus)] [
-//          yield R.div [ClassName "input-group"] [
-//              yield R.span [ClassName "input-group-addon"] [R.span [ClassName "glyphicon glyphicon glyphicon-pencil"] [] ]
-//              yield R.input [
-//                     Key ("Link_" + model.NewBookId.ToString())
-//                     HTMLAttr.Type "text"
-//                     Name "Link"
-//                     DefaultValue model.NewBook.Link
-//                     ClassName "form-control"
-//                     Placeholder "Please insert link"
-//                     Required true
-//                     OnChange (fun ev -> dispatch (LinkChanged ev.Value))]
-//              match errorText with
-//              | Some e -> yield R.span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
-//              | _ -> ()
-//          ]
-//          match errorText with
-//          | Some e -> yield R.p [ClassName "text-danger"][str e]
-//          | _ -> ()
-//     ]
-
-
 let onEnter msg dispatch =
     function
     | (ev:React.KeyboardEvent) when ev.keyCode = Keyboard.Codes.enter ->
@@ -67,3 +44,28 @@ let onEnter msg dispatch =
         dispatch msg
     | _ -> ()
     |> OnKeyDown
+
+
+open Fable.Helpers.React
+
+let validatedTextBox (onChange: string -> unit) errorText key placeholder text =
+    let status = if String.IsNullOrEmpty text then "" else "has-success"
+    R.div [ClassName ("form-group has-feedback " + status)] [
+         yield R.div [ClassName "input-group"] [
+             yield R.span [ClassName "input-group-addon"] [R.span [ClassName "glyphicon glyphicon glyphicon-pencil"] [] ]
+             yield R.input [
+                    Key key
+                    HTMLAttr.Type "text"
+                    DefaultValue text
+                    ClassName "form-control"
+                    Placeholder placeholder
+                    OnChange (fun ev -> onChange ev.Value)]
+             match errorText with
+             | Some _e -> yield R.span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
+             | _ -> ()
+         ]
+         match errorText with
+         | Some e -> yield R.p [ClassName "text-danger"][str e]
+         | _ -> ()
+    ]
+
