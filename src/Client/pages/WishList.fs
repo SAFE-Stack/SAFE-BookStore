@@ -9,7 +9,7 @@ open Elmish
 open Fetch.Fetch_types
 open ServerCode
 open ServerCode.Domain
-open Style
+open Client.Styles
 open System
 #if FABLE_COMPILER
 open Thoth.Json

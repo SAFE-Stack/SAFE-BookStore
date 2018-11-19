@@ -5,6 +5,7 @@ open Fable.Helpers.React.Props
 open Elmish
 open ServerCode.Domain
 open System
+open Client.Styles
 
 
 type Model =
@@ -83,9 +84,9 @@ let view (model:Model) dispatch =
         div [ClassName "container"] [
             div [ClassName "row"] [
                 div [ClassName "col-md-8"] [
-                    Style.validatedTextBox (dispatch << TitleChanged) model.TitleErrorText ("Title_" + model.NewBookId.ToString()) "Please insert book title" model.NewBook.Title
-                    Style.validatedTextBox (dispatch << AuthorsChanged) model.AuthorsErrorText ("Author_" + model.NewBookId.ToString()) "Please insert authors" model.NewBook.Authors
-                    Style.validatedTextBox (dispatch << LinkChanged) model.LinkErrorText ("Link_" + model.NewBookId.ToString()) "Please insert link" model.NewBook.Link
+                    validatedTextBox (dispatch << TitleChanged) "Title" ("Title_" + model.NewBookId.ToString()) "Please insert book title" model.TitleErrorText model.NewBook.Title
+                    validatedTextBox (dispatch << AuthorsChanged) "Author" ("Author_" + model.NewBookId.ToString()) "Please insert authors"  model.AuthorsErrorText model.NewBook.Authors
+                    validatedTextBox (dispatch << LinkChanged) "Link" ("Link_" + model.NewBookId.ToString()) "Please insert link"  model.LinkErrorText model.NewBook.Link
                     div [] [
                         yield button [ ClassName ("btn " + buttonTag); OnClick (fun _ -> dispatch ValidateBook)] [
                                   i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []

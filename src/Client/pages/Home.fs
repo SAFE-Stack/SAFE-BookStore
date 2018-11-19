@@ -2,13 +2,11 @@ module Client.Home
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
-open Style
-open Pages
-open Client
+open Client.Styles
+open Client.Pages
 
 let view () =
-    [
-      viewLink Page.Login "Please login into the SAFE-Stack sample app"
+    [ viewLink Page.Login "Please login into the SAFE-Stack sample app"
       br []
       br []
       br []

@@ -22,7 +22,7 @@
     <Compile Include="Database.fs" />
     <Compile Include="../Client/ReleaseNotes.fs" />
     <Compile Include="../Client/Pages.fs" />
-    <Compile Include="../Client/Style.fs" />
+    <Compile Include="../Client/Styles.fs" />
     <Compile Include="../Client/views/Menu.fs" />
     <Compile Include="../Client/pages/Home.fs" />
     <Compile Include="../Client/pages/NewBook.fs" />

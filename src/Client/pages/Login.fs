@@ -1,7 +1,5 @@
 module Client.Login
 
-open Fable.Core
-open Fable.Import
 open Elmish
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
@@ -11,7 +9,7 @@ open Fable.Core.JsInterop
 open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open ServerCode
-open Client.Style
+open Client.Styles
 #if FABLE_COMPILER
 open Thoth.Json
 #else

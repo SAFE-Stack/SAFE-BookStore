@@ -27,7 +27,7 @@ type Msg =
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
-open Client.Style
+open Client.Styles
 
 /// Constructs the view for a page given the model and dispatcher.
 let viewPage model dispatch =

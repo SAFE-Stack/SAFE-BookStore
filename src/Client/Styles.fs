@@ -1,4 +1,4 @@
-module Client.Style
+module Client.Styles
 
 open Fable.Helpers.React.Props
 open System
@@ -6,6 +6,7 @@ open Fable.Core.JsInterop
 open Fable.Import
 open Fable.PowerPack
 open Elmish.Browser.Navigation
+
 module R = Fable.Helpers.React
 
 
@@ -48,13 +49,14 @@ let onEnter msg dispatch =
 
 open Fable.Helpers.React
 
-let validatedTextBox (onChange: string -> unit) errorText key placeholder text =
+let validatedTextBox (onChange: string -> unit) name key placeholder errorText text =
     let status = if String.IsNullOrEmpty text then "" else "has-success"
     R.div [ClassName ("form-group has-feedback " + status)] [
          yield R.div [ClassName "input-group"] [
              yield R.span [ClassName "input-group-addon"] [R.span [ClassName "glyphicon glyphicon glyphicon-pencil"] [] ]
              yield R.input [
                     Key key
+                    Name name
                     HTMLAttr.Type "text"
                     DefaultValue text
                     ClassName "form-control"

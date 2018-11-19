@@ -2,7 +2,7 @@ module Client.Menu
 
 open Fable.Helpers.React
 open Fable.Helpers.Isomorphic
-open Client.Style
+open Client.Styles
 open Client.Pages
 open ServerCode.Domain
 
