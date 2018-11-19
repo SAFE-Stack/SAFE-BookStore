@@ -276,10 +276,9 @@ let bookComponent { book = book; removeBook = removeBook } =
 let inline BookComponent props = (ofFunction bookComponent) props []
 
 let view (model:Model) (dispatch: Msg -> unit) =
+    let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
     div [] [
-        h4 [] [
-            let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
-            yield str (sprintf "Wishlist for %s%s" model.WishList.UserName time) ]
+        h4 [] [ str (sprintf "Wishlist for %s%s" model.WishList.UserName time) ]
         table [ClassName "table table-striped table-hover"] [
             thead [] [
                     tr [] [
@@ -289,7 +288,7 @@ let view (model:Model) (dispatch: Msg -> unit) =
             ]
             tbody [] [
                 model.WishList.Books
-                    |> List.map(fun book ->
+                    |> List.map (fun book ->
                         BookComponent {
                             key = book.Title + book.Authors
                             book = book
