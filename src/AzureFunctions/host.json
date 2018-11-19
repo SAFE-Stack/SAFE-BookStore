@@ -1,0 +1,17 @@
+{ 
+    "version": "2.0",
+    "logger": {
+        "categoryFilter": {
+            "defaultLevel": "Information",
+            "categoryLevels": {
+                "Host": "Error",
+                "Function": "Error",
+                "Host.Aggregator": "Information"
+            }
+        }
+    },
+    "tracing": {
+      "consoleLevel": "verbose",
+      "fileLoggingMode": "debugOnly"
+    }
+}

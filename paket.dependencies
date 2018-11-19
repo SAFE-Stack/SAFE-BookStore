@@ -25,6 +25,9 @@ nuget Microsoft.Azure.WebJobs
 nuget Microsoft.Azure.WebJobs.Extensions
 nuget Thoth.Json
 
+nuget Microsoft.NET.Sdk.Functions
+nuget Microsoft.AspNetCore.Mvc
+
 clitool dotnet-fable
 
 group ServerTests

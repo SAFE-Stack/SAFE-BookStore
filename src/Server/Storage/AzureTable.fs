@@ -90,16 +90,16 @@ module private StateManagement =
         let! blob = resetTimeBlob connectionString
         return! blob.UploadTextAsync "" }
 
-let getLastResetTime connectionString = task {
-    let! blob = StateManagement.resetTimeBlob connectionString
+let getLastResetTime connection = task {
+    let! blob = StateManagement.resetTimeBlob connection
     do! blob.FetchAttributesAsync()
     return blob.Properties.LastModified |> Option.ofNullable |> Option.map (fun d -> d.UtcDateTime)
 }
 
 /// Clears all Wishlists and records the time that it occurred at.
-let clearWishLists connectionString = task {
-    let! table = getBooksTable connectionString
+let clearWishLists connection = task {
+    let! table = getBooksTable connection
     let! _ = table.DeleteIfExistsAsync()
 
-    let! _ = Defaults.defaultWishList "test" |> saveWishListToDB connectionString
-    do! StateManagement.storeResetTime connectionString }
+    let! _ = Defaults.defaultWishList "test" |> saveWishListToDB connection
+    do! StateManagement.storeResetTime connection }

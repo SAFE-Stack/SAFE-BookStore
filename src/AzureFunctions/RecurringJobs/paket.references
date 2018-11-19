@@ -1,0 +1,6 @@
+FSharp.Core
+Newtonsoft.Json
+WindowsAzure.Storage
+Microsoft.NET.Sdk.Functions
+TaskBuilder.fs
+Microsoft.AspNetCore.Mvc

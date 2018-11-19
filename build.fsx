@@ -69,6 +69,15 @@ let platformTool tool winTool =
     |> ProcessHelper.tryFindFileOnPath
     |> function Some t -> t | _ -> failwithf "%s not found" tool
 
+
+let runFunc workingDir args =
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),@"npm\func.cmd")
+            info.WorkingDirectory <- workingDir
+            info.Arguments <- args) TimeSpan.MaxValue
+    if result <> 0 then failwithf "func %s failed" args
+
 let nodeTool = platformTool "node" "node.exe"
 let npmTool = platformTool "npm" "npm.cmd"
 let yarnTool = platformTool "yarn" "yarn.cmd"
@@ -161,6 +170,82 @@ Target "RunClientTests" (fun _ ->
 
     serverProcess.Kill()
 )
+
+let getFunctionApp projectName =
+    match projectName with 
+    | "RecurringJobs.fsproj" ->
+        "bookstoretasks"
+    | _ ->
+        "bookstoretasks"
+
+let functionsPath = "./src/AzureFunctions/" |> FullName
+
+let azureFunctionsfilter = getBuildParamOrDefault "FunctionApp" ""
+
+let functionApps = 
+    [ "bookstoretasks" ]
+
+Target "PublishAzureFunctions" (fun _ ->
+    let deployDir = deployDir + "/functions"
+    CleanDir deployDir
+
+    for functionApp in functionApps do
+        if azureFunctionsfilter <> "" && functionApp <> azureFunctionsfilter then () else
+
+        let deployDir = deployDir + "/" + functionApp
+        CleanDir deployDir
+        
+        !! (functionsPath + "/*.json")
+        |> CopyFiles deployDir
+
+        let functionsToDeploy = 
+            !! (functionsPath + "/**/*.fsproj")
+            |> Seq.filter (fun proj ->
+                let fi = FileInfo proj
+                getFunctionApp fi.Name = functionApp)
+            |> Seq.toList
+        
+        let targetBinDir = deployDir + "/bin"
+        CleanDir targetBinDir
+
+        functionsToDeploy
+        |> Seq.iter (fun proj -> 
+            let fi = FileInfo proj
+            runDotnet fi.Directory.FullName (sprintf "publish -c Release %s" fi.Name)
+            let targetPath = deployDir + "/" + fi.Name.Replace(fi.Extension,"") + "/"
+            CleanDir targetPath
+            tracefn "  Target: %s" targetPath
+            
+            let mutable found = false
+            let allFiles x = found <- true; allFiles x
+
+            let publishDir = Path.Combine(fi.Directory.FullName,"bin/Release/netstandard2.0/publish")
+            let binDir = Path.Combine(publishDir,"bin")
+            if Directory.Exists binDir then
+                CopyDir targetBinDir binDir allFiles
+                !! (publishDir + "/*.deps.json")
+                |> CopyFiles targetBinDir
+            else
+                CopyDir targetBinDir publishDir allFiles
+
+            let functionJson = publishDir + "/**/function.json"
+            !! functionJson
+            |> Seq.iter (fun fileName ->
+                let fi = FileInfo fileName
+                let target = Path.Combine(targetPath,"..",fi.Directory.Name) 
+                CleanDir target
+                fileName |> CopyFile target)
+
+
+            if not found then failwithf "No files found for function %s" fi.Name
+
+            !! (fi.Directory.FullName + "/function.json")
+            |> CopyFiles targetPath
+        )
+
+        runFunc deployDir ("azure functionapp publish " + functionApp)
+)
+
 
 // --------------------------------------------------------------------------------------
 // Run the Website
@@ -362,5 +447,8 @@ Target "All" DoNothing
 
 "InstallClient"
   ==> "RunSSR"
+
+"InstallDotNetCore"
+  ==> "PublishAzureFunctions"
 
 RunTargetOrDefault "All"
