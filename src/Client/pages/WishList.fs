@@ -26,7 +26,6 @@ type Model =
 
 /// The different messages processed when interacting with the wish list
 type Msg =
-    | LoadForUser of string
     | FetchedWishList of WishList
     | FetchedResetTime of DateTime
     | RemoveBook of Book
@@ -91,9 +90,6 @@ let init (user:UserData) =
 
 let update (msg:Msg) model : Model*Cmd<Msg> =
     match msg with
-    | LoadForUser user ->
-        model, Cmd.none
-
     | FetchedWishList wishList ->
         let wishList = { wishList with Books = wishList.Books |> List.sortBy (fun b -> b.Title) }
         { model with WishList = wishList }, Cmd.none
@@ -104,8 +100,7 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
     | RemoveBook book ->
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
         { model with
-            WishList = wishList
-            ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBookModel.NewBook },
+            WishList = wishList },
                 Cmd.ofPromise postWishList (model.Token,wishList) FetchedWishList FetchError
 
     | NewBookMsg msg ->
