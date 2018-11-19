@@ -71,9 +71,11 @@ let postWishList (token,wishList) =
                 HttpRequestHeaders.ContentType "application/json" ]
               RequestProperties.Body !^body ]
 
-        return! Fetch.fetchAs url Decode.Auto.generateDecoder<WishList> props
+        let! res = Fetch.fetch url props
+        let! txt = res.text()
+        return Decode.Auto.unsafeFromString<WishList> txt
     }
-
+    
 
 let init (user:UserData) =
     let submodel,cmd = NewBook.init()

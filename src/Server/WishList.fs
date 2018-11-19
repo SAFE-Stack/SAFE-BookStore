@@ -16,12 +16,7 @@ let getWishList (getWishListFromDB : string -> Task<WishList>) (token : UserRigh
             return! ctx.WriteJsonAsync wishList
         }
 
-let private invalidWishList =
-    RequestErrors.BAD_REQUEST "WishList is not valid"
 
-let inline private forbiddenWishList username =
-    sprintf "WishList is not matching user %s" username
-    |> RequestErrors.FORBIDDEN
 
 /// Handle the POST on /api/wishlist
 let postWishList (saveWishListToDB: WishList -> Task<unit>) (token : UserRights) : HttpHandler =
@@ -35,8 +30,8 @@ let postWishList (saveWishListToDB: WishList -> Task<unit>) (token : UserRights)
                 | true ->
                     do! saveWishListToDB wishList
                     return! ctx.WriteJsonAsync wishList
-                | false -> return! forbiddenWishList token.UserName next ctx
-            | false     -> return! invalidWishList next ctx
+                | false -> return! RequestErrors.FORBIDDEN (sprintf "WishList is not matching user %s" token.UserName) next ctx
+            | false     -> return! RequestErrors.BAD_REQUEST "WishList is not valid" next ctx
         }
 
 /// Retrieve the last time the wish list was reset.
