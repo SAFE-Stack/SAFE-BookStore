@@ -6,7 +6,7 @@ flexible end-to-end web-enabled applications that are written entirely in F#.
 
 ![SAFE-Stack](src/Client/Images/safe_logo.png "SAFE-Stack")
 
-You can see it running on Microsoft Azure at https://safe-bookstore.azurewebsites.net/.
+You can see it running on Microsoft Azure at https://safebookstore.azurewebsites.net/.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/ak9gjjjp32ens0e2?svg=true)](https://ci.appveyor.com/project/isaacabraham/safe-bookstore)
 [![Build Status](https://travis-ci.org/SAFE-Stack/SAFE-BookStore.svg?branch=master)](https://travis-ci.org/SAFE-Stack/SAFE-BookStore)
@@ -42,8 +42,10 @@ For the case of the client ["Hot Module Replacement"](https://webpack.js.org/con
 Usually you can just keep this mode running and running. Just edit files, see the browser refreshing and commit + push with git.
 
 ## Getting started
+
 ### Create a new page
 This topic will guide you through creating a new page. After every section you should check whether you can see the changes in your browser.
+
 #### Minimal setup
 Let's say we want to call our new page *Tomato*
 
