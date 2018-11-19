@@ -1,8 +1,6 @@
 module Client.App
 
-open Fable.Core
 open Fable.Core.JsInterop
-
 open Fable.Import
 open Fable.PowerPack
 open Elmish
@@ -143,7 +141,6 @@ Program.mkProgram init update view
 |> Program.toNavigable Pages.urlParser urlUpdate
 #if DEBUG
 |> Program.withConsoleTrace
-|> Program.withHMR
 #endif
 |> withReact "elmish-app"
 #if DEBUG

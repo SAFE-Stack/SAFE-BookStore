@@ -6,7 +6,7 @@ flexible end-to-end web-enabled applications that are written entirely in F#.
 
 ![SAFE-Stack](src/Client/Images/safe_logo.png "SAFE-Stack")
 
-You can see it running on Microsoft Azure at http://fable-suave.azurewebsites.net.
+You can see it running on Microsoft Azure at https://safe-bookstore.azurewebsites.net/.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/ak9gjjjp32ens0e2?svg=true)](https://ci.appveyor.com/project/isaacabraham/safe-bookstore)
 [![Build Status](https://travis-ci.org/SAFE-Stack/SAFE-BookStore.svg?branch=master)](https://travis-ci.org/SAFE-Stack/SAFE-BookStore)

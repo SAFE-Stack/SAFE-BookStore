@@ -1,7 +1,5 @@
 module Client.WishList
 
-open Fable.Core
-open Fable.Import
 open Fable.PowerPack
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
@@ -23,7 +21,7 @@ type Model =
   { WishList : WishList
     Token : string
     NewBook : Book
-    NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/fable-compiler/fable-suave-scaffold/issues/107#issuecomment-301312224
+    NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/SAFE-Stack/SAFE-BookStore/issues/107#issuecomment-301312224
     ResetTime : DateTime option
     TitleErrorText : string option
     AuthorsErrorText : string option
