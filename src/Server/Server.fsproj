@@ -8,9 +8,9 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
-  <Import Project="../Shared/Shared.props" />
-
   <ItemGroup>
+    <Compile Include="Shared/Domain.fs" />
+    <Compile Include="Shared/ServerUrls.fs" />
     <Compile Include="ServerTypes.fs" />
     <Compile Include="JsonWebToken.fs" />
     <Compile Include="Auth.fs" />
@@ -20,6 +20,15 @@
     <Compile Include="Storage/AzureTable.fs" />
     <Compile Include="Storage/WebJobs.fs" />
     <Compile Include="Database.fs" />
+    <Compile Include="../Client/ReleaseNotes.fs" />
+    <Compile Include="../Client/Pages.fs" />
+    <Compile Include="../Client/Style.fs" />
+    <Compile Include="../Client/views/Menu.fs" />
+    <Compile Include="../Client/pages/Home.fs" />
+    <Compile Include="../Client/pages/NewBook.fs" />
+    <Compile Include="../Client/pages/WishList.fs" />
+    <Compile Include="../Client/pages/Login.fs" />
+    <Compile Include="../Client/Shared.fs" />
     <Compile Include="Templates.fs" />
     <Compile Include="Pages.fs" />
     <Compile Include="WebServer.fs" />

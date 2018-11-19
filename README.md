@@ -118,7 +118,7 @@ let inline private clientView onLogout (model:Model) =
 #### Move code to separate Tomato.fs files
 
 1. Add a new .fs file to the pages folder: `src/Client/pages/Tomato.fs`.
-Add the `src/Client/pages/Tomato.fs` to your `Client.props` file and move it above `Shared.fs`.
+Add the `src/Client/pages/Tomato.fs` to your `Client.fsproj` and `Server.fsproj` files and move it above `Shared.fs`.
 
     <Compile Include="../Client/pages/Tomato.fs" Watch="false" />
     <Compile Include="../Client/Shared.fs" Watch="false" />
