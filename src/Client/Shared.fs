@@ -1,6 +1,7 @@
 module Client.Shared
 
 open ServerCode.Domain
+
 /// The composed model for the different possible page states of the application
 type PageModel =
     | HomePageModel

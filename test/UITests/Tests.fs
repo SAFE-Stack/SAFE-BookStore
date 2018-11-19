@@ -1,12 +1,7 @@
 module UITests.Tests
 
-open canopy
 open canopy.classic
-open canopy.types
-open System.IO
 open Expecto
-open System
-open System.Threading
 
 let serverUrl = "http://localhost:8085/"
 let logoutLinkSelector = ".logout"
@@ -53,9 +48,9 @@ let tests =
 
             click ".btn"
 
-            element "No title was entered"
-            element "No author was entered"
-            element "No link was entered"
+            element "No title was entered" |> ignore
+            element "No author was entered" |> ignore
+            element "No link was entered" |> ignore
 
             "input[name=Title]" << "title"
             let titleWarnElem = someElement "No title was entered"

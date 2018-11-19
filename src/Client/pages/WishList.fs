@@ -20,12 +20,8 @@ open Thoth.Json.Net
 type Model =
   { WishList : WishList
     Token : string
-    NewBook : Book
-    NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/SAFE-Stack/SAFE-BookStore/issues/107#issuecomment-301312224
+    NewBookModel : NewBook.Model
     ResetTime : DateTime option
-    TitleErrorText : string option
-    AuthorsErrorText : string option
-    LinkErrorText : string option
     ErrorMsg : string option }
 
 /// The different messages processed when interacting with the wish list
@@ -34,10 +30,7 @@ type Msg =
     | FetchedWishList of WishList
     | FetchedResetTime of DateTime
     | RemoveBook of Book
-    | AddBook
-    | TitleChanged of string
-    | AuthorsChanged of string
-    | LinkChanged of string
+    | NewBookMsg of NewBook.Msg
     | FetchError of exn
 
 /// Get the wish list from the server, used to populate the model
@@ -66,11 +59,6 @@ let getResetTime token =
         return details.Time
     }
 
-let loadWishListCmd token =
-    Cmd.ofPromise getWishList token FetchedWishList FetchError
-
-let loadResetTimeCmd token =
-    Cmd.ofPromise getResetTime token FetchedResetTime FetchError
 
 let postWishList (token,wishList) =
     promise {
@@ -93,18 +81,16 @@ let postWishListCmd (token,wishList) =
 
 
 let init (user:UserData) =
+    let submodel,cmd = NewBook.init()
     { WishList = WishList.New user.UserName
       Token = user.Token
-      NewBook = Book.empty
-      NewBookId = Guid.NewGuid()
-      TitleErrorText = None
-      AuthorsErrorText = None
+      NewBookModel = submodel
       ResetTime = None
-      LinkErrorText = None
       ErrorMsg = None },
         Cmd.batch [
-            loadWishListCmd user.Token
-            loadResetTimeCmd user.Token ]
+            Cmd.map NewBookMsg cmd
+            Cmd.ofPromise getWishList user.Token FetchedWishList FetchError
+            Cmd.ofPromise getResetTime user.Token FetchedResetTime FetchError ]
 
 let update (msg:Msg) model : Model*Cmd<Msg> =
     match msg with
@@ -118,147 +104,37 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
     | FetchedResetTime datetime ->
         { model with ResetTime = Some datetime }, Cmd.none
 
-    | TitleChanged title ->
-        let newBook = { model.NewBook with Title = title }
-        { model with
-            NewBook = newBook
-            TitleErrorText = Validation.verifyBookTitle title
-            ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
-
-    | AuthorsChanged authors ->
-        let newBook = { model.NewBook with Authors = authors }
-        { model with
-            NewBook = newBook
-            AuthorsErrorText = Validation.verifyBookAuthors authors
-            ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
-
-    | LinkChanged link ->
-        let newBook = { model.NewBook with Link = link }
-        { model with
-            NewBook = newBook
-            LinkErrorText = Validation.verifyBookLink link
-            ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList newBook }, Cmd.none
-
     | RemoveBook book ->
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
         { model with
             WishList = wishList
-            ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBook },
+            ErrorMsg = Validation.verifyBookisNotADuplicate wishList model.NewBookModel.NewBook },
                 postWishListCmd(model.Token,wishList)
 
-    | AddBook ->
-        if Validation.verifyBook model.NewBook then
-            match Validation.verifyBookisNotADuplicate model.WishList model.NewBook with
-            | Some err ->
-                { model with ErrorMsg = Some err }, Cmd.none
-            | None ->
-                let wishList = { model.WishList with Books = (model.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
-                { model with WishList = wishList; NewBook = Book.empty; NewBookId = Guid.NewGuid(); ErrorMsg = None },
-                    postWishListCmd(model.Token,wishList)
-        else
-            { model with
-                TitleErrorText = Validation.verifyBookTitle model.NewBook.Title
-                AuthorsErrorText = Validation.verifyBookAuthors model.NewBook.Authors
-                LinkErrorText = Validation.verifyBookLink model.NewBook.Link
-                ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList model.NewBook }, Cmd.none
-
+    | NewBookMsg msg ->
+        match msg with
+        | NewBook.Msg.AddBook ->
+            if Validation.verifyBook model.NewBookModel.NewBook then
+                match Validation.verifyBookisNotADuplicate model.WishList model.NewBookModel.NewBook with
+                | Some err ->
+                    { model with ErrorMsg = Some err }, Cmd.none
+                | None ->
+                    let wishList = { model.WishList with Books = (model.NewBookModel.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
+                    let submodel,cmd = NewBook.init()
+                    { model with WishList = wishList; NewBookModel = submodel; ErrorMsg = None },
+                        Cmd.batch [
+                            Cmd.map NewBookMsg cmd
+                            postWishListCmd(model.Token,wishList)
+                        ]
+            else
+                { model with
+                    ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList model.NewBookModel.NewBook  }, Cmd.none
+        | _ ->
+            let submodel,cmd = NewBook.update msg model.NewBookModel
+            { model with NewBookModel = submodel}, Cmd.map NewBookMsg cmd
     | FetchError e ->
         { model with ErrorMsg = Some e.Message }, Cmd.none
 
-let newBookForm (model:Model) dispatch =
-    let buttonInactive =
-        String.IsNullOrEmpty model.NewBook.Title ||
-        String.IsNullOrEmpty model.NewBook.Authors ||
-        String.IsNullOrEmpty model.NewBook.Link ||
-        model.ErrorMsg <> None
-
-    let buttonTag = if buttonInactive then  "btn-disabled" else "btn-primary"
-
-    let titleStatus = if String.IsNullOrEmpty model.NewBook.Title then "" else "has-success"
-
-    let authorStatus = if String.IsNullOrEmpty model.NewBook.Authors then "" else "has-success"
-
-    let linkStatus = if String.IsNullOrEmpty model.NewBook.Link then "" else "has-success"
-
-    div [] [
-        h4 [] [str "New Book"]
-
-        div [ClassName "container"] [
-            div [ClassName "row"] [
-                div [ClassName "col-md-8"] [
-                    div [ClassName ("form-group has-feedback " + titleStatus)] [
-                        yield div [ClassName "input-group"] [
-                             yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon-pencil"] [] ]
-                             yield input [
-                                     Key ("Title_" + model.NewBookId.ToString())
-                                     HTMLAttr.Type "text"
-                                     Name "Title"
-                                     DefaultValue model.NewBook.Title
-                                     ClassName "form-control"
-                                     Placeholder "Please insert book title"
-                                     Required true
-                                     OnChange (fun ev -> dispatch (TitleChanged ev.Value)) ]
-                             match model.TitleErrorText with
-                             | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
-                             | _ -> ()
-                        ]
-                        match model.TitleErrorText with
-                        | Some e -> yield p [ClassName "text-danger"][str e]
-                        | _ -> ()
-                    ]
-                    div [ClassName ("form-group has-feedback " + authorStatus) ] [
-                         yield div [ClassName "input-group"][
-                             yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon-user"] [] ]
-                             yield input [
-                                     Key ("Author_" + model.NewBookId.ToString())
-                                     HTMLAttr.Type "text"
-                                     Name "Author"
-                                     DefaultValue model.NewBook.Authors
-                                     ClassName "form-control"
-                                     Placeholder "Please insert authors"
-                                     Required true
-                                     OnChange (fun ev -> dispatch (AuthorsChanged ev.Value))]
-                             match model.AuthorsErrorText with
-                             | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
-                             | _ -> ()
-                         ]
-                         match model.AuthorsErrorText with
-                         | Some e -> yield p [ClassName "text-danger"][str e]
-                         | _ -> ()
-                    ]
-                    div [ClassName ("form-group has-feedback " + linkStatus)] [
-                         yield div [ClassName "input-group"] [
-                             yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon glyphicon-pencil"] [] ]
-                             yield input [
-                                    Key ("Link_" + model.NewBookId.ToString())
-                                    HTMLAttr.Type "text"
-                                    Name "Link"
-                                    DefaultValue model.NewBook.Link
-                                    ClassName "form-control"
-                                    Placeholder "Please insert link"
-                                    Required true
-                                    OnChange (fun ev -> dispatch (LinkChanged ev.Value))]
-                             match model.LinkErrorText with
-                             | Some e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
-                             | _ -> ()
-                         ]
-                         match model.LinkErrorText with
-                         | Some e -> yield p [ClassName "text-danger"][str e]
-                         | _ -> ()
-                    ]
-                    div [] [
-                        yield button [ ClassName ("btn " + buttonTag); OnClick (fun _ -> dispatch AddBook)] [
-                                  i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []
-                                  str "Add"
-                        ]
-                        match model.ErrorMsg with
-                        | None -> ()
-                        | Some e -> yield p [ClassName "text-danger"][str e]
-                    ]
-                ]
-            ]
-        ]
-    ]
 
 type BookProps = { key: string; book: Book; removeBook: unit -> unit }
 
@@ -297,5 +173,5 @@ let view (model:Model) (dispatch: Msg -> unit) =
                     |> ofList
             ]
         ]
-        newBookForm model dispatch
+        NewBook.view model.NewBookModel (dispatch << NewBookMsg)
     ]

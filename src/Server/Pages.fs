@@ -1,10 +1,6 @@
 module ServerCode.Pages
 
-open System.Threading.Tasks
-open Microsoft.AspNetCore.Http
 open Giraffe
-open ServerCode.Domain
-open ServerTypes
 open Client.Shared
 open FSharp.Control.Tasks.V2
 
