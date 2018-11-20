@@ -49,6 +49,13 @@ let onEnter msg dispatch =
 
 open Fable.Helpers.React
 
+let errorBox msg =
+    div [] [
+        match msg with
+        | None -> ()
+        | Some e -> yield p [ClassName "text-danger"][str e]
+    ]
+
 let validatedTextBox (onChange: string -> unit) key placeholder errorText text =
     let status = if String.IsNullOrEmpty text then "" else "has-success"
     R.div [ClassName ("form-group has-feedback " + status)] [

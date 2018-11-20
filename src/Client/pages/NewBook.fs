@@ -75,8 +75,8 @@ let view (model:Model) dispatch =
             div [ClassName "row"; Key (model.NewBookId.ToString())] [
                 div [ClassName "col-md-8"] [
                     validatedTextBox (dispatch << TitleChanged) "Title" "Please insert title" model.TitleErrorText model.NewBook.Title
-                    validatedTextBox (dispatch << AuthorsChanged) "Author" "Please insert authors"  model.AuthorsErrorText model.NewBook.Authors
-                    validatedTextBox (dispatch << LinkChanged) "Link" "Please insert link"  model.LinkErrorText model.NewBook.Link
+                    validatedTextBox (dispatch << AuthorsChanged) "Author" "Please insert authors" model.AuthorsErrorText model.NewBook.Authors
+                    validatedTextBox (dispatch << LinkChanged) "Link" "Please insert link" model.LinkErrorText model.NewBook.Link
 
                     button [
                         ClassName ("btn " + if model.NewBook.Validate() then "btn-primary" else "btn-disabled")

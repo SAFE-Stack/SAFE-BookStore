@@ -21,7 +21,7 @@ let index (model: Model option) =
     html []
       [ head [] [
           meta [ _httpEquiv "Content-Type"; _content "text/html"; _charset "utf-8" ]
-          title [] [ rawText "SAFE-Stack sample" ]
+          title [] [ rawText "SAFE-Stack Bookstore" ]
           link
             [ _rel "stylesheet"
               _href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";

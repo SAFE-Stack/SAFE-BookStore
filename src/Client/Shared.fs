@@ -2,24 +2,24 @@ module Client.Shared
 
 open ServerCode.Domain
 
-/// The composed model for the different possible page states of the application
 type PageModel =
     | HomePageModel
     | LoginModel of Login.Model
     | WishListModel of WishList.Model
 
-/// The composed model for the application, which is a single page state plus login information
-type Model =
-    { User : UserData option
-      PageModel : PageModel }
+// DEMO03 - The complete app state
+type Model = { 
+    User : UserData option
+    PageModel : PageModel 
+}
 
 /// The composed set of messages that update the state of the application
 type Msg =
+    | WishListMsg of WishList.Msg
+    | LoginMsg of Login.Msg
     | LoggedIn of UserData
     | LoggedOut
     | StorageFailure of exn
-    | LoginMsg of Login.Msg
-    | WishListMsg of WishList.Msg
     | Logout of unit
 
 
@@ -29,22 +29,19 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Client.Styles
 
-/// Constructs the view for a page given the model and dispatcher.
-let viewPage model dispatch =
-    match model.PageModel with
-    | HomePageModel ->
-        Home.view ()
-
-    | LoginModel m ->
-        [ Login.view m (LoginMsg >> dispatch) ]
-
-    | WishListModel m ->
-        [ WishList.view m (WishListMsg >> dispatch) ]
-
-/// Constructs the view for the application given the model.
+// DEMO04 - the whole world put into a single view
 let view model dispatch =
-    div [] [
+    div [ Key "Application" ] [
         Menu.view (Logout >> dispatch) model.User
         hr []
-        div [ centerStyle "column" ] (viewPage model dispatch)
+
+        div [ centerStyle "column" ] [
+            match model.PageModel with
+            | HomePageModel ->
+                yield Home.view ()
+            | LoginModel m ->
+                yield Login.view m (LoginMsg >> dispatch)
+            | WishListModel m ->
+                yield WishList.view m (WishListMsg >> dispatch) 
+        ]
     ]

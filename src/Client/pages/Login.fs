@@ -91,17 +91,17 @@ let view model (dispatch: Msg -> unit) =
 
     match model.State with
     | LoggedIn user ->
-        div [ Id "greeting"] [
+        div [ Key "Greeting"; Id "greeting"] [
             h3 [ ClassName "text-center" ] [ str (sprintf "Hi %s!" user.UserName) ]
         ]
 
     | LoggedOut ->
-        div [ ClassName "signInBox" ] [
+        div [ Key "SignIn"; ClassName "signInBox" ] [
             h3 [ ClassName "text-center" ] [ str "Log in with 'test' / 'test'."]
 
             div [ ClassName showErrorClass ] [
                 div [ ClassName "alert alert-danger" ] [ str model.ErrorMsg ]
-             ]
+            ]
 
             div [ ClassName "input-group input-group-lg" ] [
                 span [ClassName "input-group-addon" ] [
@@ -113,7 +113,7 @@ let view model (dispatch: Msg -> unit) =
                     ClassName "form-control input-lg"
                     Placeholder "Username"
                     DefaultValue model.Login.UserName
-                    OnChange (fun ev -> dispatch (SetUserName !!ev.target?value))
+                    OnChange (fun ev -> dispatch (SetUserName ev.Value))
                     AutoFocus true
                 ]
             ]
@@ -129,7 +129,7 @@ let view model (dispatch: Msg -> unit) =
                     ClassName "form-control input-lg"
                     Placeholder "Password"
                     DefaultValue model.Login.Password
-                    OnChange (fun ev -> dispatch (SetPassword !!ev.target?value))
+                    OnChange (fun ev -> dispatch (SetPassword ev.Value))
                     onEnter ClickLogIn dispatch
                 ]
             ]

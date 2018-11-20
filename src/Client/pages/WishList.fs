@@ -17,12 +17,16 @@ open Thoth.Json
 open Thoth.Json.Net
 #endif
 
-type Model =
-  { WishList : WishList
-    Token : string
+// DEMO02 - Models
+type Model = { 
+    // Domain data
+    WishList : WishList
     NewBookModel : NewBook.Model
+    // Additional view data
+    Token : string
     ResetTime : DateTime option
-    ErrorMsg : string option }
+    ErrorMsg : string option 
+}
 
 /// The different messages processed when interacting with the wish list
 type Msg =
@@ -88,7 +92,7 @@ let init (user:UserData) =
             Cmd.ofPromise getWishList user.Token FetchedWishList FetchError
             Cmd.ofPromise getResetTime user.Token FetchedResetTime FetchError ]
 
-let update (msg:Msg) model : Model*Cmd<Msg> =
+let update (msg:Msg) model : Model * Cmd<Msg> =
     match msg with
     | FetchedWishList wishList ->
         let wishList = { wishList with Books = wishList.Books |> List.sortBy (fun b -> b.Title) }
@@ -133,27 +137,28 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
 type BookProps = { key: string; book: Book; removeBook: unit -> unit }
 
 let bookComponent { book = book; removeBook = removeBook } =
-  tr [] [
-    td [] [
-        if String.IsNullOrWhiteSpace book.Link then
-            yield str book.Title
-        else
-            yield a [ Href book.Link; Target "_blank"] [str book.Title ] ]
-    td [] [ str book.Authors ]
-    td [] [ buttonLink "" removeBook [ str "Remove" ] ]
+    tr [] [
+        td [] [
+            if String.IsNullOrWhiteSpace book.Link then
+                yield str book.Title
+            else
+                yield a [ Href book.Link; Target "_blank" ] [str book.Title ] ]
+        td [] [ str book.Authors ]
+        td [] [ buttonLink "" removeBook [ str "Remove" ] ]
     ]
 
 let inline BookComponent props = (ofFunction bookComponent) props []
 
+// DEMO04 - React views
 let view (model:Model) (dispatch: Msg -> unit) =
     let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
-    div [] [
-        yield h4 [] [ str (sprintf "Wishlist for %s%s" model.WishList.UserName time) ]
-        yield table [ClassName "table table-striped table-hover"] [
+    div [ Key "WishList" ] [
+        h4 [] [ str "Wishlist for " ; str model.WishList.UserName; str time ]
+        table [ClassName "table table-striped table-hover"] [
             thead [] [
-                    tr [] [
-                        th [] [str "Title"]
-                        th [] [str "Authors"]
+                tr [] [
+                    th [] [str "Title"]
+                    th [] [str "Authors"]
                 ]
             ]
             tbody [] [
@@ -167,8 +172,6 @@ let view (model:Model) (dispatch: Msg -> unit) =
                     |> ofList
             ]
         ]
-        yield NewBook.view model.NewBookModel (dispatch << NewBookMsg)        
-        match model.ErrorMsg with
-        | None -> ()
-        | Some e -> yield p [ClassName "text-danger"][str e]
+        NewBook.view model.NewBookModel (dispatch << NewBookMsg)        
+        errorBox model.ErrorMsg
     ]
