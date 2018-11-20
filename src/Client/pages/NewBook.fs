@@ -78,13 +78,11 @@ let view (model:Model) dispatch =
                     validatedTextBox (dispatch << AuthorsChanged) "Author" "Please insert authors"  model.AuthorsErrorText model.NewBook.Authors
                     validatedTextBox (dispatch << LinkChanged) "Link" "Please insert link"  model.LinkErrorText model.NewBook.Link
 
-                    div [] [
-                        button [
-                            ClassName ("btn " + if model.NewBook.Validate() then "btn-primary" else "btn-disabled")
-                            OnClick (fun _ -> dispatch ValidateBook) ] [
-                            i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []
-                            str "Add"
-                        ]
+                    button [
+                        ClassName ("btn " + if model.NewBook.Validate() then "btn-primary" else "btn-disabled")
+                        OnClick (fun _ -> dispatch ValidateBook) ] [
+                        i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []
+                        str "Add"
                     ]
                 ]
             ]
