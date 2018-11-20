@@ -68,19 +68,20 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
         model, Cmd.none
 
 let view (model:Model) dispatch =
-    let buttonTag = if model.NewBook.Validate() then "btn-primary" else "btn-disabled"
-
     div [] [
         h4 [] [str "New Book"]
 
         div [ClassName "container"] [
-            div [ClassName "row"] [
+            div [ClassName "row"; Key (model.NewBookId.ToString())] [
                 div [ClassName "col-md-8"] [
-                    validatedTextBox (dispatch << TitleChanged) "Title" ("Title_" + model.NewBookId.ToString()) "Please insert book title" model.TitleErrorText model.NewBook.Title
-                    validatedTextBox (dispatch << AuthorsChanged) "Author" ("Author_" + model.NewBookId.ToString()) "Please insert authors"  model.AuthorsErrorText model.NewBook.Authors
-                    validatedTextBox (dispatch << LinkChanged) "Link" ("Link_" + model.NewBookId.ToString()) "Please insert link"  model.LinkErrorText model.NewBook.Link
+                    validatedTextBox (dispatch << TitleChanged) "Title" "Please insert title" model.TitleErrorText model.NewBook.Title
+                    validatedTextBox (dispatch << AuthorsChanged) "Author" "Please insert authors"  model.AuthorsErrorText model.NewBook.Authors
+                    validatedTextBox (dispatch << LinkChanged) "Link" "Please insert link"  model.LinkErrorText model.NewBook.Link
+
                     div [] [
-                        button [ ClassName ("btn " + buttonTag); OnClick (fun _ -> dispatch ValidateBook)] [
+                        button [
+                            ClassName ("btn " + if model.NewBook.Validate() then "btn-primary" else "btn-disabled")
+                            OnClick (fun _ -> dispatch ValidateBook) ] [
                             i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []
                             str "Add"
                         ]
