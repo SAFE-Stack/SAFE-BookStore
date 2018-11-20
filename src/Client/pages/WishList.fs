@@ -164,7 +164,7 @@ let view (model:Model) (dispatch: Msg -> unit) =
             tbody [] [
                 model.WishList.Books
                     |> List.map (fun book ->
-                        BookComponent {
+                       BookComponent {
                             key = book.Title + book.Authors
                             book = book
                             removeBook = (fun _ -> dispatch (RemoveBook book))

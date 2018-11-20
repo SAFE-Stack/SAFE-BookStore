@@ -12,13 +12,6 @@ open System
 open System.IO
 open Fake.Testing.Expecto
 
-let project = "Suave/Fable sample"
-
-let summary = "SAFE sample"
-
-let description = summary
-
-let configuration = "Release"
 
 let clientPath = "./src/Client" |> FullName
 

@@ -21,35 +21,35 @@ type Model = {
     Running : bool
     ErrorMsg : string option }
 
-/// The messages processed during login
+// DEMO06 - messages everywhere
 type Msg =
     | LoginSuccess of UserData
     | SetUserName of string
     | SetPassword of string
     | AuthError of exn
-    | ClickLogIn
+    | LogInClicked
 
 
-let authUser (login:Login) =
-    promise {
-        if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
-        if String.IsNullOrEmpty login.Password then return! failwithf "You need to fill in a password." else
+let authUser (login:Login) = promise {
+    if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
+    if String.IsNullOrEmpty login.Password then return! failwithf "You need to fill in a password." else
 
-        let body = Encode.Auto.toString(0, login)
+    let body = Encode.Auto.toString(0, login)
 
-        let props =
-            [ RequestProperties.Method HttpMethod.POST
-              Fetch.requestHeaders [
-                  HttpRequestHeaders.ContentType "application/json" ]
-              RequestProperties.Body !^body ]
+    let props = [ 
+        RequestProperties.Method HttpMethod.POST
+        Fetch.requestHeaders [ HttpRequestHeaders.ContentType "application/json" ]
+        RequestProperties.Body !^body
+    ]
 
-        try
-            let! res = Fetch.fetch ServerUrls.APIUrls.Login props
-            let! txt = res.text()
-            return Decode.Auto.unsafeFromString<UserData> txt
-        with _ ->
-            return! failwithf "Could not authenticate user."
-    }
+    try
+        // DEMO09 - using javascript APIs
+        let! res = Fetch.fetch ServerUrls.APIUrls.Login props
+        let! txt = res.text()
+        return Decode.Auto.unsafeFromString<UserData> txt
+    with _ ->
+        return! failwithf "Could not authenticate user."
+}
 
 
 let init (user:UserData option) =
@@ -62,7 +62,8 @@ let init (user:UserData option) =
 let update (msg:Msg) model : Model*Cmd<Msg> =
     match msg with
     | LoginSuccess _ ->
-        model, Cmd.none // DEMO06 - some messages are handled one level above
+        // DEMO07 - some messages are handled one level above
+        model, Cmd.none 
 
     | SetUserName name ->
         { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
@@ -70,8 +71,10 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
     | SetPassword pw ->
         { model with Login = { model.Login with Password = pw }}, Cmd.none
 
-    | ClickLogIn ->
-        { model with Running = true }, Cmd.ofPromise authUser model.Login LoginSuccess AuthError
+    | LogInClicked ->
+        // DEMO08 - javascript promises
+        { model with Running = true }, 
+            Cmd.ofPromise authUser model.Login LoginSuccess AuthError
 
     | AuthError exn ->
         { model with Running = false; ErrorMsg = Some exn.Message }, Cmd.none
@@ -118,13 +121,15 @@ let view model (dispatch: Msg -> unit) =
                 Placeholder "Password"
                 DefaultValue model.Login.Password
                 OnChange (fun ev -> dispatch (SetPassword ev.Value))
-                onEnter ClickLogIn dispatch
+                onEnter LogInClicked dispatch
             ]
         ]
 
         div [ ClassName "text-center" ] [
-            button [ ClassName ("btn " + buttonActive);
-                     OnClick (fun _ -> dispatch ClickLogIn) ]
-                   [ str "Log In" ]
+            button [ 
+                ClassName ("btn " + buttonActive)
+                OnClick (fun _ -> dispatch LogInClicked) ] [ 
+                    str "Log In" 
+            ]
         ]
     ]
