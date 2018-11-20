@@ -18,18 +18,35 @@ type Login =
 
 type UserData =
   { UserName : string
-    Token    : JWT }
+    Token : JWT }
 
 /// The data for each book in /api/wishlist
+// DEMO 01 - Domain model and validate
 type Book =
-    { Title: string
-      Authors: string
-      Link: string }
+    { Title : string
+      Authors : string
+      Link : string }
 
     static member Empty =
-        { Title = ""
-          Authors = ""
-          Link = "" }
+        { Title = null
+          Authors = null
+          Link = null }
+
+    member this.ValidateTitle() =
+        if String.IsNullOrWhiteSpace this.Title then Some "No title was entered" else
+        None
+    member this.ValidateAuthors() =
+        if String.IsNullOrWhiteSpace this.Authors then Some "No author was entered" else
+        None
+    member this.ValidateLink() =
+        if String.IsNullOrWhiteSpace this.Link then Some "No link was entered" else
+        None
+
+    member this.Validate() =
+        this.ValidateTitle() = None &&
+        this.ValidateAuthors() = None &&
+        this.ValidateLink() = None
+
 
 /// The logical representation of the data for /api/wishlist
 type WishList =
@@ -41,35 +58,16 @@ type WishList =
         { UserName = userName
           Books = [] }
 
-type WishListResetDetails =
-    { Time : DateTime }
-
-// Model validation functions.  Write your validation functions once, for server and client!
-module Validation =
-
-    let verifyBookTitle title =
-        if String.IsNullOrWhiteSpace title then Some "No title was entered" else
-        None
-
-    let verifyBookAuthors authors =
-        if String.IsNullOrWhiteSpace authors then Some "No author was entered" else
-        None
-
-    let verifyBookLink link =
-        if String.IsNullOrWhiteSpace link then Some "No link was entered" else
-        None
-
-    let verifyBookisNotADuplicate (wishList:WishList) book =
+    member this.VerifyNewBookIsNotADuplicate book =
         // only compare author and title; ignore url because it is not directly user-visible
-        if wishList.Books |> Seq.exists (fun b -> (b.Authors,b.Title) = (book.Authors,book.Title)) then
+        if this.Books |> List.exists (fun b -> (b.Authors,b.Title) = (book.Authors,book.Title)) then
             Some "Your wishlist contains this book already."
         else
             None
 
-    let verifyBook book =
-        verifyBookTitle book.Title = None &&
-        verifyBookAuthors book.Authors = None &&
-        verifyBookLink book.Link = None
+    member this.Verify() =
+        this.Books 
+        |> List.forall (fun book -> book.Validate())
 
-    let verifyWishList wishList =
-        wishList.Books |> List.forall verifyBook
+type WishListResetDetails =
+    { Time : DateTime }

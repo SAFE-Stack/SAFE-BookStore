@@ -24,14 +24,14 @@ let postWishList (saveWishListToDB: WishList -> Task<unit>) (token : UserRights)
         task {
             let! wishList = ctx.BindJsonAsync<Domain.WishList>()
 
-            match token.UserName.Equals wishList.UserName with
-            | true ->
-                match Validation.verifyWishList wishList with
-                | true ->
+            if token.UserName <> wishList.UserName then
+                return! RequestErrors.FORBIDDEN (sprintf "WishList is not matching user %s" token.UserName) next ctx
+            else
+                if wishList.Verify() then
                     do! saveWishListToDB wishList
                     return! ctx.WriteJsonAsync wishList
-                | false -> return! RequestErrors.FORBIDDEN (sprintf "WishList is not matching user %s" token.UserName) next ctx
-            | false     -> return! RequestErrors.BAD_REQUEST "WishList is not valid" next ctx
+                else
+                    return! RequestErrors.BAD_REQUEST "WishList is not valid" next ctx    
         }
 
 /// Retrieve the last time the wish list was reset.

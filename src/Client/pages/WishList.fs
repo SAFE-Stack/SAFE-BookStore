@@ -106,21 +106,23 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
     | NewBookMsg msg ->
         match msg with
         | NewBook.Msg.AddBook ->
-            if Validation.verifyBook model.NewBookModel.NewBook then
-                match Validation.verifyBookisNotADuplicate model.WishList model.NewBookModel.NewBook with
-                | Some err ->
-                    { model with ErrorMsg = Some err }, Cmd.none
-                | None ->
-                    let wishList = { model.WishList with Books = (model.NewBookModel.NewBook :: model.WishList.Books) |> List.sortBy (fun b -> b.Title) }
-                    let submodel,cmd = NewBook.init()
-                    { model with WishList = wishList; NewBookModel = submodel; ErrorMsg = None },
-                        Cmd.batch [
-                            Cmd.map NewBookMsg cmd
-                            Cmd.ofPromise postWishList (model.Token,wishList) FetchedWishList FetchError
-                        ]
-            else
-                { model with
-                    ErrorMsg = Validation.verifyBookisNotADuplicate model.WishList model.NewBookModel.NewBook  }, Cmd.none
+            match model.WishList.VerifyNewBookIsNotADuplicate model.NewBookModel.NewBook with
+            | Some err ->
+                { model with ErrorMsg = Some err }, Cmd.none
+            | None ->
+                let wishList = 
+                    { model.WishList 
+                        with 
+                            Books = 
+                                (model.NewBookModel.NewBook :: model.WishList.Books) 
+                                |> List.sortBy (fun b -> b.Title) }
+
+                let submodel,cmd = NewBook.init()
+                { model with WishList = wishList; NewBookModel = submodel; ErrorMsg = None },
+                    Cmd.batch [
+                        Cmd.map NewBookMsg cmd
+                        Cmd.ofPromise postWishList (model.Token,wishList) FetchedWishList FetchError
+                    ]            
         | _ ->
             let submodel,cmd = NewBook.update msg model.NewBookModel
             { model with NewBookModel = submodel}, Cmd.map NewBookMsg cmd
@@ -146,8 +148,8 @@ let inline BookComponent props = (ofFunction bookComponent) props []
 let view (model:Model) (dispatch: Msg -> unit) =
     let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
     div [] [
-        h4 [] [ str (sprintf "Wishlist for %s%s" model.WishList.UserName time) ]
-        table [ClassName "table table-striped table-hover"] [
+        yield h4 [] [ str (sprintf "Wishlist for %s%s" model.WishList.UserName time) ]
+        yield table [ClassName "table table-striped table-hover"] [
             thead [] [
                     tr [] [
                         th [] [str "Title"]
@@ -165,5 +167,8 @@ let view (model:Model) (dispatch: Msg -> unit) =
                     |> ofList
             ]
         ]
-        NewBook.view model.NewBookModel (dispatch << NewBookMsg)
+        yield NewBook.view model.NewBookModel (dispatch << NewBookMsg)        
+        match model.ErrorMsg with
+        | None -> ()
+        | Some e -> yield p [ClassName "text-danger"][str e]
     ]

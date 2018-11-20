@@ -44,12 +44,6 @@ let loadUser () : UserData option =
     | Ok user -> Some user
     | Error _ -> None
 
-let saveUserCmd user =
-    Cmd.ofFunc (BrowserLocalStorage.save "user") user (fun _ -> LoggedIn user) StorageFailure
-
-let deleteUserCmd =
-    Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
-
 
 let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
     // The page was rendered server-side and now react client-side kicks in.
@@ -65,18 +59,18 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
         { User = None; PageModel = HomePageModel }, Cmd.none
 
 let init page =
-    let user = loadUser ()
     // was the page rendered server-side?
     let stateJson: string option = !!Browser.window?__INIT_MODEL__
+
     match stateJson with
     | Some json ->
         // SSR -> hydrate the model
         let model, cmd = hydrateModel json page
-        { model with User = user }, cmd
+        { model with User = loadUser() }, cmd
     | None ->
         // no SSR -> show home page
         let model =
-            { User = user
+            { User = loadUser()
               PageModel = HomePageModel }
 
         urlUpdate page model
@@ -95,7 +89,7 @@ let update msg model =
             | Login.ExternalMsg.NoOp ->
                 Cmd.none
             | Login.ExternalMsg.UserLoggedIn newUser ->
-                saveUserCmd newUser
+                Cmd.ofFunc (BrowserLocalStorage.save "user") newUser (fun _ -> LoggedIn newUser) StorageFailure
 
         { model with
             PageModel = LoginModel m },
@@ -125,7 +119,7 @@ let update msg model =
         Navigation.newUrl (toPath Page.Home)
 
     | Logout(), _ ->
-        model, deleteUserCmd
+        model, Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
 
 
 open Elmish.Debug

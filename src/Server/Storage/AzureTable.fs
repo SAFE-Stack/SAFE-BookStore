@@ -75,9 +75,10 @@ let saveWishListToDB connectionString wishList = task {
 
     let! booksTable = getBooksTable connectionString
     let! _ = booksTable.ExecuteBatchAsync batch
-    return () }
+    () 
+}
 
-module private StateManagement =
+module StateManagement =
     let getStateBlob (AzureConnection connectionString) name = task {
         let client = (CloudStorageAccount.Parse connectionString).CreateCloudBlobClient()
         let state = client.GetContainerReference "state"
@@ -95,11 +96,3 @@ let getLastResetTime connection = task {
     do! blob.FetchAttributesAsync()
     return blob.Properties.LastModified |> Option.ofNullable |> Option.map (fun d -> d.UtcDateTime)
 }
-
-/// Clears all Wishlists and records the time that it occurred at.
-let clearWishLists connection = task {
-    let! table = getBooksTable connection
-    let! _ = table.DeleteIfExistsAsync()
-
-    let! _ = Defaults.defaultWishList "test" |> saveWishListToDB connection
-    do! StateManagement.storeResetTime connection }

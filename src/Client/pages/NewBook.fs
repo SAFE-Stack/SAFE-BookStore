@@ -13,8 +13,7 @@ type Model =
     NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/SAFE-Stack/SAFE-BookStore/issues/107#issuecomment-301312224    
     TitleErrorText : string option
     AuthorsErrorText : string option
-    LinkErrorText : string option
-    ErrorMsg : string option }
+    LinkErrorText : string option }
 
 /// The different messages processed when interacting with the wish list
 type Msg =
@@ -30,8 +29,7 @@ let init () =
       NewBookId = Guid.NewGuid()
       TitleErrorText = None
       AuthorsErrorText = None
-      LinkErrorText = None
-      ErrorMsg = None },
+      LinkErrorText = None },
         Cmd.none
 
 let update (msg:Msg) model : Model*Cmd<Msg> =
@@ -40,28 +38,28 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
         let newBook = { model.NewBook with Title = title }
         { model with
             NewBook = newBook
-            TitleErrorText = Validation.verifyBookTitle title }, Cmd.none
+            TitleErrorText = newBook.ValidateTitle() }, Cmd.none
 
     | AuthorsChanged authors ->
         let newBook = { model.NewBook with Authors = authors }
         { model with
             NewBook = newBook
-            AuthorsErrorText = Validation.verifyBookAuthors authors }, Cmd.none
+            AuthorsErrorText = newBook.ValidateAuthors() }, Cmd.none
 
     | LinkChanged link ->
         let newBook = { model.NewBook with Link = link }
         { model with
             NewBook = newBook
-            LinkErrorText = Validation.verifyBookLink link }, Cmd.none
+            LinkErrorText = newBook.ValidateLink() }, Cmd.none
 
     | ValidateBook ->
         let validated =
             { model with
-                TitleErrorText = Validation.verifyBookTitle model.NewBook.Title
-                AuthorsErrorText = Validation.verifyBookAuthors model.NewBook.Authors
-                LinkErrorText = Validation.verifyBookLink model.NewBook.Link}
+                TitleErrorText = model.NewBook.ValidateTitle()
+                AuthorsErrorText = model.NewBook.ValidateAuthors()
+                LinkErrorText = model.NewBook.ValidateLink() }
         validated, 
-            if Validation.verifyBook model.NewBook then
+            if model.NewBook.Validate() then
                 Cmd.ofMsg AddBook
             else
                 Cmd.none
@@ -70,13 +68,7 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
         model, Cmd.none
 
 let view (model:Model) dispatch =
-    let buttonInactive =
-        String.IsNullOrEmpty model.NewBook.Title ||
-        String.IsNullOrEmpty model.NewBook.Authors ||
-        String.IsNullOrEmpty model.NewBook.Link ||
-        model.ErrorMsg <> None
-
-    let buttonTag = if buttonInactive then  "btn-disabled" else "btn-primary"
+    let buttonTag = if model.NewBook.Validate() then "btn-primary" else "btn-disabled"
 
     div [] [
         h4 [] [str "New Book"]
@@ -88,13 +80,10 @@ let view (model:Model) dispatch =
                     validatedTextBox (dispatch << AuthorsChanged) "Author" ("Author_" + model.NewBookId.ToString()) "Please insert authors"  model.AuthorsErrorText model.NewBook.Authors
                     validatedTextBox (dispatch << LinkChanged) "Link" ("Link_" + model.NewBookId.ToString()) "Please insert link"  model.LinkErrorText model.NewBook.Link
                     div [] [
-                        yield button [ ClassName ("btn " + buttonTag); OnClick (fun _ -> dispatch ValidateBook)] [
-                                  i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []
-                                  str "Add"
+                        button [ ClassName ("btn " + buttonTag); OnClick (fun _ -> dispatch ValidateBook)] [
+                            i [ClassName "glyphicon glyphicon-plus"; Style [PaddingRight 5]] []
+                            str "Add"
                         ]
-                        match model.ErrorMsg with
-                        | None -> ()
-                        | Some e -> yield p [ClassName "text-danger"][str e]
                     ]
                 ]
             ]

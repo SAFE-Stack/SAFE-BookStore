@@ -109,4 +109,30 @@ let tests =
 
             logout ()
         )
+
+        testCase "create a duplicate book" (fun () ->
+            startApp ()
+            login ()
+
+            let bookTitle = "Expert F# 4.0"
+            let bookAuthor = "Don Syme & Adam Granicz & Antonio Cisternino"
+            let bookLink = "https://www.amazon.com/Expert-F-4-0-Don-Syme/dp/1484207416"
+
+            "input[name=Title]" << bookTitle
+            "input[name=Author]" << bookAuthor
+            "input[name=Link]" << bookLink
+
+            click ".btn"
+
+            "input[name=Title]" << bookTitle
+            "input[name=Author]" << bookAuthor
+            "input[name=Link]" << bookLink
+
+            click ".btn"
+
+            element "Your wishlist contains this book already." |> ignore
+            
+            logout()
+
+        )
     ]
