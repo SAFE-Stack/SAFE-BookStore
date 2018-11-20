@@ -16,14 +16,10 @@ open Thoth.Json
 open Thoth.Json.Net
 #endif
 
-type LoginState =
-    | LoggedOut
-    | LoggedIn of UserData
-
 type Model = {
-    State : LoginState
     Login : Login
-    ErrorMsg : string }
+    Running : bool
+    ErrorMsg : string option }
 
 /// The messages processed during login
 type Msg =
@@ -33,9 +29,6 @@ type Msg =
     | AuthError of exn
     | ClickLogIn
 
-type ExternalMsg =
-    | NoOp
-    | UserLoggedIn of UserData
 
 let authUser (login:Login) =
     promise {
@@ -58,85 +51,80 @@ let authUser (login:Login) =
             return! failwithf "Could not authenticate user."
     }
 
-let authUserCmd login =
-    Cmd.ofPromise authUser login LoginSuccess AuthError
 
 let init (user:UserData option) =
-    match user with
-    | None ->
-        { Login = { UserName = ""; Password = ""; PasswordId = Guid.NewGuid() }
-          State = LoggedOut
-          ErrorMsg = "" }, Cmd.none
-    | Some user ->
-        { Login = { UserName = user.UserName; Password = ""; PasswordId = Guid.NewGuid() }
-          State = LoggedIn user
-          ErrorMsg = "" }, Cmd.none
-
-let update (msg:Msg) model : Model*Cmd<Msg>*ExternalMsg =
+    let userName = user |> Option.map (fun u -> u.UserName) |> Option.defaultValue ""
+            
+    { Login = { UserName = userName; Password = ""; PasswordId = Guid.NewGuid() }
+      Running = false
+      ErrorMsg = None }, Cmd.none
+    
+let update (msg:Msg) model : Model*Cmd<Msg> =
     match msg with
-    | LoginSuccess user ->
-        { model with State = LoggedIn user; Login = { model.Login with Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none, ExternalMsg.UserLoggedIn user
+    | LoginSuccess _ ->
+        model, Cmd.none // DEMO06 - some messages are handled one level above
+
     | SetUserName name ->
-        { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none, NoOp
+        { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
+
     | SetPassword pw ->
-        { model with Login = { model.Login with Password = pw }}, Cmd.none, NoOp
+        { model with Login = { model.Login with Password = pw }}, Cmd.none
+
     | ClickLogIn ->
-        model, authUserCmd model.Login, NoOp
+        { model with Running = true }, Cmd.ofPromise authUser model.Login LoginSuccess AuthError
+
     | AuthError exn ->
-        { model with ErrorMsg = string (exn.Message) }, Cmd.none, NoOp
+        { model with Running = false; ErrorMsg = Some exn.Message }, Cmd.none
 
 let view model (dispatch: Msg -> unit) =
-    let showErrorClass = if String.IsNullOrEmpty model.ErrorMsg then "hidden" else ""
-    let buttonActive = if String.IsNullOrEmpty model.Login.UserName || String.IsNullOrEmpty model.Login.Password then "btn-disabled" else "btn-primary"
+    let buttonActive = 
+        if String.IsNullOrEmpty model.Login.UserName || 
+           String.IsNullOrEmpty model.Login.Password ||
+           model.Running
+        then 
+            "btn-disabled"
+        else
+            "btn-primary"
+    
+    div [ Key "SignIn"; ClassName "signInBox" ] [
+        h3 [ ClassName "text-center" ] [ str "Log in with 'test' / 'test'."]
 
-    match model.State with
-    | LoggedIn user ->
-        div [ Key "Greeting"; Id "greeting"] [
-            h3 [ ClassName "text-center" ] [ str (sprintf "Hi %s!" user.UserName) ]
-        ]
+        Styles.errorBox model.ErrorMsg
 
-    | LoggedOut ->
-        div [ Key "SignIn"; ClassName "signInBox" ] [
-            h3 [ ClassName "text-center" ] [ str "Log in with 'test' / 'test'."]
-
-            div [ ClassName showErrorClass ] [
-                div [ ClassName "alert alert-danger" ] [ str model.ErrorMsg ]
+        div [ ClassName "input-group input-group-lg" ] [
+            span [ClassName "input-group-addon" ] [
+                span [ClassName "glyphicon glyphicon-user"] []
             ]
-
-            div [ ClassName "input-group input-group-lg" ] [
-                span [ClassName "input-group-addon" ] [
-                    span [ClassName "glyphicon glyphicon-user"] []
-                ]
-                input [
-                    Id "username"
-                    HTMLAttr.Type "text"
-                    ClassName "form-control input-lg"
-                    Placeholder "Username"
-                    DefaultValue model.Login.UserName
-                    OnChange (fun ev -> dispatch (SetUserName ev.Value))
-                    AutoFocus true
-                ]
-            ]
-
-            div [ ClassName "input-group input-group-lg" ] [
-                span [ClassName "input-group-addon" ] [
-                    span [ClassName "glyphicon glyphicon-asterisk"] []
-                ]
-                input [
-                    Id "password"
-                    Key ("password_" + model.Login.PasswordId.ToString())
-                    HTMLAttr.Type "password"
-                    ClassName "form-control input-lg"
-                    Placeholder "Password"
-                    DefaultValue model.Login.Password
-                    OnChange (fun ev -> dispatch (SetPassword ev.Value))
-                    onEnter ClickLogIn dispatch
-                ]
-            ]
-
-            div [ ClassName "text-center" ] [
-                button [ ClassName ("btn " + buttonActive);
-                         OnClick (fun _ -> dispatch ClickLogIn) ]
-                       [ str "Log In" ]
+            input [
+                Id "username"
+                HTMLAttr.Type "text"
+                ClassName "form-control input-lg"
+                Placeholder "Username"
+                DefaultValue model.Login.UserName
+                OnChange (fun ev -> dispatch (SetUserName ev.Value))
+                AutoFocus true
             ]
         ]
+
+        div [ ClassName "input-group input-group-lg" ] [
+            span [ClassName "input-group-addon" ] [
+                span [ClassName "glyphicon glyphicon-asterisk"] []
+            ]
+            input [
+                Id "password"
+                Key ("password_" + model.Login.PasswordId.ToString())
+                HTMLAttr.Type "password"
+                ClassName "form-control input-lg"
+                Placeholder "Password"
+                DefaultValue model.Login.Password
+                OnChange (fun ev -> dispatch (SetPassword ev.Value))
+                onEnter ClickLogIn dispatch
+            ]
+        ]
+
+        div [ ClassName "text-center" ] [
+            button [ ClassName ("btn " + buttonActive);
+                     OnClick (fun _ -> dispatch ClickLogIn) ]
+                   [ str "Log In" ]
+        ]
+    ]

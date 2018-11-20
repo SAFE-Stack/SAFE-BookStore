@@ -82,20 +82,14 @@ let update msg model =
         model, Cmd.none
 
     | LoginMsg msg, LoginModel m ->
-        let m, cmd, externalMsg = Login.update msg m
+        match msg with
+        | Login.Msg.LoginSuccess newUser ->
+            model, Cmd.ofFunc (BrowserLocalStorage.save "user") newUser (fun _ -> LoggedIn newUser) StorageFailure
+        | _ ->
+            let m, cmd = Login.update msg m
 
-        let cmd2 =
-            match externalMsg with
-            | Login.ExternalMsg.NoOp ->
-                Cmd.none
-            | Login.ExternalMsg.UserLoggedIn newUser ->
-                Cmd.ofFunc (BrowserLocalStorage.save "user") newUser (fun _ -> LoggedIn newUser) StorageFailure
-
-        { model with
-            PageModel = LoginModel m },
-                Cmd.batch [
-                    Cmd.map LoginMsg cmd
-                    cmd2 ]
+            { model with
+                PageModel = LoginModel m }, Cmd.map LoginMsg cmd
 
     | LoginMsg _, _ -> model, Cmd.none
 
