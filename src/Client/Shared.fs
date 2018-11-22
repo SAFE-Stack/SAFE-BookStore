@@ -29,7 +29,7 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Client.Styles
 
-// DEMO04 - the whole world put into a single view
+// DEMO05 - the whole world put into a single view
 let view model dispatch =
     div [ Key "Application" ] [
         Menu.view (Logout >> dispatch) model.User

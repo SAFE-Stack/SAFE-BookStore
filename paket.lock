@@ -9,7 +9,7 @@ NUGET
       Newtonsoft.Json (>= 11.0.2) - restriction: >= netcoreapp2.0
     Dotnet.ProjInfo (0.20) - restriction: >= netcoreapp2.0
       FSharp.Core (>= 4.1.18) - restriction: && (< net45) (>= netstandard2.0)
-    Fable.Core (2.0.1)
+    Fable.Core (2.0.2)
       FSharp.Core (>= 4.5.2) - restriction: >= netstandard2.0
     Fable.Elmish (2.0.3)
       Fable.Core (>= 2.0) - restriction: >= netstandard2.0
@@ -459,11 +459,11 @@ NUGET
       Microsoft.Build.Framework (>= 15.3.409) - restriction: || (>= net46) (>= netstandard2.0)
       Microsoft.Build.Utilities.Core (>= 15.3.409) - restriction: || (>= net46) (>= netstandard2.0)
       System.Runtime.Loader (>= 4.3) - restriction: && (< net46) (>= netstandard2.0)
-    Microsoft.Build.Framework (15.8.166) - restriction: && (< net46) (>= netstandard2.0)
+    Microsoft.Build.Framework (15.9.20) - restriction: && (< net46) (>= netstandard2.0)
       System.Runtime.Serialization.Primitives (>= 4.1.1) - restriction: && (< net46) (>= netstandard2.0)
       System.Threading.Thread (>= 4.0) - restriction: && (< net46) (>= netstandard2.0)
-    Microsoft.Build.Utilities.Core (15.8.166) - restriction: && (< net46) (>= netstandard2.0)
-      Microsoft.Build.Framework (>= 15.8.166) - restriction: || (>= net46) (>= netstandard2.0)
+    Microsoft.Build.Utilities.Core (15.9.20) - restriction: && (< net46) (>= netstandard2.0)
+      Microsoft.Build.Framework (>= 15.9.20) - restriction: || (>= net46) (>= netstandard2.0)
       Microsoft.Win32.Registry (>= 4.3) - restriction: && (< net46) (>= netstandard2.0)
       System.Collections.Immutable (>= 1.5) - restriction: || (>= net46) (>= netstandard2.0)
       System.Runtime.InteropServices.RuntimeInformation (>= 4.3) - restriction: || (>= net46) (>= netstandard2.0)
@@ -1383,7 +1383,7 @@ GROUP Build
 RESTRICTION: >= net461
 NUGET
   remote: https://www.nuget.org/api/v2
-    FAKE (5.8.4)
+    FAKE (4.64.13)
 
 GROUP ServerTests
 STORAGE: NONE

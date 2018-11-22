@@ -21,7 +21,7 @@ type UserData =
     Token : JWT }
 
 /// The data for each book in /api/wishlist
-// DEMO 01 - Domain model and validate
+// DEMO01 - Domain model and validation
 type Book =
     { Title : string
       Authors : string
@@ -35,9 +35,11 @@ type Book =
     member this.ValidateTitle() =
         if String.IsNullOrWhiteSpace this.Title then Some "No title was entered" else
         None
+
     member this.ValidateAuthors() =
         if String.IsNullOrWhiteSpace this.Authors then Some "No author was entered" else
         None
+        
     member this.ValidateLink() =
         if String.IsNullOrWhiteSpace this.Link then Some "No link was entered" else
         None

@@ -21,6 +21,7 @@ open Thoth.Json.Net
 type Model = { 
     // Domain data
     WishList : WishList
+    // Subcomponent model
     NewBookModel : NewBook.Model
     // Additional view data
     Token : string
@@ -149,7 +150,7 @@ let bookComponent { book = book; removeBook = removeBook } =
 
 let inline BookComponent props = (ofFunction bookComponent) props []
 
-// DEMO04 - React views
+// DEMO04 - React views - hot reloading
 let view (model:Model) (dispatch: Msg -> unit) =
     let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
     div [ Key "WishList" ] [

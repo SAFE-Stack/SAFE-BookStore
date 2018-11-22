@@ -21,14 +21,13 @@ type Model = {
     Running : bool
     ErrorMsg : string option }
 
-// DEMO06 - messages everywhere
+// DEMO06 - messages everywhere - easy debugging
 type Msg =
     | LoginSuccess of UserData
     | SetUserName of string
     | SetPassword of string
     | AuthError of exn
     | LogInClicked
-
 
 let authUser (login:Login) = promise {
     if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else

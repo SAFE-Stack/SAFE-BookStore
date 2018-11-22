@@ -84,6 +84,7 @@ let update msg model =
     | LoginMsg msg, LoginModel m ->
         match msg with
         | Login.Msg.LoginSuccess newUser ->
+            // DEMO07a - Msg intercepted
             model, Cmd.ofFunc (BrowserLocalStorage.save "user") newUser (fun _ -> LoggedIn newUser) StorageFailure
         | _ ->
             let m, cmd = Login.update msg m
