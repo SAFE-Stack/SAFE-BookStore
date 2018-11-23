@@ -67,48 +67,48 @@ let tests =
             logout()
         )
 
-        testCase "create and remove book" (fun () ->
-            startApp ()
-            login ()
+        // testCase "create and remove book" (fun () ->
+        //     startApp ()
+        //     login ()
 
-            let initBookRows =
-                match someElement "table tbody tr" with
-                | Some (_) -> elements "table tbody tr"
-                | None -> []
+        //     let initBookRows =
+        //         match someElement "table tbody tr" with
+        //         | Some (_) -> elements "table tbody tr"
+        //         | None -> []
 
-            let bookTitle = "Expert F# 4.0"
-            let bookAuthor = "Don Syme & Adam Granicz & Antonio Cisternino"
-            let bookLink = "https://www.amazon.com/Expert-F-4-0-Don-Syme/dp/1484207416"
+        //     let bookTitle = "Expert F# 4.0"
+        //     let bookAuthor = "Don Syme & Adam Granicz & Antonio Cisternino"
+        //     let bookLink = "https://www.amazon.com/Expert-F-4-0-Don-Syme/dp/1484207416"
 
-            "input[name=Title]" << bookTitle
-            "input[name=Author]" << bookAuthor
-            "input[name=Link]" << bookLink
+        //     "input[name=Title]" << bookTitle
+        //     "input[name=Author]" << bookAuthor
+        //     "input[name=Link]" << bookLink
 
-            click ".btn"
+        //     click ".btn"
 
-            let titleElement = element bookTitle
-            let authorElement = element bookAuthor
-            let removeBtn = titleElement |> parent |> parent |> elementWithin "Remove"
+        //     let titleElement = element bookTitle
+        //     let authorElement = element bookAuthor
+        //     let removeBtn = titleElement |> parent |> parent |> elementWithin "Remove"
 
-            let href = titleElement.GetAttribute("href")
-            Expect.equal href bookLink "title element's href should be book link"
+        //     let href = titleElement.GetAttribute("href")
+        //     Expect.equal href bookLink "title element's href should be book link"
 
-            let currBookRows = elements "table tbody tr"
-            Expect.equal currBookRows.Length (initBookRows.Length + 1) "should add a new book"
+        //     let currBookRows = elements "table tbody tr"
+        //     Expect.equal currBookRows.Length (initBookRows.Length + 1) "should add a new book"
 
-            let bookRemoved () =
-                match someElement bookTitle with
-                | Some (_) -> false
-                | None -> true
+        //     let bookRemoved () =
+        //         match someElement bookTitle with
+        //         | Some (_) -> false
+        //         | None -> true
 
-            click removeBtn
-            waitFor bookRemoved
+        //     click removeBtn
+        //     waitFor bookRemoved
 
-            let currBookRows = elements "table tbody tr"
-            Expect.equal currBookRows.Length initBookRows.Length "should remove the new book"
+        //     let currBookRows = elements "table tbody tr"
+        //     Expect.equal currBookRows.Length initBookRows.Length "should remove the new book"
 
-            logout ()
-        )
+        //     logout ()
+        // )
 
         // DEMO12 - UI tests with canopy
         testCase "create a duplicate book" (fun () ->
