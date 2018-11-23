@@ -1,24 +1,17 @@
-// --------------------------------------------------------------------------------------
-// FAKE build script
-// --------------------------------------------------------------------------------------
-
 #r @"packages/build/FAKE/tools/FakeLib.dll"
 
 open Fake
 open Fake.Git
-open Fake.AssemblyInfoFile
 open Fake.ReleaseNotesHelper
 open System
 open System.IO
 open Fake.Testing.Expecto
 
 
-let clientPath = "./src/Client" |> FullName
-
-let serverPath = "./src/Server/" |> FullName
-
-let serverTestsPath = "./test/ServerTests" |> FullName
-let clientTestsPath = "./test/UITests" |> FullName
+let clientPath = FullName "./src/Client"
+let serverPath = FullName "./src/Server/"
+let serverTestsPath = FullName "./test/ServerTests"
+let clientTestsPath = FullName "./test/UITests"
 
 let dotnetcliVersion = DotNetCli.GetDotNetSDKVersionFromGlobalJson()
 let mutable dotnetExePath = "dotnet"
@@ -72,7 +65,6 @@ let runFunc workingDir args =
     if result <> 0 then failwithf "func %s failed" args
 
 let nodeTool = platformTool "node" "node.exe"
-let npmTool = platformTool "npm" "npm.cmd"
 let yarnTool = platformTool "yarn" "yarn.cmd"
 
 do if not isWindows then
