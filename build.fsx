@@ -18,28 +18,28 @@ let mutable dotnetExePath = "dotnet"
 
 let deployDir = "./deploy"
 
-// Pattern specifying assemblies to be tested using expecto
 let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.exe"
+
 
 let dockerUser = getBuildParam "DockerUser"
 let dockerPassword = getBuildParam "DockerPassword"
 let dockerLoginServer = getBuildParam "DockerLoginServer"
 let dockerImageName = getBuildParam "DockerImageName"
 
-// --------------------------------------------------------------------------------------
-// END TODO: The rest of the file includes standard build steps
-// --------------------------------------------------------------------------------------
 
-let run' timeout cmd args dir =
-    if execProcess (fun info ->
-        info.FileName <- cmd
-        if not (String.IsNullOrWhiteSpace dir) then
-            info.WorkingDirectory <- dir
-        info.Arguments <- args
-    ) timeout |> not then
+
+
+let run cmd args dir =
+    let success =
+        execProcess (fun info ->
+            info.FileName <- cmd
+            if not (String.IsNullOrWhiteSpace dir) then
+                info.WorkingDirectory <- dir
+            info.Arguments <- args
+        ) System.TimeSpan.MaxValue 
+    if not success then
         failwithf "Error while running '%s' with args: %s" cmd args
 
-let run = run' System.TimeSpan.MaxValue
 
 let runDotnet workingDir args =
     let result =
@@ -47,7 +47,8 @@ let runDotnet workingDir args =
             info.FileName <- dotnetExePath
             info.WorkingDirectory <- workingDir
             info.Arguments <- args) TimeSpan.MaxValue
-    if result <> 0 then failwithf "dotnet %s failed" args
+    if result <> 0 then 
+        failwithf "dotnet %s failed" args
 
 let platformTool tool winTool =
     let tool = if isUnix then tool else winTool
@@ -111,15 +112,12 @@ Target "BuildServer" (fun _ ->
     runDotnet serverPath "build"
 )
 
-Target "BuildClientTests" (fun _ ->
+Target "BuildTests" (fun _ ->
     runDotnet clientTestsPath "build"
-)
-
-Target "BuildServerTests" (fun _ ->
     runDotnet serverTestsPath "build"
 )
 
-Target "InstallClient" (fun _ ->
+Target "NPMInstall" (fun _ ->
     printfn "Node version:"
     run nodeTool "--version" __SOURCE_DIRECTORY__
     printfn "Yarn version:"
@@ -136,7 +134,12 @@ Target "RunServerTests" (fun _ ->
     runDotnet serverTestsPath "run"
 )
 
-Target "RunClientTests" (fun _ ->
+FinalTarget "KillProcess" (fun _ ->
+    killProcess "dotnet"
+    killProcess "dotnet.exe"
+)
+
+Target "RunUITest" (fun _ ->
     ActivateFinalTarget "KillProcess"
 
     let serverProcess =
@@ -156,93 +159,13 @@ Target "RunClientTests" (fun _ ->
     serverProcess.Kill()
 )
 
-let getFunctionApp projectName =
-    match projectName with 
-    | "RecurringJobs.fsproj" ->
-        "bookstoretasks"
-    | _ ->
-        "bookstoretasks"
-
-let functionsPath = "./src/AzureFunctions/" |> FullName
-
-let azureFunctionsfilter = getBuildParamOrDefault "FunctionApp" ""
-
-let functionApps = 
-    [ "bookstoretasks" ]
-
-Target "PublishAzureFunctions" (fun _ ->
-    let deployDir = deployDir + "/functions"
-    CleanDir deployDir
-
-    for functionApp in functionApps do
-        if azureFunctionsfilter <> "" && functionApp <> azureFunctionsfilter then () else
-
-        let deployDir = deployDir + "/" + functionApp
-        CleanDir deployDir
-        
-        !! (functionsPath + "/*.json")
-        |> CopyFiles deployDir
-
-        let functionsToDeploy = 
-            !! (functionsPath + "/**/*.fsproj")
-            |> Seq.filter (fun proj ->
-                let fi = FileInfo proj
-                getFunctionApp fi.Name = functionApp)
-            |> Seq.toList
-        
-        let targetBinDir = deployDir + "/bin"
-        CleanDir targetBinDir
-
-        functionsToDeploy
-        |> Seq.iter (fun proj -> 
-            let fi = FileInfo proj
-            runDotnet fi.Directory.FullName (sprintf "publish -c Release %s" fi.Name)
-            let targetPath = deployDir + "/" + fi.Name.Replace(fi.Extension,"") + "/"
-            CleanDir targetPath
-            tracefn "  Target: %s" targetPath
-            
-            let mutable found = false
-            let allFiles x = found <- true; allFiles x
-
-            let publishDir = Path.Combine(fi.Directory.FullName,"bin/Release/netstandard2.0/publish")
-            let binDir = Path.Combine(publishDir,"bin")
-            if Directory.Exists binDir then
-                CopyDir targetBinDir binDir allFiles
-                !! (publishDir + "/*.deps.json")
-                |> CopyFiles targetBinDir
-            else
-                CopyDir targetBinDir publishDir allFiles
-
-            let functionJson = publishDir + "/**/function.json"
-            !! functionJson
-            |> Seq.iter (fun fileName ->
-                let fi = FileInfo fileName
-                let target = Path.Combine(targetPath,"..",fi.Directory.Name) 
-                CleanDir target
-                fileName |> CopyFile target)
-
-
-            if not found then failwithf "No files found for function %s" fi.Name
-
-            !! (fi.Directory.FullName + "/function.json")
-            |> CopyFiles targetPath
-        )
-
-        runFunc deployDir ("azure functionapp publish " + functionApp)
-)
-
 
 // --------------------------------------------------------------------------------------
-// Run the Website
+// Development mode
 
-let ipAddress = "localhost"
+let host = "localhost"
 let port = 8080
 let serverPort = 8085
-
-FinalTarget "KillProcess" (fun _ ->
-    killProcess "dotnet"
-    killProcess "dotnet.exe"
-)
 
 
 Target "Run" (fun _ ->
@@ -256,12 +179,17 @@ Target "Run" (fun _ ->
                 info.WorkingDirectory <- serverTestsPath
                 info.Arguments <- sprintf "watch msbuild /t:TestAndRun /p:DotNetHost=%s" dotnetExePath) TimeSpan.MaxValue
 
-        if result <> 0 then failwith "Website shut down." }
+        if result <> 0 then failwith "Website shut down."
+    }
 
-    let fablewatch = async { runDotnet clientPath "fable webpack-dev-server -- --config src/Client/webpack.config.js" }
+    let fablewatch = async { 
+        runDotnet clientPath "fable webpack-dev-server -- --config src/Client/webpack.config.js"
+    }
+
     let openBrowser = async {
         System.Threading.Thread.Sleep(5000)
-        Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" port) |> ignore }
+        Diagnostics.Process.Start("http://"+ host + sprintf ":%d" port) |> ignore
+    }
 
     Async.Parallel [| unitTestsWatch; fablewatch; openBrowser |]
     |> Async.RunSynchronously
@@ -280,12 +208,17 @@ Target "RunSSR" (fun _ ->
                 info.WorkingDirectory <- serverTestsPath
                 info.Arguments <- sprintf "watch msbuild /t:TestAndRun /p:DotNetHost=%s /p:DebugSSR=true" dotnetExePath) TimeSpan.MaxValue
 
-        if result <> 0 then failwith "Website shut down." }
+        if result <> 0 then failwith "Website shut down."
+    }
 
-    let fablewatch = async { runDotnet clientPath "fable webpack-cli -- --config src/Client/webpack.config.js -w" }
+    let fablewatch = async { 
+        runDotnet clientPath "fable webpack-cli -- --config src/Client/webpack.config.js -w"
+    }
+
     let openBrowser = async {
         System.Threading.Thread.Sleep(10000)
-        Diagnostics.Process.Start("http://"+ ipAddress + sprintf ":%d" serverPort) |> ignore }
+        Diagnostics.Process.Start("http://"+ host + sprintf ":%d" serverPort) |> ignore
+    }
 
     Async.Parallel [| unitTestsWatch; fablewatch; openBrowser |]
     |> Async.RunSynchronously
@@ -404,19 +337,98 @@ Target "Deploy" (fun _ ->
 )
 
 // -------------------------------------------------------------------------------------
+
+
+let getFunctionApp projectName =
+    match projectName with 
+    | "RecurringJobs.fsproj" ->
+        "bookstoretasks"
+    | _ ->
+        "bookstoretasks"
+
+let functionsPath = "./src/AzureFunctions/" |> FullName
+
+let azureFunctionsfilter = getBuildParamOrDefault "FunctionApp" ""
+
+let functionApps = 
+    [ "bookstoretasks" ]
+
+Target "PublishAzureFunctions" (fun _ ->
+    let deployDir = deployDir + "/functions"
+    CleanDir deployDir
+
+    for functionApp in functionApps do
+        if azureFunctionsfilter <> "" && functionApp <> azureFunctionsfilter then () else
+
+        let deployDir = deployDir + "/" + functionApp
+        CleanDir deployDir
+        
+        !! (functionsPath + "/*.json")
+        |> CopyFiles deployDir
+
+        let functionsToDeploy = 
+            !! (functionsPath + "/**/*.fsproj")
+            |> Seq.filter (fun proj ->
+                let fi = FileInfo proj
+                getFunctionApp fi.Name = functionApp)
+            |> Seq.toList
+        
+        let targetBinDir = deployDir + "/bin"
+        CleanDir targetBinDir
+
+        functionsToDeploy
+        |> Seq.iter (fun proj -> 
+            let fi = FileInfo proj
+            runDotnet fi.Directory.FullName (sprintf "publish -c Release %s" fi.Name)
+            let targetPath = deployDir + "/" + fi.Name.Replace(fi.Extension,"") + "/"
+            CleanDir targetPath
+            tracefn "  Target: %s" targetPath
+            
+            let mutable found = false
+            let allFiles x = found <- true; allFiles x
+
+            let publishDir = Path.Combine(fi.Directory.FullName,"bin/Release/netstandard2.0/publish")
+            let binDir = Path.Combine(publishDir,"bin")
+            if Directory.Exists binDir then
+                CopyDir targetBinDir binDir allFiles
+                !! (publishDir + "/*.deps.json")
+                |> CopyFiles targetBinDir
+            else
+                CopyDir targetBinDir publishDir allFiles
+
+            let functionJson = publishDir + "/**/function.json"
+            !! functionJson
+            |> Seq.iter (fun fileName ->
+                let fi = FileInfo fileName
+                let target = Path.Combine(targetPath,"..",fi.Directory.Name) 
+                CleanDir target
+                fileName |> CopyFile target)
+
+
+            if not found then failwithf "No files found for function %s" fi.Name
+
+            !! (fi.Directory.FullName + "/function.json")
+            |> CopyFiles targetPath
+        )
+
+        runFunc deployDir ("azure functionapp publish " + functionApp)
+)
+
+// -------------------------------------------------------------------------------------
+
+
 Target "Build" DoNothing
 Target "All" DoNothing
 
 "Clean"
   ==> "InstallDotNetCore"
-  ==> "InstallClient"
+  ==> "NPMInstall"
   ==> "SetReleaseNotes"
   ==> "BuildServer"
   ==> "BuildClient"
-  ==> "BuildServerTests"
+  ==> "BuildTests"
   ==> "RunServerTests"
-  ==> "BuildClientTests"
-  ==> "RunClientTests"
+  ==> "RunUITest"
   ==> "BundleClient"
   ==> "All"
   ==> "CreateDockerImage"
@@ -427,10 +439,10 @@ Target "All" DoNothing
 "BuildClient"
   ==> "Build"
 
-"InstallClient"
+"NPMInstall"
   ==> "Run"
 
-"InstallClient"
+"NPMInstall"
   ==> "RunSSR"
 
 "InstallDotNetCore"
