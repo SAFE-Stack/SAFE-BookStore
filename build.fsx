@@ -126,8 +126,7 @@ Target "NPMInstall" (fun _ ->
 )
 
 Target "BuildClient" (fun _ ->
-    runDotnet clientPath "restore"
-    runDotnet clientPath "fable webpack-cli -- --config src/Client/webpack.config.js -p"
+    run yarnTool "webpack --config src/Client/webpack.config.js -p" clientPath 
 )
 
 Target "RunServerTests" (fun _ ->
@@ -170,7 +169,6 @@ let serverPort = 8085
 
 Target "Run" (fun _ ->
     runDotnet serverTestsPath "restore"
-    runDotnet clientPath "restore"
 
     let unitTestsWatch = async {
         let result =
@@ -183,7 +181,7 @@ Target "Run" (fun _ ->
     }
 
     let fablewatch = async { 
-        runDotnet clientPath "fable webpack-dev-server -- --config src/Client/webpack.config.js"
+        run yarnTool "webpack-dev-server --config src/Client/webpack.config.js" clientPath 
     }
 
     let openBrowser = async {
@@ -199,7 +197,6 @@ Target "Run" (fun _ ->
 
 Target "RunSSR" (fun _ ->
     runDotnet serverTestsPath "restore"
-    runDotnet clientPath "restore"
 
     let unitTestsWatch = async {
         let result =
@@ -212,7 +209,7 @@ Target "RunSSR" (fun _ ->
     }
 
     let fablewatch = async { 
-        runDotnet clientPath "fable webpack-cli -- --config src/Client/webpack.config.js -w"
+        run yarnTool "webpack-dev-server --config src/Client/webpack.config.js" clientPath
     }
 
     let openBrowser = async {
