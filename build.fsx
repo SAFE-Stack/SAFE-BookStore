@@ -102,6 +102,12 @@ Target "Clean" (fun _ ->
 
 Target "InstallDotNetCore" (fun _ ->
     dotnetExePath <- DotNetCli.InstallDotNetSDK dotnetcliVersion
+    let fi = FileInfo dotnetExePath
+    let SEPARATOR = if isWindows then ";" else ":"
+    Environment.SetEnvironmentVariable(
+        "PATH",
+        fi.Directory.FullName + SEPARATOR + System.Environment.GetEnvironmentVariable "PATH",
+        EnvironmentVariableTarget.Process)
 )
 
 // --------------------------------------------------------------------------------------
