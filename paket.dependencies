@@ -28,8 +28,6 @@ nuget Thoth.Json
 nuget Microsoft.NET.Sdk.Functions
 nuget Microsoft.AspNetCore.Mvc
 
-clitool dotnet-fable
-
 group ServerTests
   source https://nuget.org/api/v2
   storage:none
