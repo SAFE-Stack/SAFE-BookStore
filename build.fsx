@@ -97,6 +97,9 @@ Target "Clean" (fun _ ->
     ++ "test/**/obj/*.nuspec"
     |> DeleteFiles
 
+    !! "./**/temp/db/*.json" 
+    |> DeleteFiles
+
     CleanDirs ["bin"; "temp"; "docs/output"; deployDir; Path.Combine(clientPath,"public/bundle")]
 )
 

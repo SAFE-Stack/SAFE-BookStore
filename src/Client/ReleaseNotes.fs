@@ -1,11 +1,11 @@
 module internal ReleaseNotes
 
-let Version = "0.11.0"
+let Version = "0.11.1"
 
 let IsPrerelease = false
 
 let Notes = """
-### 0.11.0 - 2018-12-01
+### 0.11.1 - 2018-12-01
 * Updated to Fable 2.1
 
 ### 0.10.18 - 2018-11-23
