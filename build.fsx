@@ -135,7 +135,6 @@ Target "NPMInstall" (fun _ ->
 )
 
 Target "BuildClient" (fun _ ->
-    runDotnet clientPath "restore"
     run yarnTool "webpack --config src/Client/webpack.config.js -p" clientPath 
 )
 
