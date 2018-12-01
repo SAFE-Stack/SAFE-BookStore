@@ -86,7 +86,7 @@ let tests =
 
             click ".btn"
             
-            sleep 5 // TODO: Add some visual clue so that we see success
+            sleep 15 // TODO: Add some visual clue so that we see success
 
             let titleElement = element bookTitle
             let authorElement = element bookAuthor
