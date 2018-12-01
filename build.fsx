@@ -177,8 +177,6 @@ let serverPort = 8085
 
 
 Target "Run" (fun _ ->
-    runDotnet serverTestsPath "restore"
-
     let unitTestsWatch = async {
         let result =
             ExecProcess (fun info ->
@@ -205,8 +203,6 @@ Target "Run" (fun _ ->
 
 
 Target "RunSSR" (fun _ ->
-    runDotnet serverTestsPath "restore"
-
     let unitTestsWatch = async {
         let result =
             ExecProcess (fun info ->
