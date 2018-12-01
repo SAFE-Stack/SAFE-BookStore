@@ -292,6 +292,9 @@ Target "BundleClient" (fun _ ->
 )
 
 Target "CreateDockerImage" (fun _ ->
+    !! "./**/temp/db/*.json" 
+    |> DeleteFiles
+
     if String.IsNullOrEmpty dockerUser then
         failwithf "docker username not given."
     if String.IsNullOrEmpty dockerImageName then
