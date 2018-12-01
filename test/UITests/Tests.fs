@@ -86,7 +86,10 @@ let tests =
 
             click ".btn"
             
-            sleep 15 // TODO: Add some visual clue so that we see success
+            sleep 5
+
+            let errorText = someElement "Your wishlist contains this book already."
+            Expect.isNone errorText "should not be a duplicate"
 
             let titleElement = element bookTitle
             let authorElement = element bookAuthor
