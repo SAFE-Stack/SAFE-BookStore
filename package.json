@@ -6,7 +6,7 @@
     "react": "16.6.3",
     "react-bootstrap": "0.32.4",
     "react-dom": "16.6.3",
-    "remotedev": "0.2.7",
+    "remotedev": "0.2.8",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
@@ -15,10 +15,10 @@
     "@babel/preset-env": "^7.1.6",
     "babel-loader": "^8.0.0",
     "concurrently": "4.1.0",
+    "fable-compiler": "2.1.2",
     "fable-loader": "2.1.0",
-    "fable-compiler": "2.1.1",
     "terser-webpack-plugin": "^1.1.0",
-    "webpack": "4.26.0",
+    "webpack": "4.26.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "3.1.10"
   },

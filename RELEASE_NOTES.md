@@ -1,3 +1,6 @@
+### 0.11.0 - 2018-12-01
+* Updated to Fable 2.1
+
 ### 0.10.18 - 2018-11-23
 * Updated to Fable 2.0
 * Available under https://safe-bookstore.azurewebsites.net/
