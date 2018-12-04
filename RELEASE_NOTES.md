@@ -1,3 +1,6 @@
+### 0.12.0 - 2018-12-04
+* Updated to ASP.NET 2.2
+
 ### 0.11.1 - 2018-12-01
 * Updated to Fable 2.1
 
