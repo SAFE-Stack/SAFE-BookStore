@@ -318,10 +318,11 @@ Target "TestDockerImage" (fun _ ->
     |> Expecto (fun p -> { p with Parallel = false } )
     |> ignore
 
-    ExecProcess (fun info ->
-        info.FileName <- "docker"
-        info.Arguments <- sprintf "stop %s" testImageName) TimeSpan.MaxValue
-    |> ignore 
+    let result =
+        ExecProcess (fun info ->
+            info.FileName <- "docker"
+            info.Arguments <- sprintf "stop %s" testImageName) TimeSpan.MaxValue
+    if result <> 0 then failwith "Docker stop failed"
 )
 
 Target "Deploy" (fun _ ->
