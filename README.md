@@ -27,7 +27,7 @@ This development stack is designed to be used with minimal tooling. An instance 
 
 Start the development mode with:
 
-    > build.cmd run // on windows
+    > ./build.cmd run // on windows
     $ ./build.sh run // on unix
 
 This command will call the target "Run" in **build.fsx**. This will start in parallel:
@@ -67,9 +67,9 @@ Let's say we want to call our new page *Tomato*
 
     let pageParser : Parser<Page->_,_> =
         oneOf
-            [ map Home (s "home")
+            [ map Page.Home (s "home")
               map Page.Login (s "login")
-              map WishList (s "wishlist")
+              map Page.WishList (s "wishlist")
               map Page.Tomato (s "tomato") ] // <- our page
     ```
 
@@ -81,16 +81,19 @@ Let's say we want to call our new page *Tomato*
             //...
             | TomatoModel
         ```
-    - viewPage function inside `src/Client/Shared.fs`
+    - `view` function inside `src/Client/Shared.fs`
         ```fsharp
-        let viewPage model dispatch =
-            match model.Page with
-            //...
-            | TomatoModel ->
-                [ words 60 "Tomatoes taste good!"]
+        let view model dispatch =
+            div [ Key "Application" ] [
+                //...
+                div [ centerStyle "column" ] [
+                    match model.PageModel with
+                    //...
+                    | TomatoModel ->
+                        yield div [] [ words 60 "Tomatos taste good"]
         ```    
 
-3. Adjust the `urlUpdate` function inside the `src/Client/App.fs`:
+3. Adjust the `urlUpdate` function inside `src/Client/App.fs`:
 
     - urlUpdate function
         ```fsharp
@@ -100,8 +103,23 @@ Let's say we want to call our new page *Tomato*
             | Some Page.Tomato ->
                 { model with PageModel = TomatoModel }, Cmd.none
         ```
+4. Fix up incomplete pattern matches in the `hydrateModel` function inside `src/Client/App.fs`:
 
-4. Try it out by navigating to `http://localhost:8080/tomato`
+    - hydrateModel function
+        ```fsharp
+        let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
+            //...
+            match page, model.PageModel with
+            //...
+            | Some Page.Tomato, TomatoModel -> model, Cmd.none
+            | _, HomePageModel 
+            //... 
+            | _, TomatoModel ->
+                // unknown page or page does not match model -> go to home page
+                { User = None; PageModel = HomePageModel }, Cmd.none
+        ```
+
+5. Try it out by navigating to `http://localhost:8080/tomato`
 
 You should see `Tomatoes taste good!`
 
@@ -122,23 +140,35 @@ let inline private clientView onLogout (model:Model) =
 1. Add a new .fs file to the pages folder: `src/Client/pages/Tomato.fs`.
 Add the `src/Client/pages/Tomato.fs` to your `Client.fsproj` and `Server.fsproj` files and move it above `Shared.fs`.
 
-    <Compile Include="../Client/pages/Tomato.fs" Watch="false" />
-    <Compile Include="../Client/Shared.fs" Watch="false" />
+    - `Client.fsproj`
+    ```xml
+    <Compile Include="pages/Login.fs" />
+    <Compile Include="pages/Tomato.fs" /> <!-- <- our page -->
+    <Compile Include="Shared.fs" />  
+    ```
+    - `Server.fsproj`
+    ```xml
+    <Compile Include="../Client/pages/Login.fs" />
+    <Compile Include="../Client/pages/Tomato.fs" />  <!-- <- our page -->
+    <Compile Include="../Client/Shared.fs" />
+    ```
 
 2. Place following code in the `src/Client/pages/Tomato.fs`:
 
     ```fsharp
     module Client.Tomato
-    open Style
+
+    open Client.Styles
+
     let view() =
-        [ words 60 "Tomatoes taste VERY good!"]
+        words 60 "Tomatoes taste VERY good!"
     ```
 
-3. Remove old 'view' code from the `viewPage` function in `src/Client/Shared.fs` and replace it
+3. Remove old 'view' code from the `view` function in `src/Client/Shared.fs` and replace it
     with:
     ```fsharp
     | TomatoModel ->
-        Tomato.view()
+        Tomato.view ()
     ```
 
 #### Define a model for the page that holds the state
@@ -147,18 +177,23 @@ Add the `src/Client/pages/Tomato.fs` to your `Client.fsproj` and `Server.fsproj`
 
     ```fsharp
     module Client.Tomato
-    open Style
+
+    open Client.Styles
+    open Fable.Helpers.React
 
     type Model = {
         Color:string
     }
+
     let init() =
         { Color = "red" }
+        
     let view model =
-        [
-            words 60 "Tomatoes taste VERY good!"
-            words 20 (sprintf "The color of a tomato is %s"  model.Color)
-        ]
+        div []
+            [
+                div [] [words 60 "Tomatoes taste VERY good!"]
+                div [] [words 20 (sprintf "The color of a tomato is %s" model.Color)]
+            ]        
     ```
 
 2. Adjust the `PageModel` discriminated union in `Shared.fs`
@@ -178,12 +213,18 @@ Add the `src/Client/pages/Tomato.fs` to your `Client.fsproj` and `Server.fsproj`
         { model with PageModel = TomatoModel m }, Cmd.none
     ```
 
+4. `hydrateModel` needs to explicitly ignore the payload of the TomatoModel case in its pattern match
+    ```fsharp
+        //...
+        | _, TomatoModel _ ->
+    ```
 
-4. The `viewPage` function should call the `view` function of the the Tomato module and pass in the page model if it is a `TomatoModel`
+5. The `view` function in `Shared.fs` should call the `view` function of the the Tomato module and pass in the page model if it is a `TomatoModel`
     ```fsharp
     | TomatoModel m ->
-        Tomato.view m
+        yield Tomato.view m
     ```
+
 #### Make it interactive (update the state)
 
 1. Add a new message DU in `src/Client/pages/Tomato.fs`
@@ -209,30 +250,29 @@ Add the `src/Client/pages/Tomato.fs` to your `Client.fsproj` and `Server.fsproj`
     | TomatoMsg msg, _ -> model, Cmd.none // in case we receive a delayed message originating from the previous page
     ```
 
-4. Change the `Tomato.view` function (and add in required packages):
+4. Change the `Tomato.view` function (and open another namespace):
 
     ```fsharp
-
-    open Fable.Helpers.React
     open Fable.Helpers.React.Props
     //...
     let view model dispatch =
-        [
-            words 60 "Tomatoes taste VERY good!"
-            words 20 (sprintf "The color of a tomato is %s" model.Color)
-            br []
-            button [
-                ClassName ("btn btn-primary")
-                OnClick (fun _ -> dispatch (ChangeColor "green"))]
-                [ str "No, my tomatoes are green!" ]
-        ]
+        div []
+            [
+                words 60 "Tomatoes taste VERY good!"
+                words 20 (sprintf "The color of a tomato is %s" model.Color)
+                br []
+                button [
+                    ClassName ("btn btn-primary")
+                    OnClick (fun _ -> dispatch (ChangeColor "green"))]
+                    [ str "No, my tomatoes are green!" ]
+            ]    
     ```
 
-5. Edit `Shared.viewPage` and pass the `dispatch` function to `Tomato.view`, remapping `Tomato.Msg` onto `App.Msg`
+5. Edit `Shared.view` and pass the `dispatch` function to `Tomato.view`, remapping `Tomato.Msg` onto `App.Msg`
 
     ```fsharp
     | TomatoModel m ->
-       Tomato.view m (TomatoMsg >> dispatch)
+        yield Tomato.view m (TomatoMsg >> dispatch)
     ```
 
 ## Debugging
