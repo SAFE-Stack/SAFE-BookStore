@@ -11,6 +11,10 @@ You can see it running on Microsoft Azure at https://safebookstore.azurewebsites
 [![Build status](https://ci.appveyor.com/api/projects/status/ak9gjjjp32ens0e2?svg=true)](https://ci.appveyor.com/project/isaacabraham/safe-bookstore)
 [![Build Status](https://travis-ci.org/SAFE-Stack/SAFE-BookStore.svg?branch=master)](https://travis-ci.org/SAFE-Stack/SAFE-BookStore)
 
+## Note!
+
+If you are looking to create your *own* SAFE application, we recommend that you use the official [SAFE template](https://safe-stack.github.io/docs/template-overview/) which provides a clean, flexible and regularly updated template dotnet designed for starting brand-new applications quickly and easily.
+
 ## Requirements
 
 - [Mono](http://www.mono-project.com/) on MacOS/Linux
