@@ -1,4 +1,4 @@
-/// Functions for managing the Suave web server.
+/// Functions for managing the Giraffe web server.
 module ServerCode.WebServer
 
 open ServerCode
