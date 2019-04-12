@@ -1,12 +1,11 @@
 module Client.WishList
 
-open Fable.PowerPack
-open Fable.Helpers.React
-open Fable.Helpers.React.Props
+open Fable.React
+open Fable.React.Props
 open Fable.Core.JsInterop
 
 open Elmish
-open Fetch.Fetch_types
+open Fetch.Types
 open ServerCode
 open ServerCode.Domain
 open Client.Styles
@@ -18,7 +17,7 @@ open Thoth.Json.Net
 #endif
 
 // DEMO02 - Models
-type Model = { 
+type Model = {
     // Domain data
     WishList : WishList
     // Subcomponent model
@@ -26,7 +25,7 @@ type Model = {
     // Additional view data
     Token : string
     ResetTime : DateTime option
-    ErrorMsg : string option 
+    ErrorMsg : string option
 }
 
 /// The different messages processed when interacting with the wish list
@@ -79,7 +78,7 @@ let postWishList (token,wishList) =
         let! txt = res.text()
         return Decode.Auto.unsafeFromString<WishList> txt
     }
-    
+
 
 let init (user:UserData) =
     let submodel,cmd = NewBook.init()
@@ -90,8 +89,8 @@ let init (user:UserData) =
       ErrorMsg = None },
         Cmd.batch [
             Cmd.map NewBookMsg cmd
-            Cmd.ofPromise getWishList user.Token FetchedWishList FetchError
-            Cmd.ofPromise getResetTime user.Token FetchedResetTime FetchError ]
+            Cmd.OfPromise.either getWishList user.Token FetchedWishList FetchError
+            Cmd.OfPromise.either getResetTime user.Token FetchedResetTime FetchError ]
 
 let update (msg:Msg) model : Model * Cmd<Msg> =
     match msg with
@@ -106,7 +105,7 @@ let update (msg:Msg) model : Model * Cmd<Msg> =
         let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
         { model with
             WishList = wishList },
-                Cmd.ofPromise postWishList (model.Token,wishList) FetchedWishList FetchError
+                Cmd.OfPromise.either postWishList (model.Token,wishList) FetchedWishList FetchError
 
     | NewBookMsg msg ->
         match msg with
@@ -115,19 +114,19 @@ let update (msg:Msg) model : Model * Cmd<Msg> =
             | Some err ->
                 { model with ErrorMsg = Some err }, Cmd.none
             | None ->
-                let wishList = 
-                    { model.WishList 
-                        with 
-                            Books = 
-                                (model.NewBookModel.NewBook :: model.WishList.Books) 
+                let wishList =
+                    { model.WishList
+                        with
+                            Books =
+                                (model.NewBookModel.NewBook :: model.WishList.Books)
                                 |> List.sortBy (fun b -> b.Title) }
 
                 let submodel,cmd = NewBook.init()
                 { model with WishList = wishList; NewBookModel = submodel; ErrorMsg = None },
                     Cmd.batch [
                         Cmd.map NewBookMsg cmd
-                        Cmd.ofPromise postWishList (model.Token,wishList) FetchedWishList FetchError
-                    ]            
+                        Cmd.OfPromise.either postWishList (model.Token,wishList) FetchedWishList FetchError
+                    ]
         | _ ->
             let submodel,cmd = NewBook.update msg model.NewBookModel
             { model with NewBookModel = submodel}, Cmd.map NewBookMsg cmd
@@ -173,6 +172,6 @@ let view (model:Model) (dispatch: Msg -> unit) =
                     |> ofList
             ]
         ]
-        NewBook.view model.NewBookModel (dispatch << NewBookMsg)        
+        NewBook.view model.NewBookModel (dispatch << NewBookMsg)
         errorBox model.ErrorMsg
     ]

@@ -2,7 +2,6 @@ module Client.App
 
 open Fable.Core.JsInterop
 open Fable.Import
-open Fable.PowerPack
 open Elmish
 open Elmish.React
 open Elmish.Browser.Navigation
@@ -11,9 +10,10 @@ open Client.Shared
 open Client.Pages
 open ServerCode.Domain
 open Thoth.Json
+open Fable.Core
 
 let handleNotFound (model: Model) =
-    Browser.console.error("Error parsing url: " + Browser.window.location.href)
+    JS.console.error("Error parsing url: " + Browser.Dom.window.location.href)
     ( model, Navigation.modifyUrl (toPath Page.Home) )
 
 /// The navigation logic of the application given a page identity parsed from the .../#info
@@ -33,17 +33,16 @@ let urlUpdate (result:Page option) (model: Model) =
             let m, cmd = WishList.init user
             { model with PageModel = WishListModel m }, Cmd.map WishListMsg cmd
         | None ->
-            model, Cmd.ofMsg (Logout ())
+            model, Cmd.OfFunc.result (Logout ())
 
     | Some Page.Home ->
         { model with PageModel = HomePageModel }, Cmd.none
 
 let loadUser () : UserData option =
     let userDecoder = Decode.Auto.generateDecoder<UserData>()
-    match BrowserLocalStorage.load userDecoder "user" with
+    match LocalStorage.load userDecoder "user" with
     | Ok user -> Some user
     | Error _ -> None
-
 
 let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
     // The page was rendered server-side and now react client-side kicks in.
@@ -60,7 +59,7 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
 
 let init page =
     // was the page rendered server-side?
-    let stateJson: string option = !!Browser.window?__INIT_MODEL__
+    let stateJson: string option = !!Browser.Dom.window?__INIT_MODEL__
 
     match stateJson with
     | Some json ->
@@ -85,7 +84,7 @@ let update msg model =
         match msg with
         | Login.Msg.LoginSuccess newUser ->
             // DEMO07a - Msg intercepted
-            model, Cmd.ofFunc (BrowserLocalStorage.save "user") newUser (fun _ -> LoggedIn newUser) StorageFailure
+            model, Cmd.OfFunc.either (LocalStorage.save "user") newUser (fun _ -> LoggedIn newUser) StorageFailure
         | _ ->
             let m, cmd = Login.update msg m
 
@@ -114,15 +113,15 @@ let update msg model =
         Navigation.newUrl (toPath Page.Home)
 
     | Logout(), _ ->
-        model, Cmd.ofFunc BrowserLocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
+        model, Cmd.OfFunc.either LocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure
 
 
 open Elmish.Debug
 
 let withReact =
-    if (!!Browser.window?__INIT_MODEL__)
+    if (!!Browser.Dom.window?__INIT_MODEL__)
     then Program.withReactHydrate
-    else Program.withReact
+    else Program.withReactBatched
 
 
 // App

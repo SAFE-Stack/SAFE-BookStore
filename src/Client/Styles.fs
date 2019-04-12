@@ -1,53 +1,48 @@
 module Client.Styles
 
-open Fable.Helpers.React.Props
+open Fable.React.Props
 open System
 open Fable.Core.JsInterop
 open Fable.Import
-open Fable.PowerPack
 open Elmish.Browser.Navigation
+open Fable.React
 
-module R = Fable.Helpers.React
 
-
-let goToUrl (e: React.MouseEvent) =
+let goToUrl (e: Browser.Types.MouseEvent) =
     e.preventDefault()
     let href = !!e.target?href
     Navigation.newUrl href |> List.map (fun f -> f ignore) |> ignore
 
 let viewLink page description =
-    R.a [ Style [ Padding "0 20px" ]
-          Href (Pages.toPath page)
-          OnClick goToUrl]
-        [ R.str description]
+    a [ Style [ Padding "0 20px" ]
+        Href (Pages.toPath page)
+        OnClick goToUrl ]
+        [ str description ]
 
 let centerStyle direction =
-    Style [ Display "flex"
+    Style [ Display Display.Flex
             FlexDirection direction
-            AlignItems "center"
+            AlignItems AlignItems.Center
             JustifyContent "center"
             Padding "20px 0"
     ]
 
 let words size message =
-    R.span [ Style [ FontSize (size |> sprintf "%dpx") ] ] [ R.str message ]
+    span [ Style [ FontSize (size |> sprintf "%dpx") ] ] [ str message ]
 
 let buttonLink cssClass onClick elements =
-    R.a [ ClassName cssClass
-          OnClick (fun _ -> onClick())
-          OnTouchStart (fun _ -> onClick())
-          Style [ Cursor "pointer" ] ] elements
+    a [ ClassName cssClass
+        OnClick (fun _ -> onClick())
+        OnTouchStart (fun _ -> onClick())
+        Style [ Cursor "pointer" ] ] elements
 
 let onEnter msg dispatch =
     function
-    | (ev:React.KeyboardEvent) when ev.keyCode = Keyboard.Codes.enter ->
+    | (ev:Browser.Types.KeyboardEvent) when ev.keyCode = 13. ->
         ev.preventDefault()
         dispatch msg
     | _ -> ()
     |> OnKeyDown
-
-
-open Fable.Helpers.React
 
 let errorBox msg =
     div [] [
@@ -58,10 +53,10 @@ let errorBox msg =
 
 let validatedTextBox (onChange: string -> unit) key placeholder errorText text =
     let status = if String.IsNullOrEmpty text then "" else "has-success"
-    R.div [ClassName ("form-group has-feedback " + status)] [
-         yield R.div [ClassName "input-group"] [
-             yield R.span [ClassName "input-group-addon"] [R.span [ClassName "glyphicon glyphicon glyphicon-pencil"] [] ]
-             yield R.input [
+    div [ClassName ("form-group has-feedback " + status)] [
+         yield div [ClassName "input-group"] [
+             yield span [ClassName "input-group-addon"] [span [ClassName "glyphicon glyphicon glyphicon-pencil"] [] ]
+             yield input [
                     Key key
                     Name key
                     HTMLAttr.Type "text"
@@ -70,11 +65,10 @@ let validatedTextBox (onChange: string -> unit) key placeholder errorText text =
                     Placeholder placeholder
                     OnChange (fun ev -> onChange ev.Value)]
              match errorText with
-             | Some _e -> yield R.span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
+             | Some _e -> yield span [ClassName "glyphicon glyphicon-remove form-control-feedback"] []
              | _ -> ()
          ]
          match errorText with
-         | Some e -> yield R.p [ClassName "text-danger"][str e]
+         | Some e -> yield p [ClassName "text-danger"][str e]
          | _ -> ()
     ]
-

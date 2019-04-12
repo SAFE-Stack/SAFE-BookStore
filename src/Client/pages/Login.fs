@@ -1,13 +1,12 @@
 module Client.Login
 
 open Elmish
-open Fable.Helpers.React
-open Fable.Helpers.React.Props
+open Fable.React
+open Fable.React.Props
 open ServerCode.Domain
 open System
 open Fable.Core.JsInterop
-open Fable.PowerPack
-open Fable.PowerPack.Fetch.Fetch_types
+open Fetch.Types
 open ServerCode
 open Client.Styles
 #if FABLE_COMPILER
@@ -35,7 +34,7 @@ let authUser (login:Login) = promise {
 
     let body = Encode.Auto.toString(0, login)
 
-    let props = [ 
+    let props = [
         RequestProperties.Method HttpMethod.POST
         Fetch.requestHeaders [ HttpRequestHeaders.ContentType "application/json" ]
         RequestProperties.Body !^body
@@ -53,16 +52,16 @@ let authUser (login:Login) = promise {
 
 let init (user:UserData option) =
     let userName = user |> Option.map (fun u -> u.UserName) |> Option.defaultValue ""
-            
+
     { Login = { UserName = userName; Password = ""; PasswordId = Guid.NewGuid() }
       Running = false
       ErrorMsg = None }, Cmd.none
-    
+
 let update (msg:Msg) model : Model*Cmd<Msg> =
     match msg with
     | LoginSuccess _ ->
         // DEMO07 - some messages are handled one level above
-        model, Cmd.none 
+        model, Cmd.none
 
     | SetUserName name ->
         { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
@@ -72,22 +71,22 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
 
     | LogInClicked ->
         // DEMO08 - javascript promises
-        { model with Running = true }, 
-            Cmd.ofPromise authUser model.Login LoginSuccess AuthError
+        { model with Running = true },
+            Cmd.OfPromise.either authUser model.Login LoginSuccess AuthError
 
     | AuthError exn ->
         { model with Running = false; ErrorMsg = Some exn.Message }, Cmd.none
 
 let view model (dispatch: Msg -> unit) =
-    let buttonActive = 
-        if String.IsNullOrEmpty model.Login.UserName || 
+    let buttonActive =
+        if String.IsNullOrEmpty model.Login.UserName ||
            String.IsNullOrEmpty model.Login.Password ||
            model.Running
-        then 
+        then
             "btn-disabled"
         else
             "btn-primary"
-    
+
     div [ Key "SignIn"; ClassName "signInBox" ] [
         h3 [ ClassName "text-center" ] [ str "Log in with 'test' / 'test'."]
 
@@ -125,10 +124,10 @@ let view model (dispatch: Msg -> unit) =
         ]
 
         div [ ClassName "text-center" ] [
-            button [ 
+            button [
                 ClassName ("btn " + buttonActive)
-                OnClick (fun _ -> dispatch LogInClicked) ] [ 
-                    str "Log In" 
+                OnClick (fun _ -> dispatch LogInClicked) ] [
+                    str "Log In"
             ]
         ]
     ]
