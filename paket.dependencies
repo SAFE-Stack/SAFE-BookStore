@@ -1,6 +1,5 @@
 source https://nuget.org/api/v2
 storage:none
-framework: netstandard2.0
 
 nuget FSharp.Core redirects: force
 nuget Giraffe
@@ -28,8 +27,15 @@ nuget Microsoft.Azure.WebJobs
 nuget Microsoft.Azure.WebJobs.Extensions
 nuget Thoth.Json prerelease
 
-nuget Microsoft.NET.Sdk.Functions
-nuget Microsoft.AspNetCore.Mvc
+group AzureFunctions
+  source https://nuget.org/api/v2
+  storage:none
+  nuget FSharp.Core redirects: force
+  nuget Microsoft.NET.Sdk.Functions
+  nuget Newtonsoft.Json
+  nuget WindowsAzure.Storage
+  nuget TaskBuilder.fs
+  nuget Microsoft.AspNetCore.Mvc
 
 group ServerTests
   source https://nuget.org/api/v2
