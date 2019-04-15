@@ -11,5 +11,5 @@ let load (decoder: Decoder<'T>) key: Result<'T,string> =
 let delete key =
     Browser.WebStorage.localStorage.removeItem(key)
 
-let save key (data: 'T) =
+let inline save key (data: 'T) =
     Browser.WebStorage.localStorage.setItem(key, Encode.Auto.toString(0, data))

@@ -63,7 +63,7 @@ let getResetTime token =
     }
 
 
-let postWishList (token,wishList) =
+let postWishList (token,wishList:WishList) =
     promise {
         let url = ServerUrls.APIUrls.WishList
         let body = Encode.Auto.toString(0, wishList)
