@@ -7,4 +7,7 @@ Fable.Elmish.HMR
 Fable.Core
 Thoth.Json
 Thoth.Json.Net
-Fable.PowerPack
+Fable.Fetch
+Fable.Promise
+Fable.Browser.Dom
+Fable.Browser.WebStorage

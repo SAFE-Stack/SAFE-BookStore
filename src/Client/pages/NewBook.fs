@@ -1,7 +1,7 @@
 module Client.NewBook
 
-open Fable.Helpers.React
-open Fable.Helpers.React.Props
+open Fable.React
+open Fable.React.Props
 open Elmish
 open ServerCode.Domain
 open System
@@ -10,7 +10,7 @@ open Client.Styles
 
 type Model =
   { NewBook : Book
-    NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/SAFE-Stack/SAFE-BookStore/issues/107#issuecomment-301312224    
+    NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/SAFE-Stack/SAFE-BookStore/issues/107#issuecomment-301312224
     TitleErrorText : string option
     AuthorsErrorText : string option
     LinkErrorText : string option }
@@ -58,9 +58,9 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
                 TitleErrorText = model.NewBook.ValidateTitle()
                 AuthorsErrorText = model.NewBook.ValidateAuthors()
                 LinkErrorText = model.NewBook.ValidateLink() }
-        validated, 
+        validated,
             if model.NewBook.Validate() then
-                Cmd.ofMsg AddBook
+                Cmd.OfFunc.result AddBook
             else
                 Cmd.none
 

@@ -95,7 +95,7 @@ Let's say we want to call our new page *Tomato*
                     //...
                     | TomatoModel ->
                         yield div [] [ words 60 "Tomatos taste good"]
-        ```    
+        ```
 
 3. Adjust the `urlUpdate` function inside `src/Client/App.fs`:
 
@@ -116,8 +116,8 @@ Let's say we want to call our new page *Tomato*
             match page, model.PageModel with
             //...
             | Some Page.Tomato, TomatoModel -> model, Cmd.none
-            | _, HomePageModel 
-            //... 
+            | _, HomePageModel
+            //...
             | _, TomatoModel ->
                 // unknown page or page does not match model -> go to home page
                 { User = None; PageModel = HomePageModel }, Cmd.none
@@ -148,7 +148,7 @@ Add the `src/Client/pages/Tomato.fs` to your `Client.fsproj` and `Server.fsproj`
     ```xml
     <Compile Include="pages/Login.fs" />
     <Compile Include="pages/Tomato.fs" /> <!-- <- our page -->
-    <Compile Include="Shared.fs" />  
+    <Compile Include="Shared.fs" />
     ```
     - `Server.fsproj`
     ```xml
@@ -183,7 +183,7 @@ Add the `src/Client/pages/Tomato.fs` to your `Client.fsproj` and `Server.fsproj`
     module Client.Tomato
 
     open Client.Styles
-    open Fable.Helpers.React
+    open Fable.React
 
     type Model = {
         Color:string
@@ -191,13 +191,13 @@ Add the `src/Client/pages/Tomato.fs` to your `Client.fsproj` and `Server.fsproj`
 
     let init() =
         { Color = "red" }
-        
+
     let view model =
         div []
             [
                 div [] [words 60 "Tomatoes taste VERY good!"]
                 div [] [words 20 (sprintf "The color of a tomato is %s" model.Color)]
-            ]        
+            ]
     ```
 
 2. Adjust the `PageModel` discriminated union in `Shared.fs`
@@ -257,7 +257,7 @@ Add the `src/Client/pages/Tomato.fs` to your `Client.fsproj` and `Server.fsproj`
 4. Change the `Tomato.view` function (and open another namespace):
 
     ```fsharp
-    open Fable.Helpers.React.Props
+    open Fable.React.Props
     //...
     let view model dispatch =
         div []
@@ -269,7 +269,7 @@ Add the `src/Client/pages/Tomato.fs` to your `Client.fsproj` and `Server.fsproj`
                     ClassName ("btn btn-primary")
                     OnClick (fun _ -> dispatch (ChangeColor "green"))]
                     [ str "No, my tomatoes are green!" ]
-            ]    
+            ]
     ```
 
 5. Edit `Shared.view` and pass the `dispatch` function to `Tomato.view`, remapping `Tomato.Msg` onto `App.Msg`
@@ -301,7 +301,7 @@ In development mode the server is automatically restarted whenever a file in `sr
 
 ### Freya on .NET Core
 
-The SAFE stack does not force you to use Giraffe/Saturn. Check out the [freya branch](https://github.com/SAFE-Stack/SAFE-BookStore/tree/freya) for an alternative implementation of the backend. 
+The SAFE stack does not force you to use Giraffe/Saturn. Check out the [freya branch](https://github.com/SAFE-Stack/SAFE-BookStore/tree/freya) for an alternative implementation of the backend.
 
 If you are new to Freya, you can find an introduction at:
 - [Freya website](https://docs.freya.io/en/latest/tutorials/getting-started-netcore.html)

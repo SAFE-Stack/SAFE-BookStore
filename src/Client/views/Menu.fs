@@ -1,6 +1,6 @@
 module Client.Menu
 
-open Fable.Helpers.React
+open Fable.React
 open Client.Styles
 open Client.Pages
 open ServerCode.Domain

@@ -10,23 +10,32 @@ nuget Microsoft.AspNetCore.WebSockets
 nuget Microsoft.AspNetCore.WebSockets.Server
 nuget System.Net.NetworkInformation
 nuget jose-jwt
-nuget Thoth.Json.Net
-nuget Thoth.Json.Giraffe
+nuget Thoth.Json.Net prerelease
+nuget Thoth.Json.Giraffe prerelease
 
-nuget Fable.Core
-nuget Fable.React
-nuget Fable.Elmish
-nuget Fable.Elmish.React
-nuget Fable.Elmish.Browser
-nuget Fable.Elmish.Debugger
-nuget Fable.Elmish.HMR
-nuget Fable.PowerPack
+nuget Fable.Core prerelease
+nuget Fable.Browser.Dom prerelease
+nuget Fable.Browser.WebStorage prerelease
+nuget Fable.Fetch prerelease
+nuget Fable.Promise prerelease
+nuget Fable.React prerelease
+nuget Fable.Elmish prerelease
+nuget Fable.Elmish.React prerelease
+nuget Fable.Elmish.Debugger prerelease
+nuget Fable.Elmish.HMR prerelease
 nuget Microsoft.Azure.WebJobs
 nuget Microsoft.Azure.WebJobs.Extensions
-nuget Thoth.Json
+nuget Thoth.Json prerelease
 
-nuget Microsoft.NET.Sdk.Functions
-nuget Microsoft.AspNetCore.Mvc
+group AzureFunctions
+  source https://nuget.org/api/v2
+  storage:none
+  nuget FSharp.Core redirects: force
+  nuget Microsoft.NET.Sdk.Functions
+  nuget Newtonsoft.Json
+  nuget WindowsAzure.Storage
+  nuget TaskBuilder.fs
+  nuget Microsoft.AspNetCore.Mvc
 
 group ServerTests
   source https://nuget.org/api/v2
