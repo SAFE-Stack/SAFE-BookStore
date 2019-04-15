@@ -147,7 +147,8 @@ let bookComponent { book = book; removeBook = removeBook } =
         td [] [ buttonLink "" removeBook [ str "Remove" ] ]
     ]
 
-let inline BookComponent props = (ofFunction bookComponent) props []
+let BookComponent =
+    FunctionComponent.Of bookComponent
 
 // DEMO04 - React views - hot reloading
 let view (model:Model) (dispatch: Msg -> unit) =

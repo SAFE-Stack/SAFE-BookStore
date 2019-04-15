@@ -121,7 +121,7 @@ open Elmish.Debug
 let withReact =
     if (!!Browser.Dom.window?__INIT_MODEL__)
     then Program.withReactHydrate
-    else Program.withReactBatched
+    else Program.withReactSynchronous
 
 
 // App
