@@ -2,7 +2,7 @@ module ServerCode.Templates
 
 open Client.Shared
 open Giraffe.GiraffeViewEngine
-open Fable.Helpers.ReactServer
+open Fable.ReactServer
 open Thoth.Json.Net
 
 // DEMO10 - server side react
