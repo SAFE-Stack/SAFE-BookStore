@@ -13,12 +13,12 @@ nuget jose-jwt
 nuget Thoth.Json.Net prerelease
 nuget Thoth.Json.Giraffe prerelease
 
-nuget Fable.Core prerelease
-nuget Fable.Browser.Dom prerelease
-nuget Fable.Browser.WebStorage prerelease
-nuget Fable.Fetch prerelease
-nuget Fable.Promise prerelease
-nuget Fable.React prerelease
+nuget Fable.Core 
+nuget Fable.Browser.Dom 
+nuget Fable.Browser.WebStorage
+nuget Fable.Fetch
+nuget Fable.Promise
+nuget Fable.React
 nuget Fable.Elmish prerelease
 nuget Fable.Elmish.React prerelease
 nuget Fable.Elmish.Debugger prerelease

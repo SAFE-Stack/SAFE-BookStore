@@ -7,7 +7,6 @@ open Fable.Import
 open Elmish.Browser.Navigation
 open Fable.React
 
-
 let goToUrl (e: Browser.Types.MouseEvent) =
     e.preventDefault()
     let href = !!e.target?href
@@ -20,9 +19,9 @@ let viewLink page description =
         [ str description ]
 
 let centerStyle direction =
-    Style [ Display Display.Flex
+    Style [ Display DisplayOptions.Flex
             FlexDirection direction
-            AlignItems AlignItems.Center
+            AlignItems AlignItemsOptions.Center
             JustifyContent "center"
             Padding "20px 0"
     ]
