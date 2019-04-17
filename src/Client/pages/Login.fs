@@ -9,6 +9,7 @@ open Fable.Core.JsInterop
 open Fetch.Types
 open ServerCode
 open Client.Styles
+open Client.Utils
 #if FABLE_COMPILER
 open Thoth.Json
 #else
@@ -77,7 +78,12 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
     | AuthError exn ->
         { model with Running = false; ErrorMsg = Some exn.Message }, Cmd.none
 
-let view model (dispatch: Msg -> unit) =
+type Props = {
+    Dispatch: Msg -> unit
+    Model: Model
+}
+
+let view = elmishView "Login" <| fun { Dispatch = dispatch; Model = model } ->
     let buttonActive =
         if String.IsNullOrEmpty model.Login.UserName ||
            String.IsNullOrEmpty model.Login.Password ||
