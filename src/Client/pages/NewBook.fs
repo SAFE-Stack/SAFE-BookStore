@@ -6,7 +6,7 @@ open Elmish
 open ServerCode.Domain
 open System
 open Client.Styles
-
+open Client.Utils
 
 type Model =
   { NewBook : Book
@@ -67,7 +67,12 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
     | AddBook ->
         model, Cmd.none
 
-let view (model:Model) dispatch =
+type Props = {
+    Model: Model
+    Dispatch: Msg -> unit
+}
+
+let view = elmishView "NewBook" <| fun { Model = model; Dispatch = dispatch } ->
     div [] [
         h4 [] [str "New Book"]
 
@@ -88,3 +93,4 @@ let view (model:Model) dispatch =
             ]
         ]
     ]
+

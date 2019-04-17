@@ -42,6 +42,6 @@ let view model dispatch =
             | LoginModel m ->
                 yield Login.view { Model = m; Dispatch = (LoginMsg >> dispatch) }
             | WishListModel m ->
-                yield WishList.view m (WishListMsg >> dispatch)
+                yield WishList.view { Model = m; Dispatch = (WishListMsg >> dispatch) }
         ]
     ]

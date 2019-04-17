@@ -9,6 +9,7 @@ open Fetch.Types
 open ServerCode
 open ServerCode.Domain
 open Client.Styles
+open Client.Utils
 open System
 #if FABLE_COMPILER
 open Thoth.Json
@@ -147,32 +148,44 @@ let bookComponent { book = book; removeBook = removeBook } =
         td [] [ buttonLink "" removeBook [ str "Remove" ] ]
     ]
 
-let BookComponent =
-    FunctionComponent.Of bookComponent
+let BookComponent = elmishView "Book" bookComponent
+
+type BooksProps = {
+    WishList: WishList
+    Dispatch: Msg -> unit
+}
+
+let booksView = elmishView "Books" <| fun { WishList = wishList; Dispatch = dispatch } ->
+    table [ClassName "table table-striped table-hover"] [
+        thead [] [
+            tr [] [
+                th [] [str "Title"]
+                th [] [str "Authors"]
+            ]
+        ]
+        tbody [] [
+            wishList.Books
+                |> List.map (fun book ->
+                   BookComponent {
+                        key = book.Title + book.Authors
+                        book = book
+                        removeBook = (fun _ -> dispatch (RemoveBook book))
+                })
+                |> ofList
+        ]
+    ]
+
+type WishListProps = {
+    Model: Model
+    Dispatch: Msg -> unit
+}
 
 // DEMO04 - React views - hot reloading
-let view (model:Model) (dispatch: Msg -> unit) =
+let view = elmishView "WishList" <| fun { Model = model; Dispatch = dispatch } ->
     let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
     div [ Key "WishList" ] [
         h4 [] [ str "Wishlist for " ; str model.WishList.UserName; str time ]
-        table [ClassName "table table-striped table-hover"] [
-            thead [] [
-                tr [] [
-                    th [] [str "Title"]
-                    th [] [str "Authors"]
-                ]
-            ]
-            tbody [] [
-                model.WishList.Books
-                    |> List.map (fun book ->
-                       BookComponent {
-                            key = book.Title + book.Authors
-                            book = book
-                            removeBook = (fun _ -> dispatch (RemoveBook book))
-                    })
-                    |> ofList
-            ]
-        ]
-        NewBook.view model.NewBookModel (dispatch << NewBookMsg)
+        booksView { WishList = model.WishList; Dispatch = dispatch }
+        NewBook.view { Model = model.NewBookModel; Dispatch = (dispatch << NewBookMsg) }
         errorBox model.ErrorMsg
     ]
