@@ -79,11 +79,11 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
         { model with Running = false; ErrorMsg = Some exn.Message }, Cmd.none
 
 type Props = {
-    Dispatch: Msg -> unit
     Model: Model
+    Dispatch: Msg -> unit
 }
 
-let view = elmishView "Login" <| fun { Dispatch = dispatch; Model = model } ->
+let view = elmishView "Login" <| fun { Model = model; Dispatch = dispatch } ->
     let buttonActive =
         if String.IsNullOrEmpty model.Login.UserName ||
            String.IsNullOrEmpty model.Login.Password ||

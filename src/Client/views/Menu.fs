@@ -9,17 +9,17 @@ open ServerCode.Domain
 type Model = UserData option
 
 type Props = {
-    OnLogout: unit -> unit
     Model: Model
+    OnLogout: unit -> unit
 }
 
-let view = elmishView "Menu" <| fun p ->
+let view = elmishView "Menu" <| fun ({ OnLogout = onLogout; Model = model }) ->
     div [ centerStyle "row" ] [
         yield viewLink Page.Home "Home"
-        if p.Model <> None then
+        if model <> None then
             yield viewLink Page.WishList "Wishlist"
-        if p.Model = None then
+        if model = None then
             yield viewLink Page.Login "Login"
         else
-            yield buttonLink "logout" p.OnLogout [ str "Logout" ]
+            yield buttonLink "logout" onLogout [ str "Logout" ]
     ]
