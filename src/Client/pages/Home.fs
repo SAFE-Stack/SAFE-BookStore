@@ -4,8 +4,9 @@ open Fable.React
 open Fable.React.Props
 open Client.Styles
 open Client.Pages
+open Client.Utils
 
-let view () =
+let view = elmishView "Home" <| fun () ->
     div [Key "Menu"; centerStyle "column"] [
         viewLink Page.Login "Please login into the SAFE-Stack sample app"
         br []

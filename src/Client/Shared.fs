@@ -32,7 +32,7 @@ open Client.Styles
 // DEMO05 - the whole world put into a single view
 let view model dispatch =
     div [ Key "Application" ] [
-        Menu.view (Logout >> dispatch) model.User
+        Menu.view { OnLogout = (Logout >> dispatch); Model = model.User }
         hr []
 
         div [ centerStyle "column" ] [
