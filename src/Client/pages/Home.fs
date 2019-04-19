@@ -4,6 +4,7 @@ open Fable.React
 open Fable.React.Props
 open Client.Styles
 open Client.Pages
+open Client.Utils
 
 let view () =
     div [Key "Menu"; centerStyle "column"] [

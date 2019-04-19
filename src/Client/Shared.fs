@@ -32,7 +32,7 @@ open Client.Styles
 // DEMO05 - the whole world put into a single view
 let view model dispatch =
     div [ Key "Application" ] [
-        Menu.view (Logout >> dispatch) model.User
+        Menu.view { Model = model.User; OnLogout = (Logout >> dispatch) }
         hr []
 
         div [ centerStyle "column" ] [
@@ -40,8 +40,8 @@ let view model dispatch =
             | HomePageModel ->
                 yield Home.view ()
             | LoginModel m ->
-                yield Login.view m (LoginMsg >> dispatch)
+                yield Login.view { Model = m; Dispatch = (LoginMsg >> dispatch) }
             | WishListModel m ->
-                yield WishList.view m (WishListMsg >> dispatch)
+                yield WishList.view { Model = m; Dispatch = (WishListMsg >> dispatch) }
         ]
     ]

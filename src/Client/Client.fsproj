@@ -9,6 +9,7 @@
     <Compile Include="LocalStorage.fs" />
     <Compile Include="Pages.fs" />
     <Compile Include="Styles.fs" />
+    <Compile Include="views/Utils.fs" />
     <Compile Include="views/Menu.fs" />
     <Compile Include="pages/Home.fs" />
     <Compile Include="pages/NewBook.fs" />
