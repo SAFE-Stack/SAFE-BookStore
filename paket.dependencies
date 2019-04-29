@@ -19,10 +19,10 @@ nuget Fable.Browser.WebStorage
 nuget Fable.Fetch
 nuget Fable.Promise
 nuget Fable.React
-nuget Fable.Elmish prerelease
-nuget Fable.Elmish.React prerelease
-nuget Fable.Elmish.Debugger prerelease
-nuget Fable.Elmish.HMR prerelease
+nuget Fable.Elmish
+nuget Fable.Elmish.React
+nuget Fable.Elmish.Debugger
+nuget Fable.Elmish.HMR
 nuget Microsoft.Azure.WebJobs
 nuget Microsoft.Azure.WebJobs.Extensions
 nuget Thoth.Json prerelease

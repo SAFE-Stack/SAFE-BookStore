@@ -4,13 +4,13 @@ open Fable.Core.JsInterop
 open Fable.Import
 open Elmish
 open Elmish.React
-open Elmish.Browser.Navigation
 open Elmish.HMR
 open Client.Shared
 open Client.Pages
 open ServerCode.Domain
 open Thoth.Json
 open Fable.Core
+open Elmish.Navigation
 
 let handleNotFound (model: Model) =
     JS.console.error("Error parsing url: " + Browser.Dom.window.location.href)

@@ -6,8 +6,8 @@
     <Compile Include="ReleaseNotes.fs" />
     <Compile Include="../Server/Shared/Domain.fs" />
     <Compile Include="../Server/Shared/ServerUrls.fs" />
-    <Compile Include="LocalStorage.fs" />
     <Compile Include="Pages.fs" />
+    <Compile Include="LocalStorage.fs" />
     <Compile Include="Styles.fs" />
     <Compile Include="views/Utils.fs" />
     <Compile Include="views/Menu.fs" />
