@@ -4,7 +4,7 @@ open Fable.React.Props
 open System
 open Fable.Core.JsInterop
 open Fable.Import
-open Elmish.Browser.Navigation
+open Elmish.Navigation
 open Fable.React
 
 let goToUrl (e: Browser.Types.MouseEvent) =
