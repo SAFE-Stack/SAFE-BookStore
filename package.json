@@ -13,13 +13,13 @@
     "@babel/core": "^7.4.4",
     "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
-    "babel-loader": "^8.0.5",
+    "babel-loader": "^8.0.6",
     "concurrently": "4.1.0",
-    "fable-compiler": "2.3.5",
-    "fable-loader": "2.1.6",
+    "fable-compiler": "2.3.8",
+    "fable-loader": "2.1.7",
     "terser-webpack-plugin": "^1.2.3",
-    "webpack": "4.30.0",
-    "webpack-cli": "^3.3.1",
+    "webpack": "4.31.0",
+    "webpack-cli": "^3.3.2",
     "webpack-dev-server": "3.3.1"
   },
   "scripts": {
