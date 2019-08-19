@@ -22,15 +22,19 @@ let getDatabase databaseType startupTime =
     | DatabaseType.AzureStorage connection ->
         //Storage.WebJobs.startWebJobs connection
         { new IDatabaseFunctions with
-            member __.LoadWishList key = Storage.AzureTable.getWishListFromDB connection key
-            member __.SaveWishList wishList = Storage.AzureTable.saveWishListToDB connection wishList
+            member __.LoadWishList key = getWishListFromDB connection key
+            member __.SaveWishList wishList = saveWishListToDB connection wishList
             member __.GetLastResetTime () = task {
-                let! resetTime = Storage.AzureTable.getLastResetTime connection
-                return resetTime |> Option.defaultValue startupTime } }
+                let! resetTime = getLastResetTime connection
+                return
+                    resetTime
+                    |> Option.defaultValue startupTime
+            }
+        }
 
     | DatabaseType.FileSystem ->
         { new IDatabaseFunctions with
-            member __.LoadWishList key = task { return Storage.FileSystem.getWishListFromDB key }
-            member __.SaveWishList wishList = task { return Storage.FileSystem.saveWishListToDB wishList }
-            member __.GetLastResetTime () = task { return startupTime } }
-
+            member __.LoadWishList key = Task.FromResult (Storage.FileSystem.getWishListFromDB key)
+            member __.SaveWishList wishList = Task.FromResult (Storage.FileSystem.saveWishListToDB wishList)
+            member __.GetLastResetTime () = Task.FromResult startupTime
+        }

@@ -39,7 +39,7 @@ type Book =
     member this.ValidateAuthors() =
         if String.IsNullOrWhiteSpace this.Authors then Some "No author was entered" else
         None
-        
+
     member this.ValidateLink() =
         if String.IsNullOrWhiteSpace this.Link then Some "No link was entered" else
         None
@@ -68,7 +68,7 @@ type WishList =
             None
 
     member this.Verify() =
-        this.Books 
+        this.Books
         |> List.forall (fun book -> book.Validate())
 
 type WishListResetDetails =

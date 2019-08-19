@@ -8,7 +8,7 @@ let home: HttpHandler = fun _ ctx ->
     task {
         let model: Model = {
             User = None
-            PageModel = PageModel.HomePageModel
+            PageModel = HomePageModel
         }
         return! ctx.WriteHtmlViewAsync (Templates.index (Some model))
     }
@@ -19,7 +19,7 @@ let login: HttpHandler = fun _ ctx ->
             User = None
             PageModel =
                 let m,_ = Client.Login.init None
-                PageModel.LoginModel m
+                LoginModel m
         }
         return! ctx.WriteHtmlViewAsync (Templates.index (Some model))
     }

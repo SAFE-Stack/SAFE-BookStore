@@ -75,7 +75,7 @@ let saveWishListToDB connectionString wishList = task {
 
     let! booksTable = getBooksTable connectionString
     let! _ = booksTable.ExecuteBatchAsync batch
-    () 
+    ()
 }
 
 module StateManagement =

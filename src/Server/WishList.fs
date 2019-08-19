@@ -31,7 +31,7 @@ let postWishList (saveWishListToDB: WishList -> Task<unit>) (token : UserRights)
                     do! saveWishListToDB wishList
                     return! ctx.WriteJsonAsync wishList
                 else
-                    return! RequestErrors.BAD_REQUEST "WishList is not valid" next ctx    
+                    return! RequestErrors.BAD_REQUEST "WishList is not valid" next ctx
         }
 
 /// Retrieve the last time the wish list was reset.
