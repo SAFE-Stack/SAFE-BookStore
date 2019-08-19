@@ -1,3 +1,6 @@
+### 0.13.0 - 2019-08-19
+* Updates to SSR
+
 ### 0.12.3 - 2018-12-04
 * Updated to ASP.NET 2.2
 
