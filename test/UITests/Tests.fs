@@ -14,9 +14,9 @@ let startApp () =
     waitForElement(".elmish-app")
 
 let login () =
-    let logout = someElement logoutLinkSelector 
+    let logout = someElement logoutLinkSelector
     if logout.IsSome then
-        click logoutLinkSelector 
+        click logoutLinkSelector
         waitForElement loginLinkSelector
 
     click loginLinkSelector
@@ -30,7 +30,7 @@ let login () =
 let logout () =
     click logoutLinkSelector
 
-let tests = 
+let tests =
     testList "client tests" [
         testCase "sound check - server is online" (fun () ->
             startApp ()
@@ -85,7 +85,7 @@ let tests =
             "input[name=Link]" << bookLink
 
             click ".btn"
-            
+
             sleep 5
 
             let errorText = someElement "Your wishlist contains this book already."
@@ -137,7 +137,7 @@ let tests =
             click ".btn"
 
             element "Your wishlist contains this book already." |> ignore
-            
+
             logout()
 
         )

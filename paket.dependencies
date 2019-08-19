@@ -13,8 +13,8 @@ nuget jose-jwt
 nuget Thoth.Json.Net prerelease
 nuget Thoth.Json.Giraffe prerelease
 
-nuget Fable.Core 
-nuget Fable.Browser.Dom 
+nuget Fable.Core
+nuget Fable.Browser.Dom
 nuget Fable.Browser.WebStorage
 nuget Fable.Fetch
 nuget Fable.Promise
@@ -45,9 +45,8 @@ group ServerTests
 
 group UITests
   source https://nuget.org/api/v2
-  framework >= net461
   nuget FSharp.Core redirects: force
-  nuget Canopy 2.0.1
+  nuget Canopy
   nuget Expecto
   nuget phantomjs
   nuget Selenium.WebDriver.ChromeDriver = 2.36
