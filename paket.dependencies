@@ -2,16 +2,12 @@ source https://nuget.org/api/v2
 storage:none
 
 nuget FSharp.Core redirects: force
-nuget Giraffe
-nuget Giraffe.TokenRouter
-nuget Microsoft.AspNetCore.StaticFiles
-nuget Microsoft.AspNetCore
+nuget Saturn
 nuget Microsoft.AspNetCore.WebSockets
 nuget Microsoft.AspNetCore.WebSockets.Server
 nuget System.Net.NetworkInformation
-nuget jose-jwt
-nuget Thoth.Json.Net prerelease
-nuget Thoth.Json.Giraffe prerelease
+nuget Thoth.Json.Net
+nuget Thoth.Json.Giraffe
 
 nuget Fable.Core
 nuget Fable.Browser.Dom
@@ -25,7 +21,7 @@ nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.HMR
 nuget Microsoft.Azure.WebJobs
 nuget Microsoft.Azure.WebJobs.Extensions
-nuget Thoth.Json prerelease
+nuget Thoth.Json
 
 group AzureFunctions
   source https://nuget.org/api/v2

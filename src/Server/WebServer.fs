@@ -4,8 +4,8 @@ module ServerCode.WebServer
 open ServerCode
 open ServerCode.ServerUrls
 open Giraffe
-open Giraffe.TokenRouter
-open RequestErrors
+open Saturn.Router
+open Saturn.Pipeline
 open Microsoft.AspNetCore.Http
 
 /// Start the web server and connect to database
@@ -14,24 +14,18 @@ let webApp databaseType =
 
     let db = Database.getDatabase databaseType startupTime
     let apiPathPrefix = PathString("/api")
-    let notfound: HttpHandler =
-        fun next ctx ->
-            if ctx.Request.Path.StartsWithSegments(apiPathPrefix) then
-                NOT_FOUND "Page not found" next ctx
-            else
-                Pages.notfound next ctx
 
-    router notfound [
-        GET [
-            route PageUrls.Home Pages.home
-            route PageUrls.Login Pages.login
 
-            route APIUrls.WishList (Auth.requiresJwtTokenForAPI (WishList.getWishList db.LoadWishList))
-            route APIUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
-        ]
+    let secured = router {
+        pipe_through jwtAuthentication
+        get ServerUrls.WishList (WishList.getWishList db.LoadWishList)
+        get ServerUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
+        post ServerUrls.WishList (WishList.postWishList db.SaveWishList)
+    }
 
-        POST [
-            route APIUrls.Login Auth.login
-            route APIUrls.WishList (Auth.requiresJwtTokenForAPI (WishList.postWishList db.SaveWishList))
-        ]
-    ]
+    router {
+        error_handler (NOT_FOUND "Page not found")
+        get "/" (htmlFile "index.html")
+        post ServerUrls.Login Auth.login
+        forward "" secured
+    }

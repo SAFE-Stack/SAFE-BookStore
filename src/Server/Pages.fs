@@ -2,7 +2,7 @@ module ServerCode.Pages
 
 open Giraffe
 open Client.Shared
-open FSharp.Control.Tasks.V2
+open FSharp.Control.Tasks.ContextInsensitive
 
 let home: HttpHandler = fun _ ctx ->
     task {
