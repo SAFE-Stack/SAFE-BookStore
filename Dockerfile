@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.2.0-runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
 COPY /deploy .
 WORKDIR .
 EXPOSE 8085
