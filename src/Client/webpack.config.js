@@ -90,6 +90,7 @@ module.exports = {
         hot: true,
         inline: true,
         historyApiFallback: true,
+        port: 8089,
         contentBase: CONFIG.contentBase
     },
     // - fable-loader: transforms F# into JS

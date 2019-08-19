@@ -35,7 +35,7 @@ Start the development mode with:
     $ ./build.sh run // on unix
 
 This command will call the target "Run" in **build.fsx**. This will start in parallel:
-- **dotnet fable webpack-dev-server** in [src/Client](src/Client) (note: the Webpack development server will serve files on http://localhost:8080)
+- **dotnet fable webpack-dev-server** in [src/Client](src/Client) (note: the Webpack development server will serve files on http://localhost:8089)
 - **dotnet watch msbuild /t:TestAndRun** in [test/serverTests](src/ServerTests) to run unit tests and then server (note: Giraffe is launched on port **8085**)
 
 You can now edit files in `src/Server` or `src/Client` and recompile + browser refresh will be triggered automatically.
@@ -123,7 +123,7 @@ Let's say we want to call our new page *Tomato*
                 { User = None; PageModel = HomePageModel }, Cmd.none
         ```
 
-5. Try it out by navigating to `http://localhost:8080/tomato`
+5. Try it out by navigating to `http://localhost:8089/tomato`
 
 You should see `Tomatoes taste good!`
 
@@ -444,7 +444,7 @@ With the steps above the website is only using local file storage. If you want t
 
 ### Google Cloud AppEngine
 
-The repository comes with a sample `app.yaml` file which is used to deploy to Google Cloud AppEngine using the custom flex environment. At the moment it seems like the application must run on port `8080` and that is set as a environment variable in the `app.yaml` file. When you run the deploy command it will first look for the `app.yaml` file and then look for the `Dockerfile` for what should deploy. The container that is deploy is exactly that same as the one that should have been deployed to Azure, but it is only set up to deploy from local to Google Cloud at the moment, and not from CI server to Google Cloud.
+The repository comes with a sample `app.yaml` file which is used to deploy to Google Cloud AppEngine using the custom flex environment. At the moment it seems like the application must run on port `8089` and that is set as a environment variable in the `app.yaml` file. When you run the deploy command it will first look for the `app.yaml` file and then look for the `Dockerfile` for what should deploy. The container that is deploy is exactly that same as the one that should have been deployed to Azure, but it is only set up to deploy from local to Google Cloud at the moment, and not from CI server to Google Cloud.
 
 Before you can execute the deploy command you also need to build the solution with the `Publish` target, that is so the container image will get the compiled binaries when the container build is executed via the deploy command.
 

@@ -36,7 +36,7 @@ let run cmd args dir =
             if not (String.IsNullOrWhiteSpace dir) then
                 info.WorkingDirectory <- dir
             info.Arguments <- args
-        ) System.TimeSpan.MaxValue 
+        ) System.TimeSpan.MaxValue
     if not success then
         failwithf "Error while running '%s' with args: %s" cmd args
 
@@ -47,7 +47,7 @@ let runDotnet workingDir args =
             info.FileName <- dotnetExePath
             info.WorkingDirectory <- workingDir
             info.Arguments <- args) TimeSpan.MaxValue
-    if result <> 0 then 
+    if result <> 0 then
         failwithf "dotnet %s failed" args
 
 let platformTool tool winTool =
@@ -97,7 +97,7 @@ Target "Clean" (fun _ ->
     ++ "test/**/obj/*.nuspec"
     |> DeleteFiles
 
-    !! "./**/temp/db/*.json" 
+    !! "./**/temp/db/*.json"
     |> DeleteFiles
 
     CleanDirs ["bin"; "temp"; "docs/output"; deployDir; Path.Combine(clientPath,"public/bundle")]
@@ -135,7 +135,7 @@ Target "NPMInstall" (fun _ ->
 )
 
 Target "BuildClient" (fun _ ->
-    run yarnTool "webpack --config src/Client/webpack.config.js -p" clientPath 
+    run yarnTool "webpack --config src/Client/webpack.config.js -p" clientPath
 )
 
 Target "RunServerTests" (fun _ ->
@@ -172,7 +172,7 @@ Target "RunUITest" (fun _ ->
 // Development mode
 
 let host = "localhost"
-let port = 8080
+let port = 8089
 let serverPort = 8085
 
 
@@ -187,8 +187,8 @@ Target "Run" (fun _ ->
         if result <> 0 then failwith "Website shut down."
     }
 
-    let fablewatch = async { 
-        run yarnTool "webpack-dev-server --config src/Client/webpack.config.js" clientPath 
+    let fablewatch = async {
+        run yarnTool "webpack-dev-server --config src/Client/webpack.config.js" clientPath
     }
 
     let openBrowser = async {
@@ -213,7 +213,7 @@ Target "RunSSR" (fun _ ->
         if result <> 0 then failwith "Website shut down."
     }
 
-    let fablewatch = async { 
+    let fablewatch = async {
         run yarnTool "webpack-dev-server --config src/Client/webpack.config.js" clientPath
     }
 
@@ -287,7 +287,7 @@ Target "BundleClient" (fun _ ->
 )
 
 Target "CreateDockerImage" (fun _ ->
-    !! "./**/temp/db/*.json" 
+    !! "./**/temp/db/*.json"
     |> DeleteFiles
 
     if String.IsNullOrEmpty dockerUser then
@@ -345,7 +345,7 @@ Target "Deploy" (fun _ ->
 
 
 let getFunctionApp projectName =
-    match projectName with 
+    match projectName with
     | "RecurringJobs.fsproj" ->
         "bookstoretasks"
     | _ ->
@@ -355,7 +355,7 @@ let functionsPath = "./src/AzureFunctions/" |> FullName
 
 let azureFunctionsfilter = getBuildParamOrDefault "FunctionApp" ""
 
-let functionApps = 
+let functionApps =
     [ "bookstoretasks" ]
 
 Target "PublishAzureFunctions" (fun _ ->
@@ -367,28 +367,28 @@ Target "PublishAzureFunctions" (fun _ ->
 
         let deployDir = deployDir + "/" + functionApp
         CleanDir deployDir
-        
+
         !! (functionsPath + "/*.json")
         |> CopyFiles deployDir
 
-        let functionsToDeploy = 
+        let functionsToDeploy =
             !! (functionsPath + "/**/*.fsproj")
             |> Seq.filter (fun proj ->
                 let fi = FileInfo proj
                 getFunctionApp fi.Name = functionApp)
             |> Seq.toList
-        
+
         let targetBinDir = deployDir + "/bin"
         CleanDir targetBinDir
 
         functionsToDeploy
-        |> Seq.iter (fun proj -> 
+        |> Seq.iter (fun proj ->
             let fi = FileInfo proj
             runDotnet fi.Directory.FullName (sprintf "publish -c Release %s" fi.Name)
             let targetPath = deployDir + "/" + fi.Name.Replace(fi.Extension,"") + "/"
             CleanDir targetPath
             tracefn "  Target: %s" targetPath
-            
+
             let mutable found = false
             let allFiles x = found <- true; allFiles x
 
@@ -405,7 +405,7 @@ Target "PublishAzureFunctions" (fun _ ->
             !! functionJson
             |> Seq.iter (fun fileName ->
                 let fi = FileInfo fileName
-                let target = Path.Combine(targetPath,"..",fi.Directory.Name) 
+                let target = Path.Combine(targetPath,"..",fi.Directory.Name)
                 CleanDir target
                 fileName |> CopyFile target)
 

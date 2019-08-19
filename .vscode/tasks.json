@@ -40,19 +40,19 @@
                 "args": [
                     "/C",
                     "start",
-                    "http://localhost:8080/"
+                    "http://localhost:8089/"
                 ]
             },
             "osx": {
                 "command": "open",
                 "args": [
-                    "http://localhost:8080/"
+                    "http://localhost:8089/"
                 ]
             },
             "linux": {
                 "command": "xdg-open",
                 "args": [
-                    "http://localhost:8080/"
+                    "http://localhost:8089/"
                 ]
             }
         },
