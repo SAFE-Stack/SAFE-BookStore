@@ -25,4 +25,5 @@ let login: HttpHandler = fun _ ctx ->
     }
 
 let notfound: HttpHandler = fun _ ctx ->
+    ctx.SetStatusCode 404
     ctx.WriteHtmlViewAsync (Templates.index None)
