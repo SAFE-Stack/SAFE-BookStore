@@ -7,7 +7,6 @@ type PageModel =
     | LoginModel of Login.Model
     | WishListModel of WishList.Model
 
-// DEMO03 - The complete app state
 type Model = {
     User : UserData option
     PageModel : PageModel
@@ -29,7 +28,6 @@ open Fable.React
 open Fable.React.Props
 open Client.Styles
 
-// DEMO05 - the whole world put into a single view
 let view model dispatch =
     div [ Key "Application" ] [
         Menu.view { Model = model.User; OnLogout = (Logout >> dispatch) }

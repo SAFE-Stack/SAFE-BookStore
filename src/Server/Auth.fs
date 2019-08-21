@@ -18,7 +18,6 @@ let createUserData (login : Domain.Login) =
     } : Domain.UserData
 
 /// Authenticates a user and returns a token in the HTTP body.
-// DEMO08a - tasks on the server
 let login (next : HttpFunc) (ctx : HttpContext) = task {
     let! login = ctx.BindJsonAsync<Domain.Login>()
     return!

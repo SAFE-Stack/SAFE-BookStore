@@ -17,7 +17,6 @@ open Thoth.Json
 open Thoth.Json.Net
 #endif
 
-// DEMO02 - Models
 type Model = {
     // Domain data
     WishList : WishList
@@ -180,7 +179,6 @@ type WishListProps = {
     Dispatch: Msg -> unit
 }
 
-// DEMO04 - React views - hot reloading
 let view = elmishView "WishList" <| fun { Model = model; Dispatch = dispatch } ->
     let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
     div [ Key "WishList" ] [

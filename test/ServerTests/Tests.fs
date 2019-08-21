@@ -6,13 +6,12 @@ open ServerCode.Storage
 
 let defaults = ServerCode.Storage.Defaults.defaultWishList "test"
 
-// DEMO11 - Unittests in watch mode
 let wishListTests =
     testList "Wishlist" [
         testCase "default contains F# mastering book" (fun _ ->
             Expect.isNonEmpty defaults.Books "Default Books list should have at least one item"
             Expect.isTrue
-                (defaults.Books |> Seq.exists (fun b -> b.Title = "Mastering F#")) 
+                (defaults.Books |> Seq.exists (fun b -> b.Title = "Mastering F#"))
                  "A good book should have been advertised"
         )
 

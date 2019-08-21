@@ -5,7 +5,7 @@ open Giraffe.GiraffeViewEngine
 open Fable.ReactServer
 open Thoth.Json.Net
 
-// DEMO10 - server side react
+/// Server side react
 let index (model: Model option) =
     let jsonState, htmlStr =
         match model with

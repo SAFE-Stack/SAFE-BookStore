@@ -115,7 +115,6 @@ let tests =
             logout ()
         )
 
-        // DEMO12 - UI tests with canopy
         testCase "create a duplicate book" (fun () ->
             startApp ()
             login ()

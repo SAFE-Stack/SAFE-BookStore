@@ -21,7 +21,6 @@ type Model = {
     Running : bool
     ErrorMsg : string option }
 
-// DEMO06 - messages everywhere - easy debugging
 type Msg =
     | LoginSuccess of UserData
     | SetUserName of string
@@ -42,7 +41,6 @@ let authUser (login:Login) = promise {
     ]
 
     try
-        // DEMO09 - using javascript APIs
         let! res = Fetch.fetch ServerUrls.APIUrls.Login props
         let! txt = res.text()
         return Decode.Auto.unsafeFromString<UserData> txt
@@ -61,7 +59,6 @@ let init (user:UserData option) =
 let update (msg:Msg) model : Model*Cmd<Msg> =
     match msg with
     | LoginSuccess _ ->
-        // DEMO07 - some messages are handled one level above
         model, Cmd.none
 
     | SetUserName name ->
@@ -71,7 +68,6 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
         { model with Login = { model.Login with Password = pw }}, Cmd.none
 
     | LogInClicked ->
-        // DEMO08 - javascript promises
         { model with Running = true },
             Cmd.OfPromise.either authUser model.Login LoginSuccess AuthError
 

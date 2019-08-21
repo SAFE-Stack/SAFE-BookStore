@@ -21,7 +21,6 @@ type UserData =
     Token : JWT }
 
 /// The data for each book in /api/wishlist
-// DEMO01 - Domain model and validation
 type Book =
     { Title : string
       Authors : string
