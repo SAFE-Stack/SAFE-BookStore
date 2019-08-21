@@ -50,9 +50,9 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
     // In this case we just deserialize the model from the json and don't need to to anything special.
     let model: Model = Decode.Auto.unsafeFromString(json)
     match page, model.PageModel with
-    | Some Page.Home, HomePageModel -> model, Cmd.none
-    | Some Page.Login, LoginModel _ -> model, Cmd.none
-    | Some Page.WishList, WishListModel _ -> model, Cmd.none
+    | Some Page.Home, HomePageModel -> model, Cmd.ofMsg AppHydrated
+    | Some Page.Login, LoginModel _ -> model, Cmd.ofMsg AppHydrated
+    | Some Page.WishList, WishListModel _ -> model, Cmd.ofMsg AppHydrated
     | _, HomePageModel
     | _, LoginModel _
     | _, WishListModel _ ->
@@ -70,7 +70,7 @@ let init page =
     | Some json ->
         // SSR -> hydrate the model
         let model, cmd = hydrateModel json page
-        { model with User = loadUser(); RenderedOnServer = false }, cmd
+        { model with User = loadUser() }, cmd
     | None ->
         // no SSR -> show home page
         let model =
@@ -105,6 +105,9 @@ let update msg model =
 
     | WishListMsg _, _ ->
         model, Cmd.none
+
+    | AppHydrated , _ ->
+        { model with RenderedOnServer = false }, Cmd.none
 
     | LoggedIn newUser, _ ->
         let nextPage = Page.WishList

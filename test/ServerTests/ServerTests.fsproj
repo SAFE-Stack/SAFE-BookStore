@@ -11,12 +11,5 @@
     <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-  <PropertyGroup>
-    <DotNetHost Condition="'$(DotNetHost)' == ''">dotnet</DotNetHost>
-  </PropertyGroup>
-  <Target Name="TestAndRun">
-    <Exec Command="$(DotNetHost) run" WorkingDirectory=".\" />
-    <Exec Command="$(DotNetHost) run" WorkingDirectory="..\..\src\Server\" />
-  </Target>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

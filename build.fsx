@@ -27,8 +27,6 @@ let dockerLoginServer = getBuildParam "DockerLoginServer"
 let dockerImageName = getBuildParam "DockerImageName"
 
 
-
-
 let run cmd args dir =
     let success =
         execProcess (fun info ->
@@ -145,6 +143,7 @@ Target "RunServerTests" (fun _ ->
 FinalTarget "KillProcess" (fun _ ->
     killProcess "dotnet"
     killProcess "dotnet.exe"
+    killProcess "docker-proxy"
 )
 
 Target "RunUITest" (fun _ ->
@@ -177,12 +176,22 @@ let serverPort = 8085
 
 
 Target "Run" (fun _ ->
+    let serverWatch = async {
+        let result =
+            ExecProcess (fun info ->
+                info.FileName <- dotnetExePath
+                info.WorkingDirectory <- serverPath
+                info.Arguments <- "watch run") TimeSpan.MaxValue
+
+        if result <> 0 then failwith "Website shut down."
+    }
+
     let unitTestsWatch = async {
         let result =
             ExecProcess (fun info ->
                 info.FileName <- dotnetExePath
                 info.WorkingDirectory <- serverTestsPath
-                info.Arguments <- sprintf "watch msbuild /t:TestAndRun /p:DotNetHost=%s" dotnetExePath) TimeSpan.MaxValue
+                info.Arguments <- "watch run") TimeSpan.MaxValue
 
         if result <> 0 then failwith "Website shut down."
     }
@@ -196,37 +205,10 @@ Target "Run" (fun _ ->
         Diagnostics.Process.Start("http://"+ host + sprintf ":%d" port) |> ignore
     }
 
-    Async.Parallel [| unitTestsWatch; fablewatch; openBrowser |]
+    Async.Parallel [| unitTestsWatch; fablewatch; serverWatch; openBrowser |]
     |> Async.RunSynchronously
     |> ignore
 )
-
-
-Target "RunSSR" (fun _ ->
-    let unitTestsWatch = async {
-        let result =
-            ExecProcess (fun info ->
-                info.FileName <- dotnetExePath
-                info.WorkingDirectory <- serverTestsPath
-                info.Arguments <- sprintf "watch msbuild /t:TestAndRun /p:DotNetHost=%s /p:DebugSSR=true" dotnetExePath) TimeSpan.MaxValue
-
-        if result <> 0 then failwith "Website shut down."
-    }
-
-    let fablewatch = async {
-        run yarnTool "webpack-dev-server --config src/Client/webpack.config.js" clientPath
-    }
-
-    let openBrowser = async {
-        System.Threading.Thread.Sleep(10000)
-        Diagnostics.Process.Start("http://"+ host + sprintf ":%d" serverPort) |> ignore
-    }
-
-    Async.Parallel [| unitTestsWatch; fablewatch; openBrowser |]
-    |> Async.RunSynchronously
-    |> ignore
-)
-
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
@@ -446,9 +428,6 @@ Target "All" DoNothing
 
 "NPMInstall"
   ==> "Run"
-
-"NPMInstall"
-  ==> "RunSSR"
 
 "InstallDotNetCore"
   ==> "PublishAzureFunctions"

@@ -28,8 +28,8 @@ let view = elmishView "Menu" (fun ({ OnLogout = onLogout; Model = model }) ->
             yield viewLink Page.Login "Login"
 
         if model.RenderedOnServer then
-            yield img [ Key "RenderSource"; Src "/Images/baseline_check_box_outline_blank_black_24dp.png"; Alt "Rendered on server" ]
+            yield img [ Key "RenderSource"; Src "/Images/baseline_check_box_outline_blank_black_24dp.png"; Title "Rendered on server";  ]
         else
-            yield img [ Key "RenderSource"; Src "/Images/baseline_check_box_black_24dp.png"; Alt "Rendered in browser" ]
+            yield img [ Key "RenderSource"; Src "/Images/baseline_check_box_black_24dp.png"; Title "Rendered in browser" ]
     ]
 )

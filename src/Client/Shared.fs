@@ -15,6 +15,7 @@ type Model = {
 
 /// The composed set of messages that update the state of the application
 type Msg =
+    | AppHydrated
     | WishListMsg of WishList.Msg
     | LoginMsg of Login.Msg
     | LoggedIn of UserData
