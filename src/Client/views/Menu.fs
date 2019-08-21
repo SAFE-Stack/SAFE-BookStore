@@ -23,7 +23,7 @@ let view = elmishView "Menu" (fun ({ OnLogout = onLogout; Model = model }) ->
         match model.User with
         | Some _ ->
             yield viewLink Page.WishList "Wishlist"
-            yield buttonLink "logout" onLogout [ str "Logout" ]
+            yield menuLink onLogout "Logout"
         | _ ->
             yield viewLink Page.Login "Login"
 

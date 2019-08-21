@@ -35,6 +35,12 @@ let buttonLink cssClass onClick elements =
         OnTouchStart (fun _ -> onClick())
         Style [ Cursor "pointer" ] ] elements
 
+let menuLink onClick description =
+    a [ Style [ Padding "0 20px" ]
+        OnClick (fun _ -> onClick())
+        OnTouchStart (fun _ -> onClick()) ]
+        [ str description ]
+
 let onEnter msg dispatch =
     function
     | (ev:Browser.Types.KeyboardEvent) when ev.keyCode = 13. ->
