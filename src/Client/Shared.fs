@@ -8,6 +8,7 @@ type PageModel =
     | WishListModel of WishList.Model
 
 type Model = {
+    RenderedOnServer : bool
     User : UserData option
     PageModel : PageModel
 }
@@ -30,13 +31,13 @@ open Client.Styles
 
 let view model dispatch =
     div [ Key "Application" ] [
-        Menu.view { Model = model.User; OnLogout = (Logout >> dispatch) }
+        Menu.view { Model = { User = model.User; RenderedOnServer = model.RenderedOnServer}; OnLogout = (Logout >> dispatch) }
         hr []
 
         div [ centerStyle "column" ] [
             match model.PageModel with
             | HomePageModel ->
-                yield Home.view ()
+                yield Home.view { Version = ReleaseNotes.Version }
             | LoginModel m ->
                 yield Login.view { Model = m; Dispatch = (LoginMsg >> dispatch) }
             | WishListModel m ->

@@ -8,6 +8,7 @@ let home: HttpHandler = fun _ ctx ->
     task {
         let model: Model = {
             User = None
+            RenderedOnServer = true
             PageModel = HomePageModel
         }
         return! ctx.WriteHtmlViewAsync (Templates.index (Some model))
@@ -17,6 +18,7 @@ let login: HttpHandler = fun _ ctx ->
     task {
         let model: Model = {
             User = None
+            RenderedOnServer = true
             PageModel =
                 let m,_ = Client.Login.init None
                 LoginModel m

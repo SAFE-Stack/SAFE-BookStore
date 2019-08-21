@@ -179,7 +179,7 @@ type WishListProps = {
     Dispatch: Msg -> unit
 }
 
-let view = elmishView "WishList" <| fun { Model = model; Dispatch = dispatch } ->
+let view = elmishView "WishList" (fun { Model = model; Dispatch = dispatch } ->
     let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
     div [ Key "WishList" ] [
         h4 [] [ str "Wishlist for " ; str model.WishList.UserName; str time ]
@@ -187,3 +187,4 @@ let view = elmishView "WishList" <| fun { Model = model; Dispatch = dispatch } -
         NewBook.view { Model = model.NewBookModel; Dispatch = (dispatch << NewBookMsg) }
         errorBox model.ErrorMsg
     ]
+)

@@ -53,9 +53,14 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
     | Some Page.Home, HomePageModel -> model, Cmd.none
     | Some Page.Login, LoginModel _ -> model, Cmd.none
     | Some Page.WishList, WishListModel _ -> model, Cmd.none
-    | _, HomePageModel |  _, LoginModel _ |  _, WishListModel _ ->
+    | _, HomePageModel
+    | _, LoginModel _
+    | _, WishListModel _ ->
         // unknown page or page does not match model -> go to home page
-        { User = None; PageModel = HomePageModel }, Cmd.none
+        { User = None
+          RenderedOnServer = false
+          PageModel = HomePageModel }, Cmd.none
+
 
 let init page =
     // was the page rendered server-side?
@@ -65,11 +70,12 @@ let init page =
     | Some json ->
         // SSR -> hydrate the model
         let model, cmd = hydrateModel json page
-        { model with User = loadUser() }, cmd
+        { model with User = loadUser(); RenderedOnServer = false }, cmd
     | None ->
         // no SSR -> show home page
         let model =
             { User = loadUser()
+              RenderedOnServer = false
               PageModel = HomePageModel }
 
         urlUpdate page model
