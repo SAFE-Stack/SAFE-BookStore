@@ -29,4 +29,4 @@ let private algorithm = Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSh
 let generateToken username =
     [ Claim(JwtRegisteredClaimNames.Sub, username);
       Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) ]
-    |> Authentication.generateToken (secret, algorithm) issuer  (DateTime.UtcNow.AddHours(1.0))
+    |> Saturn.Auth.generateJWT (secret, algorithm) issuer (DateTime.UtcNow.AddHours(1.0))

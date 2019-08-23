@@ -7,14 +7,11 @@ open ServerCode.Domain
 open FSharp.Control.Tasks.ContextInsensitive
 open Saturn.ControllerHelpers
 
-let createUserData (login : Domain.Login) =
+let createUserData (login : Domain.Login) : Domain.UserData =
     {
         UserName = login.UserName
-        Token    =
-            ServerCode.JsonWebToken.encode (
-                { UserName = login.UserName } : ServerTypes.UserRights
-            )
-    } : Domain.UserData
+        Token    = JsonWebToken.generateToken login.UserName
+    }
 
 /// Authenticates a user and returns a token in the HTTP body.
 // DEMO08a - tasks on the server
@@ -27,6 +24,3 @@ let login (next : HttpFunc) (ctx : HttpContext) = task {
         else
             Response.unauthorized ctx "Bearer" "" (sprintf "User '%s' can't be logged in." login.UserName)
 }
-
-let private missingToken = RequestErrors.BAD_REQUEST "Request doesn't contain a JSON Web Token"
-let private invalidToken = RequestErrors.FORBIDDEN "Accessing this API is not allowed"
