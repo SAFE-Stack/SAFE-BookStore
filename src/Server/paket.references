@@ -1,10 +1,8 @@
 FSharp.Core
 System.Net.NetworkInformation
-jose-jwt
 Microsoft.Azure.WebJobs
 Microsoft.Azure.WebJobs.Extensions
-Giraffe
-Giraffe.TokenRouter
+Saturn
 Microsoft.AspNetCore.StaticFiles
 Microsoft.AspNetCore
 Microsoft.AspNetCore.WebSockets
