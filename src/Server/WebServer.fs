@@ -2,11 +2,8 @@
 module ServerCode.WebServer
 
 open ServerCode
-open ServerCode.ServerUrls
 open Giraffe
 open Saturn.Router
-open Saturn.Pipeline
-open Microsoft.AspNetCore.Http
 
 /// Start the web server and connect to database
 let webApp databaseType =
@@ -28,10 +25,9 @@ let webApp databaseType =
         post ServerUrls.APIUrls.Login Auth.login
 
         // SSR
-        get "" Pages.home
-        get ServerUrls.PageUrls.Home Pages.home
+        get "" (Pages.home db.LoadWishList)
+        get ServerUrls.PageUrls.Home (Pages.home db.LoadWishList)
         get ServerUrls.PageUrls.Login Pages.login
-        getf "/wishlist/%s" (Pages.wishList db.LoadWishList db.GetLastResetTime)
 
         forward "" secured
     }

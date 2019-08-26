@@ -32,11 +32,11 @@ let urlUpdate (result:Page option) (model: Model) =
         | Some user ->
             let m, cmd = WishList.init user.UserName user.Token
             { model with PageModel = WishListModel m }, Cmd.map WishListMsg cmd
-        | None ->
+        | _ ->
             model, Cmd.OfFunc.result (Logout ())
 
     | Some Page.Home ->
-        { model with PageModel = HomePageModel }, Cmd.none
+        { model with PageModel = HomePageModel Home.empty }, Cmd.none
 
 let loadUser () : UserData option =
     let userDecoder = Decode.Auto.generateDecoder<UserData>()
@@ -50,16 +50,19 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
     // In this case we just deserialize the model from the json and don't need to to anything special.
     let model: Model = Decode.Auto.unsafeFromString(json)
     match page, model.PageModel with
-    | Some Page.Home, HomePageModel -> model, Cmd.ofMsg AppHydrated
-    | Some Page.Login, LoginModel _ -> model, Cmd.ofMsg AppHydrated
-    | Some Page.WishList, WishListModel _ -> model, Cmd.ofMsg AppHydrated
-    | _, HomePageModel
+    | Some Page.Home, HomePageModel _ ->
+        model, Cmd.ofMsg AppHydrated
+    | Some Page.Login, LoginModel _ ->
+        model, Cmd.ofMsg AppHydrated
+    | Some Page.WishList, WishListModel _ ->
+        model, Cmd.ofMsg AppHydrated
+    | _, HomePageModel _
     | _, LoginModel _
     | _, WishListModel _ ->
         // unknown page or page does not match model -> go to home page
         { User = None
           RenderedOnServer = false
-          PageModel = HomePageModel }, Cmd.none
+          PageModel = HomePageModel Home.empty }, Cmd.none
 
 
 let init page =
@@ -76,7 +79,7 @@ let init page =
         let model =
             { User = loadUser()
               RenderedOnServer = false
-              PageModel = HomePageModel }
+              PageModel = HomePageModel Home.empty }
 
         urlUpdate page model
 
@@ -117,7 +120,7 @@ let update msg model =
     | LoggedOut, _ ->
         { model with
             User = None
-            PageModel = HomePageModel },
+            PageModel = HomePageModel Home.empty },
         Navigation.newUrl (toPath Page.Home)
 
     | Logout(), _ ->

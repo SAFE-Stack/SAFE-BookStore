@@ -15,7 +15,6 @@ let toPath =
     | Page.Login -> "/login"
     | Page.WishList -> "/wishlist"
 
-
 /// The URL is turned into a Result.
 let pageParser : Parser<Page -> Page,_> =
     oneOf

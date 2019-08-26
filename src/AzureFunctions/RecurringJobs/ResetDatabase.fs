@@ -12,9 +12,9 @@ let connection = AzureConnection connectionString
 
 [<FunctionName("ResetDatabase")>]
 
-let run([<TimerTrigger("0 0 */2 * * *")>] timer:TimerInfo) = 
+let run([<TimerTrigger("0 0 */2 * * *")>] timer:TimerInfo) =
     let t = task {
-        let defaults = Defaults.defaultWishList "test" 
+        let defaults = Defaults.defaultWishList "test"
         do! saveWishListToDB connection defaults
         do! storeResetTime connection
     }

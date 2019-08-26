@@ -37,9 +37,9 @@ let getWishListFromDB connectionString userName = task {
           Books =
             [ for result in results ->
                 { Title = result.Properties.["Title"].StringValue
-                  Authors = string result.Properties.["Authors"].StringValue
-                  ImageLink = string result.Properties.["ImageLink"].StringValue
-                  Link = string result.Properties.["Link"].StringValue } ] } }
+                  Authors = result.Properties.["Authors"].StringValue
+                  ImageLink = result.Properties.["ImageLink"].StringValue
+                  Link = result.Properties.["Link"].StringValue } ] } }
 
 /// Save to the database
 let saveWishListToDB connectionString wishList = task {

@@ -3,7 +3,7 @@ module Client.Shared
 open ServerCode.Domain
 
 type PageModel =
-    | HomePageModel
+    | HomePageModel of Home.Model
     | LoginModel of Login.Model
     | WishListModel of WishList.Model
 
@@ -37,8 +37,8 @@ let view model dispatch =
 
         div [ centerStyle "column" ] [
             match model.PageModel with
-            | HomePageModel ->
-                yield Home.view { Version = ReleaseNotes.Version }
+            | HomePageModel model ->
+                yield Home.view model
             | LoginModel m ->
                 yield Login.view { Model = m; Dispatch = (LoginMsg >> dispatch) }
             | WishListModel m ->
