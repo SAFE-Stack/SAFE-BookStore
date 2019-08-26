@@ -82,7 +82,7 @@ type Props = {
     Dispatch: Msg -> unit
 }
 
-let view = elmishView "NewBook" <| fun { Model = model; Dispatch = dispatch } ->
+let view = elmishView "NewBook" (fun { Model = model; Dispatch = dispatch } ->
     div [] [
         h4 [] [str "New Book"]
 
@@ -104,4 +104,4 @@ let view = elmishView "NewBook" <| fun { Model = model; Dispatch = dispatch } ->
             ]
         ]
     ]
-
+)

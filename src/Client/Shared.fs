@@ -32,7 +32,7 @@ open Client.Styles
 
 let view model dispatch =
     div [ Key "Application" ] [
-        Menu.view { Model = model.MenuModel ; OnLogout = (Logout >> dispatch) }
+        Menu.view (Logout >> dispatch) model.MenuModel
         hr []
 
         div [ centerStyle "column" ] [
