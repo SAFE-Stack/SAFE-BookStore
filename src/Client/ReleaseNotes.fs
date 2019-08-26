@@ -1,11 +1,11 @@
 module internal ReleaseNotes
 
-let Version = "0.13.22"
+let Version = "0.13.23"
 
 let IsPrerelease = false
 
 let Notes = """
-### 0.13.22 - 2019-08-26
+### 0.13.23 - 2019-08-26
 * Show RenderSource
 * Updates to SSR
 
