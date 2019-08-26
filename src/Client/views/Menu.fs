@@ -22,7 +22,7 @@ let view onLogout (model:Model) =
             yield viewLink Page.Login "Login"
 
         if model.RenderedOnServer then
-            yield img [ Src "/Images/baseline_check_box_outline_blank_black_24dp.png"; Title "Rendered on server";  ]
+            yield str "Rendered on server"
         else
-            yield img [ Src "/Images/baseline_check_box_black_24dp.png"; Title "Rendered in browser" ]
+            yield str "Rendered in browser"
     ]
