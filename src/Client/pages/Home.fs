@@ -115,9 +115,5 @@ let view = elmishView "Home" (fun (model:Model) ->
         br []
 
         booksView { WishList = model.WishList }
-
-        br []
-        br []
-        words 20 ("version " + model.Version)
     ]
 )

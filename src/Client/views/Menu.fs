@@ -1,7 +1,6 @@
 module Client.Menu
 
 open Fable.React
-open Fable.React.Props
 open Client.Styles
 open Client.Pages
 open ServerCode.Domain
@@ -25,4 +24,6 @@ let view onLogout (model:Model) =
             yield str "Rendered on server"
         else
             yield str "Rendered on client"
+
+        yield str ReleaseNotes.Version
     ]
