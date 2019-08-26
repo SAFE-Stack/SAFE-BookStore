@@ -30,7 +30,7 @@ let urlUpdate (result:Page option) (model: Model) =
     | Some Page.WishList ->
         match model.User with
         | Some user ->
-            let m, cmd = WishList.init user
+            let m, cmd = WishList.init user.UserName user.Token
             { model with PageModel = WishListModel m }, Cmd.map WishListMsg cmd
         | None ->
             model, Cmd.OfFunc.result (Logout ())

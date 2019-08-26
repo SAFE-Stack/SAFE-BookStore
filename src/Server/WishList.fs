@@ -6,17 +6,15 @@ open Microsoft.AspNetCore.Http
 open Giraffe
 open Microsoft.Extensions.Logging
 open ServerCode.Domain
-open ServerTypes
 open FSharp.Control.Tasks.ContextInsensitive
 open System.Security.Claims
 open Saturn.ControllerHelpers
 
 /// Handle the GET on /api/wishlist
-let getWishList (getWishListFromDB : string -> Task<WishList>) _next (ctx: HttpContext) =
+let getWishList (getWishListFromDB : string -> Task<WishList>) (userName:string) _next (ctx: HttpContext) =
     task {
         try
-            let username = ctx.User.FindFirst ClaimTypes.NameIdentifier
-            let! wishList = getWishListFromDB username.Value
+            let! wishList = getWishListFromDB userName
             return! ctx.WriteJsonAsync wishList
         with exn ->
             let msg = "Database not available"

@@ -17,14 +17,21 @@ let webApp databaseType =
 
     let secured = router {
         pipe_through (Saturn.Auth.requireAuthentication Saturn.ChallengeType.JWT)
-        get ServerUrls.APIUrls.WishList (WishList.getWishList db.LoadWishList)
-        get ServerUrls.APIUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
-        post ServerUrls.APIUrls.WishList (WishList.postWishList db.SaveWishList)
+        post "/api/wishlist/%s" (WishList.postWishList db.SaveWishList)
     }
 
     router {
-        not_found_handler (RequestErrors.NOT_FOUND "Page not found")
-        get ServerUrls.PageUrls.Home (htmlFile "index.html")
+        not_found_handler Pages.notfound
+
+        getf "/api/wishlist/%s" (WishList.getWishList db.LoadWishList)
+        get ServerUrls.APIUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
         post ServerUrls.APIUrls.Login Auth.login
+
+        // SSR
+        get "" Pages.home
+        get ServerUrls.PageUrls.Home Pages.home
+        get ServerUrls.PageUrls.Login Pages.login
+        getf "/wishlist/%s" (Pages.wishList db.LoadWishList db.GetLastResetTime)
+
         forward "" secured
     }

@@ -3,18 +3,16 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="Shared/Domain.fs" />
     <Compile Include="Shared/ServerUrls.fs" />
+    <Compile Include="WishList.fs" />
     <Compile Include="ServerTypes.fs" />
     <Compile Include="JsonWebToken.fs" />
     <Compile Include="Auth.fs" />
-    <Compile Include="WishList.fs" />
     <Compile Include="Storage/Defaults.fs" />
     <Compile Include="Storage/FileSystem.fs" />
     <Compile Include="Storage/AzureTable.fs" />

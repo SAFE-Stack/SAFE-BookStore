@@ -11,8 +11,8 @@ module PageUrls =
 [<RequireQualifiedAccess>]
 module APIUrls =
 
-  [<Literal>]
-  let WishList = "/api/wishlist/"
+  let WishList userName = sprintf "/api/wishlist/%s" userName
+
   [<Literal>]
   let ResetTime = "/api/wishlist/resetTime/"
   [<Literal>]
