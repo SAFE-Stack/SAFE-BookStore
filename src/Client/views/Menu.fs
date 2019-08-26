@@ -20,10 +20,11 @@ let view onLogout (model:Model) =
         | _ ->
             yield viewLink Page.Login "Login"
 
-        if model.RenderedOnServer then
-            yield str "Rendered on server"
-        else
-            yield str "Rendered on client"
 
         yield str ReleaseNotes.Version
+
+        if model.RenderedOnServer then
+            yield str " - Rendered on server"
+        else
+            yield str " - Rendered on client"
     ]
