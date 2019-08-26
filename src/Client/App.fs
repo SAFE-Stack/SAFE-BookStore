@@ -87,8 +87,8 @@ let init page =
         let model, cmd2 = urlUpdate page model
         model,
             Cmd.batch [
-                cmd2
                 Cmd.map HomePageMsg cmd
+                cmd2
             ]
 
 let update msg model =

@@ -51,8 +51,8 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
         { model with WishList = Some wishList }, Cmd.none
 
     | Error e ->
+        printfn "Error: %s" e.Message
         model, Cmd.none
-
 
 
 type BookProps = { key: string; book: Book }
