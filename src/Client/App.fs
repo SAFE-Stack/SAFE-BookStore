@@ -162,11 +162,7 @@ let withReact =
 // App
 Program.mkProgram init update view
 |> Program.toNavigable Pages.urlParser urlUpdate
-#if DEBUG
 |> Program.withConsoleTrace
-#endif
 |> withReact "elmish-app"
-#if DEBUG
 |> Program.withDebugger
-#endif
 |> Program.run
