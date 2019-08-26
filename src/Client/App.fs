@@ -130,7 +130,6 @@ let update msg model =
         model, Cmd.none
 
     | AppHydrated, _ ->
-        printfn "Hydrated!"
         { model with MenuModel = { model.MenuModel with RenderedOnServer = false }}, Cmd.none
 
     | LoggedIn newUser, _ ->

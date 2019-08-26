@@ -21,11 +21,8 @@ let view onLogout (model:Model) =
         | _ ->
             yield viewLink Page.Login "Login"
 
-        printfn "Rendered on server %b" model.RenderedOnServer
         if model.RenderedOnServer then
-            yield str (sprintf "Rendered on 1 server %b" model.RenderedOnServer)
-            yield img [ Key "RenderedOnServer"; Src "/Images/baseline_check_box_outline_blank_black_24dp.png"; Title "Rendered on server";  ]
+            yield img [ Src "/Images/baseline_check_box_outline_blank_black_24dp.png"; Title "Rendered on server";  ]
         else
-            yield str (sprintf "Rendered on 2 server %b" model.RenderedOnServer)
-            yield img [ Key "RenderedOnServer"; Src "/Images/baseline_check_box_black_24dp.png"; Title "Rendered in browser" ]
+            yield img [ Src "/Images/baseline_check_box_black_24dp.png"; Title "Rendered in browser" ]
     ]
