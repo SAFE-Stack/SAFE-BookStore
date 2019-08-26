@@ -19,27 +19,26 @@ let handleNotFound (model: Model) =
 /// The navigation logic of the application given a page identity parsed from the .../#info
 /// information in the URL.
 let urlUpdate (result:Page option) (model: Model) =
-    let model,cmd =
-        match result with
-        | None ->
-            handleNotFound model
+    match result with
+    | None ->
+        handleNotFound model
 
-        | Some Page.Login ->
-            let m, cmd = Login.init model.User
-            { model with PageModel = LoginModel m }, Cmd.map LoginMsg cmd
+    | Some Page.Login ->
+        let m, cmd = Login.init model.MenuModel.User
+        { model with PageModel = LoginModel m }, Cmd.map LoginMsg cmd
 
-        | Some Page.WishList ->
-            match model.User with
-            | Some user ->
-                let m, cmd = WishList.init user.UserName user.Token
-                { model with PageModel = WishListModel m }, Cmd.map WishListMsg cmd
-            | _ ->
-                model, Cmd.OfFunc.result (Logout ())
+    | Some Page.WishList ->
+        match model.MenuModel.User with
+        | Some user ->
+            let m, cmd = WishList.init user.UserName user.Token
+            { model with PageModel = WishListModel m }, Cmd.map WishListMsg cmd
+        | _ ->
+            model, Cmd.OfFunc.result (Logout ())
 
-        | Some Page.Home ->
-            let subModel, cmd = Home.init()
-            { model with PageModel = HomePageModel subModel }, Cmd.map HomePageMsg cmd
-    { model with RenderedOnServer = false }, cmd
+    | Some Page.Home ->
+        let subModel, cmd = Home.init()
+        { model with PageModel = HomePageModel subModel }, Cmd.map HomePageMsg cmd
+
 
 let loadUser () : UserData option =
     let userDecoder = Decode.Auto.generateDecoder<UserData>()
@@ -64,8 +63,7 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
     | _, WishListModel _ ->
         let subModel, cmd = Home.init()
         // unknown page or page does not match model -> go to home page
-        { User = None
-          RenderedOnServer = false
+        { MenuModel = { User = None; RenderedOnServer = false }
           PageModel = HomePageModel subModel },
             Cmd.batch [
                 Cmd.map HomePageMsg cmd
@@ -81,13 +79,12 @@ let init page =
     | Some json ->
         // SSR -> hydrate the model
         let model, cmd = hydrateModel json page
-        { model with User = loadUser() }, cmd
+        { model with MenuModel = { model.MenuModel with User = loadUser() } }, cmd
     | None ->
         let subModel, cmd = Home.init()
         // no SSR -> show home page
         let model =
-            { User = loadUser()
-              RenderedOnServer = false
+            { MenuModel = { User = loadUser(); RenderedOnServer = false }
               PageModel = HomePageModel subModel }
 
         let model, cmd2 = urlUpdate page model
@@ -134,17 +131,17 @@ let update msg model =
 
     | AppHydrated, _ ->
         printfn "Hydrated!"
-        { model with RenderedOnServer = false }, Cmd.none
+        { model with MenuModel = { model.MenuModel with RenderedOnServer = false }}, Cmd.none
 
     | LoggedIn newUser, _ ->
         let nextPage = Page.WishList
-        { model with User = Some newUser },
+        { model with MenuModel = { model.MenuModel with User = Some newUser }},
         Navigation.newUrl (toPath nextPage)
 
     | LoggedOut, _ ->
         let subModel, cmd = Home.init()
         { model with
-            User = None
+            MenuModel = { model.MenuModel with User = None }
             PageModel = HomePageModel subModel },
         Cmd.batch [
             Navigation.newUrl (toPath Page.Home)
