@@ -21,8 +21,8 @@ let index (model: Model option) =
         | None ->
             "null", ""
 
-    html [] [
-        head [ _lang "en-US" ] [
+    html [_lang "en-US" ] [
+        head [ ] [
             meta [ _httpEquiv "Content-Type"; _content "text/html; charset=UTF-8" ]
             title [] [ rawText "SAFE-Stack Bookstore" ]
             link [
@@ -44,7 +44,7 @@ let index (model: Model option) =
             div [ _id "elmish-app"; _class "elmish-app" ] [
                 rawText htmlStr
             ]
-            script [ ] [ rawText (sprintf "var __INIT_MODEL__ = %s" jsonState) ]
+            script [ ] [ rawText ("var __INIT_MODEL__ = " + jsonState) ]
             script [ _src "/public/vendors.js" ] []
             script [ _src "/public/main.js" ] []
         ]
