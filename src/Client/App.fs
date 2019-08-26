@@ -51,7 +51,7 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
     // In this case we just deserialize the model from the json and don't need to to anything special.
     let model: Model = Decode.Auto.unsafeFromString(json)
     match page, model.PageModel with
-    | Some Page.Home, HomePageModel _ ->
+    | Some Page.Home, HomePageModel subModel when subModel.WishList <> None ->
         model, Cmd.ofMsg AppHydrated
     | Some Page.Login, LoginModel _ ->
         model, Cmd.ofMsg AppHydrated
