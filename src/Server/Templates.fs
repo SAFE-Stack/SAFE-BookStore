@@ -22,7 +22,7 @@ let index (model: Model option) =
             "null", ""
 
     html [] [
-        head [] [
+        head [ _lang "en-US" ] [
             meta [ _httpEquiv "Content-Type"; _content "text/html; charset=UTF-8" ]
             title [] [ rawText "SAFE-Stack Bookstore" ]
             link [
