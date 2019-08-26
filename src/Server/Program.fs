@@ -5,6 +5,8 @@ open System
 open System.IO
 open Microsoft.Extensions.Logging
 open Saturn.Application
+open Microsoft.Extensions.DependencyInjection
+open Thoth.Json.Giraffe
 
 let GetEnvVar var =
     match Environment.GetEnvironmentVariable(var) with
@@ -17,12 +19,8 @@ let getPortsOrDefault defaultVal =
     | value -> value |> uint16
 
 
-// let configureServices (services : IServiceCollection) =
-//     // Add default Giraffe dependencies
-//     services.AddGiraffe() |> ignore
-
-//     services.AddSingleton<IJsonSerializer>(ThothSerializer())
-//     |> ignore
+let serviceConfig (services : IServiceCollection) =
+    services.AddSingleton<Giraffe.Serialization.Json.IJsonSerializer>(ThothSerializer())
 
 
 [<EntryPoint>]
@@ -59,6 +57,7 @@ let main args =
             url ("http://0.0.0.0:" + port.ToString() + "/")
 
             use_jwt_authentication JsonWebToken.secret JsonWebToken.issuer
+            service_config serviceConfig
             use_static clientPath
             use_gzip
         }
