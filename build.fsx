@@ -264,8 +264,6 @@ Target "BundleClient" (fun _ ->
     !! "src/Client/js/**/*.*" |> CopyFiles jsDir
     !! "src/Client/css/**/*.*" |> CopyFiles cssDir
     !! "src/Client/Images/**/*.*" |> CopyFiles imageDir
-
-    "src/Client/index.html" |> CopyFile clientDir
 )
 
 Target "CreateDockerImage" (fun _ ->
