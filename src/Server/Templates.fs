@@ -23,7 +23,7 @@ let index (model: Model option) =
 
     html [] [
         head [] [
-            meta [ _httpEquiv "Content-Type"; _content "text/html"; _charset "utf-8" ]
+            meta [ _httpEquiv "Content-Type"; _content "text/html; charset=UTF-8" ]
             title [] [ rawText "SAFE-Stack Bookstore" ]
             link [
                 _rel "stylesheet"
