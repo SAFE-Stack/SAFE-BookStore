@@ -8,6 +8,11 @@ open System
 open Client.Utils
 open ServerCode.Domain
 open Elmish
+#if FABLE_COMPILER
+open Thoth.Json
+#else
+open Thoth.Json.Net
+#endif
 
 type Model = {
     Version : string
@@ -24,14 +29,27 @@ let private empty = {
     WishList = None
 }
 
-let init () = empty, Cmd.none
+let init () = empty, Cmd.ofMsg LoadWishList
+
+/// Get the wish list from the server, used to populate the model
+let getWishList userName =
+    promise {
+        let url = ServerCode.ServerUrls.APIUrls.WishList userName
+        let props = [ ]
+
+        let! res = Fetch.fetch url props
+        let! txt = res.text()
+        return Decode.Auto.unsafeFromString<WishList> txt
+    }
 
 let update (msg:Msg) model : Model*Cmd<Msg> =
     match msg with
     | LoadWishList ->
-        model, Cmd.none
+        model, Cmd.OfPromise.either getWishList "test" WishListLoaded Error
+
     | WishListLoaded wishList ->
         { model with WishList = Some wishList }, Cmd.none
+
     | Error e ->
         model, Cmd.none
 
