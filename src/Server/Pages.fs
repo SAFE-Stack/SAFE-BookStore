@@ -8,11 +8,10 @@ open System.Threading.Tasks
 let home (getWishListFromDB : string -> Task<Domain.WishList>) : HttpHandler = fun _ ctx ->
     task {
         let! wishList = getWishListFromDB "test"
-        printfn "%A" wishList
         let model: Model = {
             User = None
             RenderedOnServer = true
-            PageModel = HomePageModel { Version = ReleaseNotes.Version; WishList = Some wishList }
+            PageModel = HomePageModel { Version = ReleaseNotes.Version; WishList = None } //Some wishList }
         }
         return! ctx.WriteHtmlViewAsync (Templates.index (Some model))
     }
