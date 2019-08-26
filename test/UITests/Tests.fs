@@ -1,13 +1,31 @@
 module UITests.Tests
 
 open canopy.classic
+open canopy.configuration
 open Expecto
+open System.IO
 
 let serverUrl = "http://localhost:8085/"
-let logoutLinkSelector = ".logout"
+let logoutLinkSelector = "Logout"
 let loginLinkSelector = "Login"
+
 let username = "test"
 let password = "test"
+
+type TypeInThisAssembly() =
+    class end
+
+let screenshotFolder = FileInfo(System.Reflection.Assembly.GetAssembly(typeof<TypeInThisAssembly>).Location).Directory.FullName
+
+let testCase name f =
+    testCase name (fun x ->
+        try
+            f x
+        with
+        | exn ->
+            screenshot screenshotFolder (name  + "-" + System.DateTime.Now.ToString("MMM-d_HH-mm-ss")) |> ignore
+            raise exn
+    )
 
 let startApp () =
     url serverUrl
@@ -29,6 +47,7 @@ let login () =
 
 let logout () =
     click logoutLinkSelector
+    waitForElement loginLinkSelector
 
 let tests =
     testList "client tests" [
@@ -79,10 +98,12 @@ let tests =
             let bookTitle = "Expert F# 4.0"
             let bookAuthor = "Don Syme & Adam Granicz & Antonio Cisternino"
             let bookLink = "https://www.amazon.com/Expert-F-4-0-Don-Syme/dp/1484207416"
+            let imageLink = "https://www.amazon.com/Expert-F-4-0-Don-Syme/dp/1484207416"
 
             "input[name=Title]" << bookTitle
             "input[name=Author]" << bookAuthor
             "input[name=Link]" << bookLink
+            "input[name=ImageLink]" << imageLink
 
             click ".btn"
 
@@ -122,16 +143,19 @@ let tests =
             let bookTitle = "Expert F# 4.0"
             let bookAuthor = "Don Syme & Adam Granicz & Antonio Cisternino"
             let bookLink = "https://www.amazon.com/Expert-F-4-0-Don-Syme/dp/1484207416"
+            let imageLink = "https://www.amazon.com/Expert-F-4-0-Don-Syme/dp/1484207416"
 
             "input[name=Title]" << bookTitle
             "input[name=Author]" << bookAuthor
             "input[name=Link]" << bookLink
+            "input[name=ImageLink]" << imageLink
 
             click ".btn"
 
             "input[name=Title]" << bookTitle
             "input[name=Author]" << bookAuthor
             "input[name=Link]" << bookLink
+            "input[name=ImageLink]" << imageLink
 
             click ".btn"
 

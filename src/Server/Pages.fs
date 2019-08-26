@@ -5,22 +5,15 @@ open Client.Shared
 open FSharp.Control.Tasks.ContextInsensitive
 open System.Threading.Tasks
 
-let cachedWishListPage = ref None
-
 let home (getWishListFromDB : string -> Task<Domain.WishList>) : HttpHandler = fun _ ctx ->
     task {
-        match !cachedWishListPage with
-        | Some page ->
-            return! ctx.WriteHtmlViewAsync page
-        | _ ->
-            let! wishList = getWishListFromDB "test"
-            let model: Model = {
-                MenuModel = { User = None; RenderedOnServer = true }
-                PageModel = HomePageModel { Version = ReleaseNotes.Version; WishList = Some wishList }
-            }
-            let page = Templates.index (Some model)
-            cachedWishListPage := Some page
-            return! ctx.WriteHtmlViewAsync page
+        let! wishList = getWishListFromDB "test"
+        let model: Model = {
+            MenuModel = { User = None; RenderedOnServer = true }
+            PageModel = HomePageModel { Version = ReleaseNotes.Version; WishList = Some wishList }
+        }
+        let page = Templates.index (Some model)
+        return! ctx.WriteHtmlViewAsync page
     }
 
 let login: HttpHandler = fun _ ctx ->

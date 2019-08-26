@@ -18,14 +18,13 @@ let mutable dotnetExePath = "dotnet"
 
 let deployDir = "./deploy"
 
-let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.exe"
-
-
 let dockerUser = getBuildParam "DockerUser"
 let dockerPassword = getBuildParam "DockerPassword"
 let dockerLoginServer = getBuildParam "DockerLoginServer"
 let dockerImageName = getBuildParam "DockerImageName"
 
+// Pattern specifying assemblies to be tested using expecto
+let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.exe"
 
 let run cmd args dir =
     let success =
@@ -119,11 +118,6 @@ Target "BuildServer" (fun _ ->
     runDotnet serverPath "build"
 )
 
-Target "BuildTests" (fun _ ->
-    runDotnet clientTestsPath "build"
-    runDotnet serverTestsPath "build"
-)
-
 Target "NPMInstall" (fun _ ->
     printfn "Node version:"
     run nodeTool "--version" __SOURCE_DIRECTORY__
@@ -159,9 +153,11 @@ Target "RunUITest" (fun _ ->
 
     System.Threading.Thread.Sleep 15000 |> ignore  // give server some time to start
 
+    runDotnet clientTestsPath "build"
+
     !! clientTestExecutables
+    |> fun xs -> if Seq.isEmpty xs then failwith "no UI tests found" else xs
     |> Expecto (fun p -> { p with Parallel = false } )
-    |> ignore
 
     serverProcess.Kill()
 )
@@ -294,9 +290,11 @@ Target "TestDockerImage" (fun _ ->
 
     System.Threading.Thread.Sleep 5000 |> ignore  // give server some time to start
 
+    runDotnet clientTestsPath "build"
+
     !! clientTestExecutables
+    |> fun xs -> if Seq.isEmpty xs then failwith "no UI tests found" else xs
     |> Expecto (fun p -> { p with Parallel = false } )
-    |> ignore
 
     let result =
         ExecProcess (fun info ->
@@ -418,7 +416,6 @@ Target "All" DoNothing
   ==> "SetReleaseNotes"
   ==> "BuildServer"
   ==> "BuildClient"
-  ==> "BuildTests"
   ==> "RunServerTests"
   ==> "RunUITest"
   ==> "BundleClient"
