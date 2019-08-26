@@ -36,7 +36,8 @@ let urlUpdate (result:Page option) (model: Model) =
             model, Cmd.OfFunc.result (Logout ())
 
     | Some Page.Home ->
-        { model with PageModel = HomePageModel Home.empty }, Cmd.none
+        let subModel, cmd = Home.init()
+        { model with PageModel = HomePageModel subModel }, Cmd.map HomePageMsg cmd
 
 let loadUser () : UserData option =
     let userDecoder = Decode.Auto.generateDecoder<UserData>()
@@ -59,10 +60,11 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
     | _, HomePageModel _
     | _, LoginModel _
     | _, WishListModel _ ->
+        let subModel, cmd = Home.init()
         // unknown page or page does not match model -> go to home page
         { User = None
           RenderedOnServer = false
-          PageModel = HomePageModel Home.empty }, Cmd.none
+          PageModel = HomePageModel subModel }, Cmd.map HomePageMsg cmd
 
 
 let init page =
@@ -75,19 +77,33 @@ let init page =
         let model, cmd = hydrateModel json page
         { model with User = loadUser() }, cmd
     | None ->
+        let subModel, cmd = Home.init()
         // no SSR -> show home page
         let model =
             { User = loadUser()
               RenderedOnServer = false
-              PageModel = HomePageModel Home.empty }
+              PageModel = HomePageModel subModel }
 
-        urlUpdate page model
+        let model, cmd2 = urlUpdate page model
+        model,
+            Cmd.batch [
+                cmd2
+                Cmd.map HomePageMsg cmd
+            ]
 
 let update msg model =
     match msg, model.PageModel with
     | StorageFailure e, _ ->
         printfn "Unable to access local storage: %A" e
         model, Cmd.none
+
+    | HomePageMsg msg, HomePageModel m ->
+        let m, cmd = Home.update msg m
+
+        { model with
+            PageModel = HomePageModel m }, Cmd.map HomePageMsg cmd
+
+    | HomePageMsg _, _ -> model, Cmd.none
 
     | LoginMsg msg, LoginModel m ->
         match msg with
@@ -118,10 +134,14 @@ let update msg model =
         Navigation.newUrl (toPath nextPage)
 
     | LoggedOut, _ ->
+        let subModel, cmd = Home.init()
         { model with
             User = None
-            PageModel = HomePageModel Home.empty },
-        Navigation.newUrl (toPath Page.Home)
+            PageModel = HomePageModel subModel },
+        Cmd.batch [
+            Navigation.newUrl (toPath Page.Home)
+            Cmd.map HomePageMsg cmd
+        ]
 
     | Logout(), _ ->
         model, Cmd.OfFunc.either LocalStorage.delete "user" (fun _ -> LoggedOut) StorageFailure

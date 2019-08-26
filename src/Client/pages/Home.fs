@@ -7,17 +7,34 @@ open Client.Pages
 open System
 open Client.Utils
 open ServerCode.Domain
+open Elmish
 
 type Model = {
     Version : string
     WishList : WishList option
 }
 
+type Msg =
+| LoadWishList
+| WishListLoaded of WishList
+| Error of exn
 
-let empty = {
+let private empty = {
     Version = ReleaseNotes.Version
     WishList = None
 }
+
+let init () = empty, Cmd.none
+
+let update (msg:Msg) model : Model*Cmd<Msg> =
+    match msg with
+    | LoadWishList ->
+        model, Cmd.none
+    | WishListLoaded wishList ->
+        { model with WishList = Some wishList }, Cmd.none
+    | Error e ->
+        model, Cmd.none
+
 
 
 type BookProps = { key: string; book: Book }

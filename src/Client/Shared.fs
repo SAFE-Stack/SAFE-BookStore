@@ -17,6 +17,7 @@ type Model = {
 type Msg =
     | AppHydrated
     | WishListMsg of WishList.Msg
+    | HomePageMsg of Home.Msg
     | LoginMsg of Login.Msg
     | LoggedIn of UserData
     | LoggedOut
