@@ -17,19 +17,20 @@ type Props = {
     OnLogout: unit -> unit
 }
 
-let view = elmishView "Menu" (fun ({ OnLogout = onLogout; Model = model }) ->
+let view = elmishView "Menu" (fun (props: Props) ->
     div [ centerStyle "row" ] [
         yield viewLink Page.Home "Home"
-        match model.User with
+        match props.Model.User with
         | Some _ ->
             yield viewLink Page.WishList "Wishlist"
-            yield menuLink onLogout "Logout"
+            yield menuLink props.OnLogout "Logout"
         | _ ->
             yield viewLink Page.Login "Login"
 
-        if model.RenderedOnServer then
-            yield img [ Key "RenderSource"; Src "/Images/baseline_check_box_outline_blank_black_24dp.png"; Title "Rendered on server";  ]
+        printfn "Rendered on server %b" props.Model.RenderedOnServer
+        if props.Model.RenderedOnServer then
+            yield img [ Key "RenderedOnServer"; Src "/Images/baseline_check_box_outline_blank_black_24dp.png"; Title "Rendered on server";  ]
         else
-            yield img [ Key "RenderSource"; Src "/Images/baseline_check_box_black_24dp.png"; Title "Rendered in browser" ]
+            yield img [ Key "RenderedOnClient"; Src "/Images/baseline_check_box_black_24dp.png"; Title "Rendered in browser" ]
     ]
 )
