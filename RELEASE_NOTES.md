@@ -1,4 +1,4 @@
-### 0.13.24 - 2019-08-26
+### 0.13.25 - 2019-08-26
 * Show RenderSource
 * Updates to SSR
 

@@ -66,8 +66,8 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
           RenderedOnServer = false
           PageModel = HomePageModel subModel },
             Cmd.batch [
-                Cmd.ofMsg AppHydrated
                 Cmd.map HomePageMsg cmd
+                Cmd.ofMsg AppHydrated
             ]
 
 
@@ -93,6 +93,7 @@ let init page =
             Cmd.batch [
                 Cmd.map HomePageMsg cmd
                 cmd2
+                Cmd.ofMsg AppHydrated
             ]
 
 let update msg model =
