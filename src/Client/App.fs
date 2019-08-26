@@ -64,7 +64,11 @@ let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
         // unknown page or page does not match model -> go to home page
         { User = None
           RenderedOnServer = false
-          PageModel = HomePageModel subModel }, Cmd.map HomePageMsg cmd
+          PageModel = HomePageModel subModel },
+            Cmd.batch [
+                Cmd.ofMsg AppHydrated
+                Cmd.map HomePageMsg cmd
+            ]
 
 
 let init page =
