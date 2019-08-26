@@ -24,12 +24,14 @@ type UserData =
 type Book =
     { Title : string
       Authors : string
-      Link : string }
+      Link : string
+      ImageLink : string }
 
     static member Empty =
         { Title = null
           Authors = null
-          Link = null }
+          Link = null
+          ImageLink = null }
 
     member this.ValidateTitle() =
         if String.IsNullOrWhiteSpace this.Title then Some "No title was entered" else
@@ -43,9 +45,14 @@ type Book =
         if String.IsNullOrWhiteSpace this.Link then Some "No link was entered" else
         None
 
+    member this.ValidateImageLink() =
+        if String.IsNullOrWhiteSpace this.ImageLink then Some "No image link was entered" else
+        None
+
     member this.Validate() =
         this.ValidateTitle() = None &&
         this.ValidateAuthors() = None &&
+        this.ValidateImageLink() = None &&
         this.ValidateLink() = None
 
 

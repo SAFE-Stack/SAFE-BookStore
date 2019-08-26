@@ -13,7 +13,8 @@ type Model =
     NewBookId : Guid // unique key to reset the vdom-elements, see https://github.com/SAFE-Stack/SAFE-BookStore/issues/107#issuecomment-301312224
     TitleErrorText : string option
     AuthorsErrorText : string option
-    LinkErrorText : string option }
+    LinkErrorText : string option
+    ImageLinkErrorText : string option }
 
 /// The different messages processed when interacting with the wish list
 type Msg =
@@ -22,6 +23,7 @@ type Msg =
     | TitleChanged of string
     | AuthorsChanged of string
     | LinkChanged of string
+    | ImageLinkChanged of string
 
 
 let init () =
@@ -29,6 +31,7 @@ let init () =
       NewBookId = Guid.NewGuid()
       TitleErrorText = None
       AuthorsErrorText = None
+      ImageLinkErrorText = None
       LinkErrorText = None },
         Cmd.none
 
@@ -52,11 +55,18 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
             NewBook = newBook
             LinkErrorText = newBook.ValidateLink() }, Cmd.none
 
+    | ImageLinkChanged link ->
+        let newBook = { model.NewBook with ImageLink = link }
+        { model with
+            NewBook = newBook
+            ImageLinkErrorText = newBook.ValidateImageLink() }, Cmd.none
+
     | ValidateBook ->
         let validated =
             { model with
                 TitleErrorText = model.NewBook.ValidateTitle()
                 AuthorsErrorText = model.NewBook.ValidateAuthors()
+                ImageLinkErrorText = model.NewBook.ValidateImageLink()
                 LinkErrorText = model.NewBook.ValidateLink() }
         validated,
             if model.NewBook.Validate() then
@@ -82,6 +92,7 @@ let view = elmishView "NewBook" <| fun { Model = model; Dispatch = dispatch } ->
                     validatedTextBox (dispatch << TitleChanged) "Title" "Please insert title" model.TitleErrorText model.NewBook.Title
                     validatedTextBox (dispatch << AuthorsChanged) "Author" "Please insert authors" model.AuthorsErrorText model.NewBook.Authors
                     validatedTextBox (dispatch << LinkChanged) "Link" "Please insert link" model.LinkErrorText model.NewBook.Link
+                    validatedTextBox (dispatch << ImageLinkChanged) "ImageLink" "Please insert image link" model.ImageLinkErrorText model.NewBook.ImageLink
 
                     button [
                         ClassName ("btn " + if model.NewBook.Validate() then "btn-primary" else "btn-disabled")

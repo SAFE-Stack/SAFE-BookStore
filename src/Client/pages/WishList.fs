@@ -152,13 +152,14 @@ let update (msg:Msg) model : Model * Cmd<Msg> =
 type BookProps = { key: string; book: Book; removeBook: unit -> unit }
 
 let bookComponent { book = book; removeBook = removeBook } =
-    tr [] [
+    tr [ Key book.Link ] [
         td [] [
             if String.IsNullOrWhiteSpace book.Link then
                 yield str book.Title
             else
                 yield a [ Href book.Link; Target "_blank" ] [str book.Title ] ]
         td [] [ str book.Authors ]
+        td [] [ img [ Src book.ImageLink; Title book.Title ]]
         td [] [ buttonLink "" removeBook [ str "Remove" ] ]
     ]
 
@@ -175,6 +176,8 @@ let booksView = elmishView "Books" <| fun { WishList = wishList; Dispatch = disp
             tr [] [
                 th [] [str "Title"]
                 th [] [str "Authors"]
+                th [] [str "Image"]
+                th [] []
             ]
         ]
         tbody [] [

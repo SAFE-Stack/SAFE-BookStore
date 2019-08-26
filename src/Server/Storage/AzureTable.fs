@@ -38,6 +38,7 @@ let getWishListFromDB connectionString userName = task {
             [ for result in results ->
                 { Title = result.Properties.["Title"].StringValue
                   Authors = string result.Properties.["Authors"].StringValue
+                  ImageLink = string result.Properties.["ImageLink"].StringValue
                   Link = string result.Properties.["Link"].StringValue } ] } }
 
 /// Save to the database
@@ -68,6 +69,7 @@ let saveWishListToDB connectionString wishList = task {
             let entity = buildEntity wishList.UserName book
             entity.Properties.["Title"] <- EntityProperty.GeneratePropertyForString book.Title
             entity.Properties.["Authors"] <- EntityProperty.GeneratePropertyForString book.Authors
+            entity.Properties.["ImageLink"] <- EntityProperty.GeneratePropertyForString book.ImageLink
             entity.Properties.["Link"] <- EntityProperty.GeneratePropertyForString book.Link
             entity |> TableOperation.InsertOrReplace |> operation.Add)
 
