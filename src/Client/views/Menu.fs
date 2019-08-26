@@ -24,5 +24,5 @@ let view onLogout (model:Model) =
         if model.RenderedOnServer then
             yield str "Rendered on server"
         else
-            yield str "Rendered in browser"
+            yield str "Rendered on client"
     ]

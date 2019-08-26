@@ -9,8 +9,8 @@ let home (getWishListFromDB : string -> Task<Domain.WishList>) : HttpHandler = f
     task {
         let! wishList = getWishListFromDB "test"
         let model: Model = {
-            MenuModel ={ User = None; RenderedOnServer = true }
-            PageModel = HomePageModel { Version = ReleaseNotes.Version; WishList = None } //Some wishList }
+            MenuModel = { User = None; RenderedOnServer = true }
+            PageModel = HomePageModel { Version = ReleaseNotes.Version; WishList = Some wishList }
         }
         return! ctx.WriteHtmlViewAsync (Templates.index (Some model))
     }
