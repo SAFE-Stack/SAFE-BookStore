@@ -19,25 +19,27 @@ let handleNotFound (model: Model) =
 /// The navigation logic of the application given a page identity parsed from the .../#info
 /// information in the URL.
 let urlUpdate (result:Page option) (model: Model) =
-    match result with
-    | None ->
-        handleNotFound model
+    let model,cmd =
+        match result with
+        | None ->
+            handleNotFound model
 
-    | Some Page.Login ->
-        let m, cmd = Login.init model.User
-        { model with PageModel = LoginModel m }, Cmd.map LoginMsg cmd
+        | Some Page.Login ->
+            let m, cmd = Login.init model.User
+            { model with PageModel = LoginModel m }, Cmd.map LoginMsg cmd
 
-    | Some Page.WishList ->
-        match model.User with
-        | Some user ->
-            let m, cmd = WishList.init user.UserName user.Token
-            { model with PageModel = WishListModel m }, Cmd.map WishListMsg cmd
-        | _ ->
-            model, Cmd.OfFunc.result (Logout ())
+        | Some Page.WishList ->
+            match model.User with
+            | Some user ->
+                let m, cmd = WishList.init user.UserName user.Token
+                { model with PageModel = WishListModel m }, Cmd.map WishListMsg cmd
+            | _ ->
+                model, Cmd.OfFunc.result (Logout ())
 
-    | Some Page.Home ->
-        let subModel, cmd = Home.init()
-        { model with PageModel = HomePageModel subModel }, Cmd.map HomePageMsg cmd
+        | Some Page.Home ->
+            let subModel, cmd = Home.init()
+            { model with PageModel = HomePageModel subModel }, Cmd.map HomePageMsg cmd
+    { model with RenderedOnServer = false }, cmd
 
 let loadUser () : UserData option =
     let userDecoder = Decode.Auto.generateDecoder<UserData>()
@@ -130,7 +132,8 @@ let update msg model =
     | WishListMsg _, _ ->
         model, Cmd.none
 
-    | AppHydrated , _ ->
+    | AppHydrated, _ ->
+        printfn "Hydrated!"
         { model with RenderedOnServer = false }, Cmd.none
 
     | LoggedIn newUser, _ ->
