@@ -4,27 +4,32 @@ open Fable.React
 open Client.Styles
 open Client.Pages
 open ServerCode.Domain
+open Client.Utils
 
 type Model = {
     User : UserData option
     RenderedOnServer : bool
 }
 
-let view onLogout (model:Model) =
+type Props = {
+    Model : Model
+    OnLogout : unit -> unit
+}
+
+let view = elmishView "Menu" (fun (props:Props) ->
     div [ centerStyle "row" ] [
         yield viewLink Page.Home "Home"
-        match model.User with
+        match props.Model.User with
         | Some _ ->
             yield viewLink Page.WishList "Wishlist"
-            yield menuLink onLogout "Logout"
+            yield menuLink props.OnLogout "Logout"
         | _ ->
             yield viewLink Page.Login "Login"
-
-
         yield str ReleaseNotes.Version
 
-        if model.RenderedOnServer then
+        if props.Model.RenderedOnServer then
             yield str " - Rendered on server"
         else
             yield str " - Rendered on client"
     ]
+)
