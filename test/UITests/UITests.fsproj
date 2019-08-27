@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,10 +8,12 @@
     <Compile Include="Tests.fs" />
     <Compile Include="Runner.fs" />
     <None Include="paket.references" />
+    <Content Include="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
-
   <ItemGroup>
     <Reference Include="netstandard" />
   </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
