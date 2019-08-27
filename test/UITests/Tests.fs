@@ -1,7 +1,6 @@
 module UITests.Tests
 
 open canopy.classic
-open canopy.configuration
 open Expecto
 open System.IO
 

@@ -44,7 +44,7 @@ group UITests
   nuget FSharp.Core redirects: force
   nuget Canopy
   nuget Expecto
-  nuget phantomjs
+  nuget NETStandard.Library
   nuget Selenium.WebDriver.ChromeDriver = 2.36
 
 group Build
