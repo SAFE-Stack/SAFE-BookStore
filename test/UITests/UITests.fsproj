@@ -9,4 +9,8 @@
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
+
+  <ItemGroup>
+    <Reference Include="netstandard" />
+  </ItemGroup>
 </Project>
