@@ -51,21 +51,25 @@ let saveWishListToDB connectionString wishList = task {
         entity
 
     let! existingWishList = getWishListFromDB connectionString wishList.UserName
+    let! booksTable = getBooksTable connectionString
+
     let batch =
         let operation = TableBatchOperation()
-        let existingBooks = existingWishList.Books |> Set
-        let newBooks = wishList.Books |> Set
-
-        // Delete old books
-        existingBooks
-        |> Set.iter (fun book ->
+        existingWishList.Books
+        |> Seq.iter (fun book ->
             let entity = buildEntity wishList.UserName book
             entity.ETag <- "*"
             entity |> TableOperation.Delete |> operation.Add)
 
-        // Insert books
-        newBooks
-        |> Set.iter (fun book ->
+        operation
+
+    let! _ = booksTable.ExecuteBatchAsync batch
+    ()
+
+    let batch =
+        let operation = TableBatchOperation()
+        wishList.Books
+        |> Seq.iter (fun book ->
             let entity = buildEntity wishList.UserName book
             entity.Properties.["Title"] <- EntityProperty.GeneratePropertyForString book.Title
             entity.Properties.["Authors"] <- EntityProperty.GeneratePropertyForString book.Authors
@@ -75,7 +79,7 @@ let saveWishListToDB connectionString wishList = task {
 
         operation
 
-    let! booksTable = getBooksTable connectionString
+
     let! _ = booksTable.ExecuteBatchAsync batch
     ()
 }
