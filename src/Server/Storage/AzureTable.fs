@@ -56,16 +56,16 @@ let saveWishListToDB connectionString wishList = task {
         let existingBooks = existingWishList.Books |> Set
         let newBooks = wishList.Books |> Set
 
-        // Delete obsolete books
-        (existingBooks - newBooks)
-        |> Set.iter(fun book ->
+        // Delete old books
+        existingBooks
+        |> Set.iter (fun book ->
             let entity = buildEntity wishList.UserName book
             entity.ETag <- "*"
             entity |> TableOperation.Delete |> operation.Add)
 
-        // Insert new / update existing books
-        (newBooks - existingBooks)
-        |> Set.iter(fun book ->
+        // Insert books
+        newBooks
+        |> Set.iter (fun book ->
             let entity = buildEntity wishList.UserName book
             entity.Properties.["Title"] <- EntityProperty.GeneratePropertyForString book.Title
             entity.Properties.["Authors"] <- EntityProperty.GeneratePropertyForString book.Authors
