@@ -13,7 +13,6 @@ open Thoth.Json.Net
 #endif
 
 type Model = {
-    Version : string
     WishList : WishList option
 }
 
@@ -23,7 +22,6 @@ type Msg =
 | Error of exn
 
 let private empty = {
-    Version = ReleaseNotes.Version
     WishList = None
 }
 
