@@ -2,7 +2,7 @@ module Client.App
 
 open Fable.Core.JsInterop
 open Fable.Import
-open Elmish
+    open Elmish
 open Elmish.React
 open Elmish.HMR
 open Client.Shared
@@ -46,41 +46,27 @@ let loadUser () : UserData option =
     | Ok user -> Some user
     | Error _ -> None
 
-let hydrateModel (json:string) (page: Page option) : Model * Cmd<_> =
+let hydrateModel (json:string) (page: Page) =
     // The page was rendered server-side and now react client-side kicks in.
     // If needed, the model could be fixed up here.
     // In this case we just deserialize the model from the json and don't need to to anything special.
     let model: Model = Decode.Auto.unsafeFromString(json)
     match page, model.PageModel with
-    | Some Page.Home, HomePageModel subModel when subModel.WishList <> None ->
-        model, Cmd.ofMsg AppHydrated
-    | Some Page.Login, LoginModel _ ->
-        model, Cmd.ofMsg AppHydrated
-    | Some Page.WishList, WishListModel _ ->
-        model, Cmd.ofMsg AppHydrated
-    | _, HomePageModel _
-    | _, LoginModel _
-    | _, WishListModel _ ->
-        let subModel, cmd = Home.init()
-        // unknown page or page does not match model -> go to home page
-        { MenuModel = { User = None; RenderedOnServer = false }
-          PageModel = HomePageModel subModel },
-            Cmd.batch [
-                Cmd.map HomePageMsg cmd
-                Cmd.ofMsg AppHydrated
-            ]
+    | Page.Home, HomePageModel subModel when subModel.WishList <> None ->
+        Some model
+    | Page.Login, LoginModel _ ->
+        Some model
+    | Page.WishList, WishListModel _ ->
+        Some model
+    | _ ->
+        None
 
 
 let init page =
     // was the page rendered server-side?
     let stateJson: string option = !!Browser.Dom.window?__INIT_MODEL__
 
-    match stateJson with
-    | Some json ->
-        // SSR -> hydrate the model
-        let model, cmd = hydrateModel json page
-        { model with MenuModel = { model.MenuModel with User = loadUser() } }, cmd
-    | None ->
+    let defaultModel () =
         let subModel, cmd = Home.init()
         // no SSR -> show home page
         let model =
@@ -92,8 +78,17 @@ let init page =
             Cmd.batch [
                 Cmd.map HomePageMsg cmd
                 cmd2
-                Cmd.ofMsg AppHydrated
             ]
+
+    match stateJson, page with
+    | Some json, Some page ->
+        // SSR -> hydrate the model
+        match hydrateModel json page with
+        | Some model ->
+            { model with MenuModel = { model.MenuModel with User = loadUser() } }, Cmd.ofMsg AppHydrated
+        | _ -> defaultModel()
+    | _ -> defaultModel()
+
 
 let update msg model =
     match msg, model.PageModel with
