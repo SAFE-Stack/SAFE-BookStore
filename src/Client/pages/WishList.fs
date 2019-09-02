@@ -39,7 +39,7 @@ type Msg =
 /// Get the wish list from the server, used to populate the model
 let getWishList userName =
     promise {
-        let url = ServerUrls.APIUrls.WishList userName
+        let url = sprintf "/api/wishlist/%s" userName
         let props = [ ]
 
         let! res = Fetch.fetch url props
@@ -49,26 +49,26 @@ let getWishList userName =
 
 let getResetTime () =
     promise {
-        let url = ServerUrls.APIUrls.ResetTime
+        let url = "/api/resetTime/"
         let props = [ ]
 
         let! res = Fetch.fetch url props
         let! txt = res.text()
-        let details = Decode.Auto.unsafeFromString<ServerCode.Domain.WishListResetDetails> txt
+        let details = Decode.Auto.unsafeFromString<Domain.WishListResetDetails> txt
         return details.Time
     }
 
 
 let postWishList (token,wishList:WishList) =
     promise {
-        let url = ServerUrls.APIUrls.WishList wishList.UserName
+        let url = sprintf "/api/wishlist/%s" wishList.UserName
         let body = Encode.Auto.toString(0, wishList)
         let props =
-            [ RequestProperties.Method HttpMethod.POST
+            [ Method HttpMethod.POST
               Fetch.requestHeaders [
-                HttpRequestHeaders.Authorization ("Bearer " + token)
-                HttpRequestHeaders.ContentType "application/json" ]
-              RequestProperties.Body !^body ]
+                Authorization ("Bearer " + token)
+                ContentType "application/json" ]
+              Body !^body ]
 
         let! res = Fetch.fetch url props
         let! txt = res.text()

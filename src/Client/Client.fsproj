@@ -5,7 +5,6 @@
   <ItemGroup>
     <Compile Include="ReleaseNotes.fs" />
     <Compile Include="../Server/Shared/Domain.fs" />
-    <Compile Include="../Server/Shared/ServerUrls.fs" />
     <Compile Include="Pages.fs" />
     <Compile Include="LocalStorage.fs" />
     <Compile Include="Styles.fs" />

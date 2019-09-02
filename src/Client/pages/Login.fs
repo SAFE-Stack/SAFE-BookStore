@@ -7,7 +7,6 @@ open ServerCode.Domain
 open System
 open Fable.Core.JsInterop
 open Fetch.Types
-open ServerCode
 open Client.Styles
 open Client.Utils
 #if FABLE_COMPILER
@@ -35,13 +34,13 @@ let authUser (login:Login) = promise {
     let body = Encode.Auto.toString(0, login)
 
     let props = [
-        RequestProperties.Method HttpMethod.POST
-        Fetch.requestHeaders [ HttpRequestHeaders.ContentType "application/json" ]
-        RequestProperties.Body !^body
+        Method HttpMethod.POST
+        Fetch.requestHeaders [ ContentType "application/json" ]
+        Body !^body
     ]
 
     try
-        let! res = Fetch.fetch ServerUrls.APIUrls.Login props
+        let! res = Fetch.fetch "/api/users/login/" props
         let! txt = res.text()
         return Decode.Auto.unsafeFromString<UserData> txt
     with _ ->

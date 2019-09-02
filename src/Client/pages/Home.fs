@@ -30,7 +30,7 @@ let init () = empty, Cmd.ofMsg LoadWishList
 /// Get the wish list from the server, used to populate the model
 let getWishList userName =
     promise {
-        let url = ServerCode.ServerUrls.APIUrls.WishList userName
+        let url = sprintf "/api/wishlist/%s" userName
         let props = [ ]
 
         let! res = Fetch.fetch url props

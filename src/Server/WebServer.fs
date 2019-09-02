@@ -21,13 +21,13 @@ let webApp databaseType =
         not_found_handler Pages.notfound
 
         getf "/api/wishlist/%s" (WishList.getWishList db.LoadWishList)
-        get ServerUrls.APIUrls.ResetTime (WishList.getResetTime db.GetLastResetTime)
-        post ServerUrls.APIUrls.Login Auth.login
+        get "/api/resetTime/" (WishList.getResetTime db.GetLastResetTime)
+        post "/api/users/login/" Auth.login
 
         // SSR
         get "" (Pages.home db.LoadWishList)
-        get ServerUrls.PageUrls.Home (Pages.home db.LoadWishList)
-        get ServerUrls.PageUrls.Login Pages.login
+        get "/" (Pages.home db.LoadWishList)
+        get "/login" Pages.login
 
         forward "" secured
     }
