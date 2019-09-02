@@ -18,7 +18,7 @@ let handleNotFound (model: Model) =
 
 /// The navigation logic of the application given a page identity parsed from the .../#info
 /// information in the URL.
-let urlUpdate (result:Page option) (model: Model) =
+let urlUpdate (result:Page option) (model:Model) =
     match result with
     | None ->
         handleNotFound model
@@ -63,22 +63,16 @@ let hydrateModel (json:string) (page: Page) =
 
 
 let init page =
-    // was the page rendered server-side?
-    let stateJson: string option = !!Browser.Dom.window?__INIT_MODEL__
-
     let defaultModel () =
-        let subModel, cmd = Home.init()
-        // no SSR -> show home page
+        // no SSR
         let model =
             { MenuModel = { User = loadUser(); RenderedOnServer = false }
-              PageModel = HomePageModel subModel }
+              PageModel = HomePageModel Home.Model.Empty }
 
-        let model, cmd2 = urlUpdate page model
-        model,
-            Cmd.batch [
-                Cmd.map HomePageMsg cmd
-                cmd2
-            ]
+        urlUpdate page model
+
+    // was the page rendered server-side?
+    let stateJson: string option = !!Browser.Dom.window?__INIT_MODEL__
 
     match stateJson, page with
     | Some json, Some page ->
@@ -86,8 +80,10 @@ let init page =
         match hydrateModel json page with
         | Some model ->
             { model with MenuModel = { model.MenuModel with User = loadUser() } }, Cmd.ofMsg AppHydrated
-        | _ -> defaultModel()
-    | _ -> defaultModel()
+        | _ ->
+            defaultModel()
+    | _ ->
+        defaultModel()
 
 
 let update msg model =

@@ -16,16 +16,19 @@ type Model = {
     WishList : WishList option
 }
 
+    with
+        static member Empty : Model = {
+            WishList = None
+        }
+
 type Msg =
 | LoadWishList
 | WishListLoaded of WishList
 | Error of exn
 
-let private empty = {
-    WishList = None
-}
 
-let init () = empty, Cmd.ofMsg LoadWishList
+
+let init () = Model.Empty, Cmd.ofMsg LoadWishList
 
 /// Get the wish list from the server, used to populate the model
 let getWishList userName =
