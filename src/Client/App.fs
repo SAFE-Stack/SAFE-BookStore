@@ -144,16 +144,10 @@ let update msg model =
 
 open Elmish.Debug
 
-let withReact =
-    if (!!Browser.Dom.window?__INIT_MODEL__)
-    then Program.withReactHydrate
-    else Program.withReactSynchronous
-
-
 // App
 Program.mkProgram init update view
 |> Program.toNavigable Pages.urlParser urlUpdate
 |> Program.withConsoleTrace
-|> withReact "elmish-app"
+|> Program.withReactHydrate "elmish-app"
 |> Program.withDebugger
 |> Program.run
