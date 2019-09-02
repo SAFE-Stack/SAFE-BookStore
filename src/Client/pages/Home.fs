@@ -52,11 +52,11 @@ let update (msg:Msg) model : Model*Cmd<Msg> =
         printfn "Error: %s" e.Message
         model, Cmd.none
 
+type BookProps = { Key: string; Book: Book }
 
-type BookProps = { key: string; book: Book }
-
-let bookComponent { book = book } =
-    tr [ Key book.Link ] [
+let bookComponent = elmishView "Book" (fun (props: BookProps) ->
+    let book = props.Book
+    tr [ Key props.Key ] [
         td [] [
             if String.IsNullOrWhiteSpace book.Link then
                 yield str book.Title
@@ -65,8 +65,7 @@ let bookComponent { book = book } =
         td [] [ str book.Authors ]
         td [] [ img [ Src book.ImageLink; Title book.Title ]]
     ]
-
-let BookComponent = elmishView "Book" bookComponent
+)
 
 let view = elmishView "Home" (fun (model:Model) ->
     match model.WishList with
@@ -82,10 +81,10 @@ let view = elmishView "Home" (fun (model:Model) ->
             tbody [] [
                 wishList.Books
                     |> List.map (fun book ->
-                       BookComponent {
-                            key = book.Title + book.Authors
-                            book = book
-                       })
+                        elmishView "Book" bookComponent {
+                            Key = book.Title + book.Authors
+                            Book = book
+                        })
                     |> ofList
             ]
         ]
