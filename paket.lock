@@ -27,7 +27,7 @@ NUGET
       Fable.Core (>= 3.0) - restriction: >= netstandard2.0
       Fable.Elmish (>= 3.0) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.6.2) - restriction: >= netstandard2.0
-    Fable.Elmish.Debugger (3.0.2)
+    Fable.Elmish.Debugger (3.0.3)
       Fable.Core (>= 3.0) - restriction: >= netstandard2.0
       Fable.Elmish (>= 3.0) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.6.2) - restriction: >= netstandard2.0
@@ -50,7 +50,7 @@ NUGET
     Fable.Promise (2.0)
       Fable.Core (>= 3.0) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.5.2) - restriction: >= netstandard2.0
-    Fable.React (5.2.7)
+    Fable.React (5.3)
       Fable.Browser.Dom (>= 1.0) - restriction: >= netstandard2.0
       Fable.Core (>= 3.0) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.6.2) - restriction: >= netstandard2.0
