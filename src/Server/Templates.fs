@@ -6,21 +6,7 @@ open Fable.ReactServer
 open Thoth.Json.Net
 
 /// Server side react
-let index (model: Model option) =
-    let jsonState, htmlStr =
-        match model with
-        | Some model ->
-            // Note we call json serialization twice here,
-            // because Elmish's model can be some complicated type instead of POJO.
-            // The first one will seriallize the state to a json string,
-            // and the second one will seriallize the json string to a js string,
-            // so we can deseriallize it by Thoth auto decoder and get the correct types.
-            Encode.Auto.toString(0, (Encode.Auto.toString(0, model))),
-            Client.Shared.view model ignore
-            |> renderToString
-        | None ->
-            "null", ""
-
+let index (model: Model) =
     html [_lang "en-US" ] [
         head [ ] [
             meta [ _httpEquiv "Content-Type"; _content "text/html; charset=UTF-8" ]
@@ -42,9 +28,16 @@ let index (model: Model option) =
         ]
         body [ _class "app-container" ] [
             div [ _id "elmish-app"; _class "elmish-app" ] [
-                rawText htmlStr
+                rawText (renderToString (Client.Shared.view model ignore))
             ]
-            script [ ] [ rawText ("var __INIT_MODEL__ = " + jsonState) ]
+            script [ ] [
+                // Note we call json serialization twice here,
+                // because Elmish's model can be some complicated type instead of POJO.
+                // The first one will seriallize the state to a json string,
+                // and the second one will seriallize the json string to a js string,
+                // so we can deseriallize it by Thoth auto decoder and get the correct types.
+                rawText ("var __INIT_MODEL__ = " + Encode.Auto.toString(0, (Encode.Auto.toString(0, model))))
+            ]
             script [ _src "/public/vendors.js" ] []
             script [ _src "/public/main.js" ] []
         ]

@@ -5,6 +5,7 @@ open ServerCode.Domain
 type PageModel =
     | HomePageModel of Home.Model
     | LoginModel of Login.Model
+    | NotFoundModel
     | WishListModel of WishList.Model
 
 type Model = {
@@ -39,6 +40,8 @@ let view model dispatch =
             match model.PageModel with
             | HomePageModel model ->
                 yield Home.view model
+            | NotFoundModel ->
+                yield div [] [ str "The page is not available." ]
             | LoginModel m ->
                 yield Login.view { Model = m; Dispatch = (LoginMsg >> dispatch) }
             | WishListModel m ->

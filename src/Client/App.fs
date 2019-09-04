@@ -14,7 +14,7 @@ open Elmish.Navigation
 
 let handleNotFound (model: Model) =
     JS.console.error("Error parsing url: " + Browser.Dom.window.location.href)
-    ( model, Navigation.modifyUrl (toPath Page.Home) )
+    ( model, Navigation.modifyUrl (toPath Page.NotFound) )
 
 /// The navigation logic of the application given a page identity parsed from the .../#info
 /// information in the URL.
@@ -22,6 +22,9 @@ let urlUpdate (result:Page option) (model:Model) =
     match result with
     | None ->
         handleNotFound model
+
+    | Some Page.NotFound ->
+        { model with PageModel = NotFoundModel }, Cmd.none
 
     | Some Page.Login ->
         let m, cmd = Login.init model.MenuModel.User

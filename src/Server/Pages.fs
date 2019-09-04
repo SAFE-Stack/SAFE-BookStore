@@ -12,7 +12,7 @@ let home (getWishListFromDB : string -> Task<Domain.WishList>) : HttpHandler = f
             MenuModel = { User = None; RenderedOnServer = true }
             PageModel = HomePageModel { WishList = Some wishList }
         }
-        let page = Templates.index (Some model)
+        let page = Templates.index model
         return! ctx.WriteHtmlViewAsync page
     }
 
@@ -24,9 +24,15 @@ let login: HttpHandler = fun _ ctx ->
                 let m,_ = Client.Login.init None
                 LoginModel m
         }
-        return! ctx.WriteHtmlViewAsync (Templates.index (Some model))
+        return! ctx.WriteHtmlViewAsync (Templates.index model)
     }
 
+let notfoundModel: Model = {
+    MenuModel = { User = None; RenderedOnServer = true }
+    PageModel = NotFoundModel
+}
+
 let notfound: HttpHandler = fun _ ctx ->
+
     ctx.SetStatusCode 404
-    ctx.WriteHtmlViewAsync (Templates.index None)
+    ctx.WriteHtmlViewAsync (Templates.index notfoundModel)
