@@ -28,7 +28,8 @@ let index (model: Model) =
         ]
         body [ _class "app-container" ] [
             div [ _id "elmish-app"; _class "elmish-app" ] [
-                rawText (renderToString (Client.Shared.view model ignore))
+                Client.Shared.view model ignore
+                |> renderToString |> rawText
             ]
             script [ ] [
                 // Note we call json serialization twice here,
@@ -36,7 +37,9 @@ let index (model: Model) =
                 // The first one will seriallize the state to a json string,
                 // and the second one will seriallize the json string to a js string,
                 // so we can deseriallize it by Thoth auto decoder and get the correct types.
-                rawText ("var __INIT_MODEL__ = " + Encode.Auto.toString(0, (Encode.Auto.toString(0, model))))
+                "var __INIT_MODEL__ = " +
+                  Encode.Auto.toString(0, (Encode.Auto.toString(0, model)))
+                |> rawText
             ]
             script [ _src "/public/vendors.js" ] []
             script [ _src "/public/main.js" ] []
