@@ -21,7 +21,7 @@ If you are looking to create your *own* SAFE application, we recommend that you 
 - [.NET Framework 4.6.2](https://support.microsoft.com/en-us/help/3151800/the--net-framework-4-6-2-offline-installer-for-windows) on Windows
 - [node.js](https://nodejs.org/) - JavaScript runtime
 - [yarn](https://yarnpkg.com/) - Package manager for npm modules
-- [dotnet SDK 2.1.500](https://github.com/dotnet/cli/releases/tag/v2.1.500)
+- [dotnet SDK 2.2.401](https://github.com/dotnet/cli/releases/tag/v2.2.401)
 - Other tools like [Paket](https://fsprojects.github.io/Paket/) or [FAKE](https://fake.build/) will also be installed by the build script.
 - For [deployment](#deployment) you need to have [docker](https://www.docker.com/) installed.
 
