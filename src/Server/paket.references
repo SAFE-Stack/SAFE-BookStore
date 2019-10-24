@@ -1,13 +1,6 @@
 FSharp.Core
 System.Net.NetworkInformation
-Microsoft.Azure.WebJobs
-Microsoft.Azure.WebJobs.Extensions
 Saturn
-Microsoft.AspNetCore.StaticFiles
-Microsoft.AspNetCore
-Microsoft.AspNetCore.WebSockets
-Microsoft.AspNetCore.WebSockets.Server
-
 Fable.Core
 Fable.React
 Fable.Browser.Dom
@@ -18,3 +11,5 @@ Fable.Elmish.Browser
 Fable.Elmish.React
 Thoth.Json.Net
 Thoth.Json.Giraffe
+Microsoft.Azure.WebJobs
+Microsoft.Azure.WebJobs.Extensions
