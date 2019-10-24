@@ -3,12 +3,9 @@ storage:none
 
 nuget FSharp.Core redirects: force
 nuget Saturn
-nuget Microsoft.AspNetCore.WebSockets
-nuget Microsoft.AspNetCore.WebSockets.Server
 nuget System.Net.NetworkInformation
 nuget Thoth.Json.Net
 nuget Thoth.Json.Giraffe
-
 nuget Fable.Core
 nuget Fable.Browser.Dom
 nuget Fable.Browser.WebStorage
