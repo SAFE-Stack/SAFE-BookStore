@@ -11,3 +11,5 @@ Fable.Elmish.Browser
 Fable.Elmish.React
 Thoth.Json.Net
 Thoth.Json.Giraffe
+Microsoft.Azure.WebJobs
+Microsoft.Azure.WebJobs.Extensions
