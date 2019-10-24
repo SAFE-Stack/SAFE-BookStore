@@ -2,25 +2,25 @@
   "private": true,
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
-    "@babel/runtime": "^7.6.0",
-    "react": "16.9.0",
-    "react-bootstrap": "1.0.0-beta.12",
-    "react-dom": "16.9.0",
+    "@babel/runtime": "^7.6.3",
+    "react": "16.11.0",
+    "react-bootstrap": "1.0.0-beta.14",
+    "react-dom": "16.11.0",
     "remotedev": "0.2.9",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.0",
-    "@babel/plugin-transform-runtime": "^7.6.0",
-    "@babel/preset-env": "^7.6.0",
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/preset-env": "^7.6.3",
     "babel-loader": "^8.0.6",
-    "concurrently": "4.1.2",
-    "fable-compiler": "2.3.23",
+    "concurrently": "5.0.0",
+    "fable-compiler": "2.4.7",
     "fable-loader": "2.1.8",
-    "terser-webpack-plugin": "^2.0.1",
-    "webpack": "4.39.3",
-    "webpack-cli": "^3.3.8",
-    "webpack-dev-server": "3.8.0"
+    "terser-webpack-plugin": "^2.2.1",
+    "webpack": "4.41.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "3.9.0"
   },
   "scripts": {
     "prebuildServer": "dotnet restore src/Server/Server.fsproj",
