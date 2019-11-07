@@ -14,6 +14,10 @@ var CONFIG = {
     outputDir: resolve("./public"),
     devServerPort: undefined,
     devServerProxy: {
+        '/': {
+            target: 'http://localhost:' + (process.env.GIRAFFE_FABLE_PORT || "8085"),
+            changeOrigin: true
+        },
         '/api/*': {
             target: 'http://localhost:' + (process.env.GIRAFFE_FABLE_PORT || "8085"),
             changeOrigin: true
