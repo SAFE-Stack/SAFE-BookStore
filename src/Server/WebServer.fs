@@ -14,7 +14,7 @@ let webApp databaseType =
 
     let secured = router {
         pipe_through (Saturn.Auth.requireAuthentication Saturn.ChallengeType.JWT)
-        post "/api/wishlist/%s" (WishList.postWishList db.SaveWishList)
+        post "/api/wishlist/" (WishList.postWishList db.SaveWishList)
     }
 
     router {

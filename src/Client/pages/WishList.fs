@@ -61,7 +61,7 @@ let getResetTime () =
 
 let postWishList (token,wishList:WishList) =
     promise {
-        let url = sprintf "/api/wishlist/%s" wishList.UserName
+        let url = "/api/wishlist/"
         let body = Encode.Auto.toString(0, wishList)
         let props =
             [ Method HttpMethod.POST
