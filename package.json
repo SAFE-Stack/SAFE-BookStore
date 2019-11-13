@@ -1,8 +1,8 @@
 {
   "private": true,
   "dependencies": {
-    "@babel/polyfill": "^7.6.0",
-    "@babel/runtime": "^7.6.3",
+    "@babel/polyfill": "^7.7.0",
+    "@babel/runtime": "^7.7.2",
     "react": "16.11.0",
     "react-bootstrap": "1.0.0-beta.14",
     "react-dom": "16.11.0",
@@ -10,16 +10,16 @@
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.4",
+    "@babel/core": "^7.7.2",
     "@babel/plugin-transform-runtime": "^7.6.2",
-    "@babel/preset-env": "^7.6.3",
+    "@babel/preset-env": "^7.7.1",
     "babel-loader": "^8.0.6",
     "concurrently": "5.0.0",
-    "fable-compiler": "2.4.7",
+    "fable-compiler": "2.4.11",
     "fable-loader": "2.1.8",
     "terser-webpack-plugin": "^2.2.1",
     "webpack": "4.41.2",
-    "webpack-cli": "^3.3.9",
+    "webpack-cli": "^3.3.10",
     "webpack-dev-server": "3.9.0"
   },
   "scripts": {
