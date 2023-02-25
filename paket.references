@@ -1,0 +1,13 @@
+group Build
+    FSharp.Core
+    Fake.Core.Target
+    Fake.DotNet.Cli
+    Fake.DotNet.MSBuild
+    Fake.DotNet.Paket
+    Fake.IO.FileSystem
+    Fake.Tools.Git
+    Fake.Core.ReleaseNotes
+    Fake.DotNet.Testing.Expecto
+    MSBuild.StructuredLogger
+    Microsoft.Build
+    Microsoft.Build.Framework

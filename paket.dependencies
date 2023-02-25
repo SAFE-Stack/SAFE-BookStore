@@ -1,4 +1,4 @@
-source https://nuget.org/api/v2
+source https://api.nuget.org/v3/index.json
 storage:none
 
 nuget FSharp.Core redirects: force
@@ -13,15 +13,17 @@ nuget Fable.Fetch
 nuget Fable.Promise
 nuget Fable.React
 nuget Fable.Elmish
+nuget Fable.Elmish.Browser
 nuget Fable.Elmish.React
 nuget Fable.Elmish.Debugger
 nuget Fable.Elmish.HMR
+nuget Microsoft.AspNetCore.Authentication.JwtBearer ~> 6.0 // If you upgrade to .NET 7, you can remove this line
 nuget Microsoft.Azure.WebJobs
 nuget Microsoft.Azure.WebJobs.Extensions
 nuget Thoth.Json
 
 group AzureFunctions
-  source https://nuget.org/api/v2
+  source https://api.nuget.org/v3/index.json
   storage:none
   nuget FSharp.Core redirects: force
   nuget Microsoft.NET.Sdk.Functions
@@ -31,19 +33,32 @@ group AzureFunctions
   nuget Microsoft.AspNetCore.Mvc
 
 group ServerTests
-  source https://nuget.org/api/v2
+  source https://api.nuget.org/v3/index.json
   storage:none
   nuget FSharp.Core redirects: force
   nuget Expecto
 
 group UITests
-  source https://nuget.org/api/v2
+  source https://api.nuget.org/v3/index.json
   nuget FSharp.Core redirects: force
   nuget Canopy
   nuget Expecto
   nuget Selenium.WebDriver.ChromeDriver = 2.36
 
 group Build
-  source https://nuget.org/api/v2
-  framework >= net461
-  nuget FAKE < 5
+  source https://api.nuget.org/v3/index.json
+  framework: net6.0
+  
+  nuget PowerShell ~> 7.2.5
+  nuget FSharp.Core ~> 6.0.5
+  nuget Fake.Core.Target ~> 5.0
+  nuget Fake.DotNet.Cli ~> 5.0
+  nuget Fake.DotNet.MSBuild ~> 5.0
+  nuget Fake.DotNet.Paket ~> 5.0
+  nuget Fake.IO.FileSystem ~> 5.0
+  nuget Fake.Tools.Git ~> 5.0
+  nuget Fake.Core.ReleaseNotes ~> 5.0
+  nuget Fake.DotNet.Testing.Expecto ~> 5.0
+  nuget MSBuild.StructuredLogger ~> 2.1.507
+  nuget Microsoft.Build ~> 17.2.0
+  nuget Microsoft.Build.Framework ~> 17.2.0
