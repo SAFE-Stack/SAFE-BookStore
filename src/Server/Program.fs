@@ -19,7 +19,7 @@ let getPortsOrDefault defaultVal =
     | value -> value |> uint16
 
 let serviceConfig (services : IServiceCollection) =
-    services.AddSingleton<Giraffe.Serialization.Json.IJsonSerializer>(ThothSerializer())
+    services.AddSingleton<Giraffe.Json.ISerializer>(ThothSerializer())
 
 [<EntryPoint>]
 let main args =

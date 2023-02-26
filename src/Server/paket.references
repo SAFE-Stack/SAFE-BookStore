@@ -13,3 +13,8 @@ Thoth.Json.Net
 Thoth.Json.Giraffe
 Microsoft.Azure.WebJobs
 Microsoft.Azure.WebJobs.Extensions
+Azure.Data.Tables
+System.Linq.Async
+Azure.Storage.Blobs
+Giraffe
+Giraffe.ViewEngine

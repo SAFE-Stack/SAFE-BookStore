@@ -14,7 +14,7 @@ let main args =
     try
         try
             startBrowser()
-            runTestsWithArgs { defaultConfig with ``parallel`` = false } args Tests.tests
+            runTestsWithCLIArgs [CLIArguments.Sequenced] args Tests.tests
         with e ->
             printfn "Error: %s" e.Message
             -1

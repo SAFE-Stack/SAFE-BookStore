@@ -1,8 +1,10 @@
 source https://api.nuget.org/v3/index.json
 storage:none
 
+nuget Azure.Storage.Blobs
 nuget FSharp.Core redirects: force
 nuget Saturn
+nuget System.Linq.Async
 nuget System.Net.NetworkInformation
 nuget Thoth.Json.Net
 nuget Thoth.Json.Giraffe
@@ -21,6 +23,7 @@ nuget Microsoft.AspNetCore.Authentication.JwtBearer ~> 6.0 // If you upgrade to 
 nuget Microsoft.Azure.WebJobs
 nuget Microsoft.Azure.WebJobs.Extensions
 nuget Thoth.Json
+nuget Azure.Data.Tables
 
 group AzureFunctions
   source https://api.nuget.org/v3/index.json
@@ -28,8 +31,8 @@ group AzureFunctions
   nuget FSharp.Core redirects: force
   nuget Microsoft.NET.Sdk.Functions
   nuget Newtonsoft.Json
-  nuget WindowsAzure.Storage
-  nuget TaskBuilder.fs
+  nuget Azure.Storage.Blobs
+  nuget Azure.Data.Tables
   nuget Microsoft.AspNetCore.Mvc
 
 group ServerTests

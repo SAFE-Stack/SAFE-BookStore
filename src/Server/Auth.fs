@@ -4,7 +4,6 @@ module ServerCode.Auth
 open Giraffe
 open Microsoft.AspNetCore.Http
 open ServerCode.Domain
-open FSharp.Control.Tasks.ContextInsensitive
 open Saturn.ControllerHelpers
 
 let createUserData (login : Domain.Login) : Domain.UserData =

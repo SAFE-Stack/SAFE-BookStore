@@ -2,7 +2,6 @@ module ServerCode.Pages
 
 open Giraffe
 open Client.Shared
-open FSharp.Control.Tasks.ContextInsensitive
 open System.Threading.Tasks
 
 let home (getWishListFromDB : string -> Task<Domain.WishList>) : HttpHandler = fun _ ctx ->

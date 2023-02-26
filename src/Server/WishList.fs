@@ -6,7 +6,6 @@ open Microsoft.AspNetCore.Http
 open Giraffe
 open Microsoft.Extensions.Logging
 open ServerCode.Domain
-open FSharp.Control.Tasks.ContextInsensitive
 open System.Security.Claims
 open Saturn.ControllerHelpers
 

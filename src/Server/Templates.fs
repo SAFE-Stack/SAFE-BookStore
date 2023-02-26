@@ -1,7 +1,7 @@
 module ServerCode.Templates
 
 open Client.Shared
-open Giraffe.GiraffeViewEngine
+open Giraffe.ViewEngine
 open Fable.ReactServer
 open Thoth.Json.Net
 

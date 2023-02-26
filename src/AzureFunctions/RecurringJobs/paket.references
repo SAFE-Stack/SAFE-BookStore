@@ -3,6 +3,6 @@ group AzureFunctions
 Microsoft.NET.Sdk.Functions
 FSharp.Core
 Newtonsoft.Json
-WindowsAzure.Storage
-TaskBuilder.fs
+Azure.Storage.Blobs
+Azure.Data.Tables
 Microsoft.AspNetCore.Mvc
