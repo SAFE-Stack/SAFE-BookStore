@@ -117,8 +117,9 @@ let NPMInstall _ =
     run yarnTool "install --frozen-lockfile" __SOURCE_DIRECTORY__
 
 let BuildClient _ =
-    run yarnTool "webpack --config src/Client/webpack.config.js -p" clientPath
-
+    // run yarnTool "webpack --config src/Client/webpack.config.js --mode production" clientPath
+    DotNet.exec (DotNet.Options.withWorkingDirectory ("src" </> "Client")) "fable" ".\ --run webpack --mode production" |> ignore
+    
 let RunServerTests _ =
     runDotnet serverTestsPath "run" ""
 

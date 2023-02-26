@@ -194,3 +194,6 @@ node_modules
 src/Client/public/
 deploy
 /.ionide
+
+# Fable
+*.fs.js

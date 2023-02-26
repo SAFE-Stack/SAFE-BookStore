@@ -9,7 +9,7 @@ var CONFIG = {
     fsharpEntry:
         ["whatwg-fetch",
             "@babel/polyfill",
-            resolve("./Client.fsproj")
+            resolve("./App.fs.js")
         ],
     outputDir: resolve("./public"),
     devServerPort: undefined,
@@ -34,6 +34,7 @@ var CONFIG = {
                 },
                 "modules": false,
                 "useBuiltIns": "usage",
+                "corejs": 3,
             }]
         ],
         plugins: ["@babel/plugin-transform-runtime"]
@@ -97,20 +98,9 @@ module.exports = {
         port: 8089,
         contentBase: CONFIG.contentBase
     },
-    // - fable-loader: transforms F# into JS
     // - babel-loader: transforms JS to old syntax (compatible with old browsers)
     module: {
         rules: [
-            {
-                test: /\.fs(x|proj)?$/,
-                use: {
-                    loader: "fable-loader",
-                    options: {
-                        babel: CONFIG.babel,
-                        define: isProduction ? [] : ["DEBUG"]
-                   }
-                },
-            },
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
