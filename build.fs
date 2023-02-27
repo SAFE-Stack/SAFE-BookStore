@@ -28,7 +28,7 @@ let dockerLoginServer = Environment.environVar "DockerLoginServer"
 let dockerImageName = Environment.environVar "DockerImageName"
 
 // Pattern specifying assemblies to be tested using Expecto
-let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.exe"
+let clientTestExecutables = "test/UITests/**/bin/**/*Tests*.dll"
 
 let run cmd args dir =
     let result =
@@ -125,12 +125,17 @@ let RunServerTests _ =
 
 // FinalTarget
 let KillProcess _ =
-    Process.killAllByName "dotnet"
-    Process.killAllByName "dotnet.exe"
+    // Process.killAllByName "dotnet"
+    // Process.killAllByName "dotnet.exe"
+    Process.getAllByName "dotnet"
+    |> Seq.append (Process.getAllByName "dotnet.exe")
+    |> Seq.filter (fun p -> p.Id <> System.Diagnostics.Process.GetCurrentProcess().Id)
+    |> Seq.iter Process.kill
+    Process.killAllCreatedProcesses ()
     Process.killAllByName "docker-proxy"
 
 let RunUITest _ =
-    Target.activateFinal "KillProcess"
+    Target.activateFinal (nameof(KillProcess))
 
     let serverProcess =
         let info = System.Diagnostics.ProcessStartInfo()
@@ -139,7 +144,7 @@ let RunUITest _ =
         info.Arguments <- " run"
         info.UseShellExecute <- false
         System.Diagnostics.Process.Start info
-
+    
     System.Threading.Thread.Sleep 15000 |> ignore  // give server some time to start
 
     runDotnet clientTestsPath "build" ""

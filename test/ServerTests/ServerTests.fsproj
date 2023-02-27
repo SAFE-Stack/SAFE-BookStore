@@ -10,6 +10,7 @@
   <ItemGroup>
     <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
+    <Content Include="paket.references" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

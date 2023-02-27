@@ -4,4 +4,4 @@ open Expecto
 
 [<EntryPoint>]
 let main args =
-    runTestsWithArgs { defaultConfig with ``parallel`` = false } args ServerTests.Tests.wishListTests
+    runTestsWithCLIArgs [CLIArguments.Sequenced] args ServerTests.Tests.wishListTests
