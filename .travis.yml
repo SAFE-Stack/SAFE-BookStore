@@ -12,8 +12,8 @@ addons:
 
 before_install:
   - chmod +x build.sh
-  - nvm install 10.16.0
-  - nvm use 10.16.0
+  - nvm install 18.14.2
+  - nvm use 18.14.2
   # Yarn
   - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
   - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
@@ -30,4 +30,4 @@ cache:
   - $HOME/.yarn-cache
 
 script:
-  - ./build.sh All
+  - ./build.sh -t All
