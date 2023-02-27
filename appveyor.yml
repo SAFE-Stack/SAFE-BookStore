@@ -1,7 +1,7 @@
 init:
   - git config --global core.autocrlf input
 environment:
-  nodejs_version: "18.14.2"
+  nodejs_version: "18"
 install:
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
