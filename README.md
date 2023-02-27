@@ -397,7 +397,7 @@ Create a file called `release.cmd` with the following content and configure your
     @echo off
     cls
 
-    .paket\paket.exe restore
+    dotnet paket restore
     if errorlevel 1 (
       exit /b %errorlevel%
     )

@@ -197,3 +197,6 @@ deploy
 
 # Fable
 *.fs.js
+
+# Rider-specific
+.idea/
