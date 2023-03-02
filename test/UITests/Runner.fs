@@ -1,5 +1,6 @@
 ﻿module UITests.Runner
 
+open OpenQA.Selenium
 open canopy.classic
 open canopy.types
 open Expecto
@@ -12,11 +13,7 @@ let startBrowser() =
 [<EntryPoint>]
 let main args =
     try
-        try
-            startBrowser()
-            runTestsWithCLIArgs [CLIArguments.Sequenced] args Tests.tests
-        with e ->
-            printfn "Error: %s" e.Message
-            -1
+        startBrowser()
+        runTestsWithCLIArgs [CLIArguments.Sequenced] args Tests.tests
     finally
         quit()

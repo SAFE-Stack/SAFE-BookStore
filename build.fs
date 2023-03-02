@@ -146,14 +146,18 @@ let RunUITest _ =
         System.Diagnostics.Process.Start info
     
     System.Threading.Thread.Sleep 15000 |> ignore  // give server some time to start
-
-    runDotnet clientTestsPath "build" ""
     
-    !! clientTestExecutables
-    |> fun xs -> if Seq.isEmpty xs then failwith "no UI tests found" else xs
-    |> Expecto.run (fun p -> { p with Parallel = false } )
-
-    serverProcess.Kill()
+    try
+        runDotnet clientTestsPath "build" ""
+        
+        !! clientTestExecutables
+        |> fun xs -> if Seq.isEmpty xs then failwith "no UI tests found" else xs
+        |> Expecto.run (fun p -> { p with Parallel = false } )
+    finally
+        // turns out that, at least on macOS, `dotnet run` spawns the actual program as a child process, so you need
+        // to kill the whole tree
+        Trace.logfn "Cleaning up server process (pid = %d)" serverProcess.Id
+        serverProcess.Kill(true)
 
 
 // --------------------------------------------------------------------------------------
@@ -409,6 +413,9 @@ let main argv =
     |> Context.RuntimeContext.Fake
     |> Context.setExecutionContext
     initTargets ()
-    Target.runOrDefaultWithArguments "All"
-
+    try
+        Target.runOrDefaultWithArguments "All"
+    finally
+        Trace.logf "Attempting to kill all created processes"
+        Process.killAllCreatedProcesses ()
     0

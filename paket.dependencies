@@ -44,8 +44,9 @@ group ServerTests
 group UITests
   source https://api.nuget.org/v3/index.json
   nuget FSharp.Core redirects: force
-  nuget Canopy
+  nuget Canopy 2.1.1
   nuget Expecto
+  nuget Selenium.WebDriver 3.141
   nuget Selenium.WebDriver.ChromeDriver = 2.36
 
 group Build
