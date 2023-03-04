@@ -1,5 +1,6 @@
 module UITests.Tests
 
+open System
 open canopy.classic
 open Expecto
 open System.IO
@@ -22,8 +23,11 @@ let testCase name f =
             f x
         with
         | exn ->
-            screenshot screenshotFolder (name  + "-" + System.DateTime.Now.ToString("MMM-d_HH-mm-ss")) |> ignore
-            raise exn
+            try
+                screenshot screenshotFolder (name  + "-" + System.DateTime.Now.ToString("MMM-d_HH-mm-ss")) |> ignore
+                raise exn
+            with screenshotExn ->
+                raise (AggregateException(screenshotExn, exn))
     )
 
 let startApp () =
