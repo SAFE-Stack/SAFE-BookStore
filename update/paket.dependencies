@@ -1,0 +1,21 @@
+source https://api.nuget.org/v3/index.json
+framework: net8.0
+storage: none
+
+nuget FSharp.Core ~> 8
+nuget Fable.Remoting.Giraffe ~> 5
+nuget Saturn ~> 0
+nuget Expecto ~> 9
+
+nuget Fable.Core ~> 4
+nuget Fable.Elmish ~> 4
+nuget Fable.Elmish.React ~> 4
+nuget Fable.Elmish.Debugger ~> 4
+nuget Fable.Elmish.HMR ~> 7
+nuget Fable.Mocha ~> 2
+nuget Fable.Remoting.Client ~> 7
+nuget Feliz ~> 2
+
+nuget Fake.Core.Target ~> 5
+nuget Fake.IO.FileSystem ~> 5
+nuget Farmer ~> 1
