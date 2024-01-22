@@ -2,6 +2,7 @@ source https://api.nuget.org/v3/index.json
 framework: net8.0
 storage: none
 
+nuget Feliz.DaisyUI
 nuget FSharp.Core ~> 8
 nuget Fable.Remoting.Giraffe ~> 5
 nuget Saturn ~> 0
