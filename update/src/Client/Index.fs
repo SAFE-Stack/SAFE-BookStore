@@ -1,32 +1,61 @@
 module Index
 
 open Elmish
+open Fable.Core
 open Fable.Remoting.Client
 open Feliz.DaisyUI
+open Feliz.Router
+open Page
 open Shared
 
 type PageTab =
-    | Home
-    | Login
-    | Wishlist
+    | Home of Home.Model
+    | Login of Login.Model
+    | NotFound
 
 type Model = { Page: PageTab }
 
 type Msg =
-    | NoOp
+    | HomePageMsg of Home.Msg
+    | LoginPageMsg of Login.Msg
+    | UrlChanged of string list
 
 // let todosApi =
 //     Remoting.createApi ()
 //     |> Remoting.withRouteBuilder Route.builder
 //     |> Remoting.buildProxy<ITodosApi>
 
+let initFromUrl url =
+    match url with
+    | [] | [""] ->
+        let homeModel, homeMsg = Home.init ()
+        let model = { Page = Home homeModel }
+        let cmd = homeMsg |> Cmd.map HomePageMsg
+        model, cmd
+    | ["login" ] ->
+        let loginModel, loginMsg = Login.init ()
+        let model = { Page = Login loginModel }
+        let cmd = loginMsg |> Cmd.map LoginPageMsg
+        model, cmd
+    | _ -> { Page = NotFound }, Cmd.none
+
 let init () =
-    let model = { Page = Home }
-    model, Cmd.none
+    Router.currentUrl ()
+    |> initFromUrl
 
 let update msg model =
-    match msg with
-    | NoOp -> model, Cmd.none
+    match model.Page, msg with
+    | Home homeModel, HomePageMsg homeMsg ->
+        let newModel, cmd = Home.update homeMsg homeModel
+        { Page = Home newModel }, cmd
+    | Login loginModel, LoginPageMsg loginMsg ->
+        let newModel, cmd = Login.update loginMsg loginModel
+        { Page = Login newModel }, cmd
+    | NotFound, _ ->
+        { Page = NotFound }, Cmd.none
+    |  _, UrlChanged url -> initFromUrl url
+    | _, _ ->
+        model, Cmd.none
 
 open Feliz
 
@@ -47,12 +76,22 @@ let navigation model dispatch =
     ]
 
 let view model dispatch =
-    Html.section [
-        theme.winter
-        prop.className "grid grid-rows-3 gap-5"
-        prop.children [
-            logo
-            navigation model dispatch
-            Page.Home.view model dispatch
+    React.router [
+        router.onUrlChanged (UrlChanged >> dispatch)
+        router.children [
+            Html.section [
+                theme.winter
+                prop.className "grid grid-rows-3 gap-5"
+                prop.children [
+                    logo
+                    navigation model dispatch
+                    match model.Page with
+                    | Home homeModel ->
+                        Home.view homeModel dispatch
+                    | Login loginModel ->
+                        Login.view loginModel dispatch
+                    | NotFound -> Html.div [ prop.text "Not Found" ]
+                ]
+            ]
         ]
     ]

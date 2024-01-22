@@ -3,6 +3,7 @@ framework: net8.0
 storage: none
 
 nuget Feliz.DaisyUI
+nuget Feliz.Router
 nuget FSharp.Core ~> 8
 nuget Fable.Remoting.Giraffe ~> 5
 nuget Saturn ~> 0
