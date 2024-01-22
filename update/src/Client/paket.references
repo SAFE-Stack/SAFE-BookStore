@@ -6,5 +6,3 @@ Fable.Elmish.HMR
 Fable.Remoting.Client
 Feliz
 FSharp.Core
-Fable.Elmish.Browser
-Fable.Fetch
