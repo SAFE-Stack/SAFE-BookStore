@@ -6,6 +6,7 @@ nuget Feliz.DaisyUI
 nuget Feliz.Router
 nuget FSharp.Core ~> 8
 nuget Fable.Remoting.Giraffe ~> 5
+nuget FSToolkit.ErrorHandling
 nuget Saturn ~> 0
 nuget Expecto ~> 9
 
