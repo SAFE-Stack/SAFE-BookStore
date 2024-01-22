@@ -27,12 +27,12 @@ type Msg =
 
 let initFromUrl url =
     match url with
-    | [] | [""] ->
+    | [] ->
         let homeModel, homeMsg = Home.init ()
         let model = { Page = Home homeModel }
         let cmd = homeMsg |> Cmd.map HomePageMsg
         model, cmd
-    | ["login" ] ->
+    | [ "login" ] ->
         let loginModel, loginMsg = Login.init ()
         let model = { Page = Login loginModel }
         let cmd = loginMsg |> Cmd.map LoginPageMsg
@@ -53,7 +53,7 @@ let update msg model =
         { Page = Login newModel }, cmd
     | NotFound, _ ->
         { Page = NotFound }, Cmd.none
-    |  _, UrlChanged url -> initFromUrl url
+    | _, UrlChanged url -> initFromUrl url
     | _, _ ->
         model, Cmd.none
 
