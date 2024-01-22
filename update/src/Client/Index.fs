@@ -81,7 +81,7 @@ let view model dispatch =
         router.children [
             Html.section [
                 theme.winter
-                prop.className "grid grid-rows-3 gap-5"
+                prop.className "grid grid-rows-[min-content_min-content_auto] gap-5 h-screen"
                 prop.children [
                     logo
                     navigation model dispatch
