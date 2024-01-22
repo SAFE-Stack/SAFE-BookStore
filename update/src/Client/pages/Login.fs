@@ -1,30 +1,55 @@
 module Page.Login
 
+open System
 open Elmish
 open Feliz.DaisyUI
+open FsToolkit.ErrorHandling
 
-type Page =
-    | Home
-    | Login
-    | Wishlist
-
-type Model = { Page: Page }
+type Model = {
+    Username: string
+    Password: string
+    FormErrors: string list
+}
 
 type Msg =
-    | NoOp
+    | SetUsername of string
+    | SetPassword of string
+    | Login
 
-// let todosApi =
-//     Remoting.createApi ()
-//     |> Remoting.withRouteBuilder Route.builder
-//     |> Remoting.buildProxy<ITodosApi>
+let validateUsername name =
+    if String.IsNullOrWhiteSpace name |> not then
+        Ok name
+    else
+        Error "You need to fill in a username."
+
+let validatePassword password =
+    if String.IsNullOrWhiteSpace password |> not then
+        Ok password
+    else
+        Error "You need to fill in a password."
+
+let validateForm name password = validation {
+    let! name = validateUsername name
+    and! password = validatePassword password
+    return {| Username = name; Password = password |}
+}
 
 let init () =
-    let model = { Page = Home }
+    let model = {
+        Username = ""
+        Password = ""
+        FormErrors = []
+    }
     model, Cmd.none
 
 let update msg model =
     match msg with
-    | NoOp -> model, Cmd.none
+    | SetUsername input -> { model with Username = input }, Cmd.none
+    | SetPassword input -> { model with Username = input }, Cmd.none
+    | Login ->
+        let form = validateForm model.Username model.Password
+
+        model, Cmd.none
 
 open Feliz
 
@@ -33,25 +58,24 @@ let view model dispatch =
         prop.className "grid justify-center"
         prop.children [
             Daisy.card [
-                prop.className "grid justify-items-center gap-2 w-[32rem] p-10 border-2"
+                prop.className "shadow-lg grid justify-items-center gap-2 w-[32rem] p-10"
                 prop.children [
-                    Html.text "Log in with 'test' / 'test'."
+                    Html.h2 [ prop.text "Log in with 'test' / 'test'." ]
+                    for error in model.FormErrors do
+                        Html.text error
                     Daisy.formControl [
                         prop.className ""
                         prop.children [
                             Html.div [
-                                prop.className "relative"
+                                prop.className ""
                                 prop.children [
-                                    Daisy.input [ input.bordered; prop.className ""; prop.placeholder "Username" ]
+                                    Daisy.input [
+                                        input.bordered
+                                        prop.className ""
+                                        prop.placeholder "Username"
+                                        prop.onChange (SetUsername >> dispatch)
+                                    ]
                                 ]
-                            ]
-                        ]
-                    ]
-                    Daisy.formControl [
-                        Html.div [
-                            prop.className "relative"
-                            prop.children [
-                                Daisy.input [ input.bordered; prop.className ""; prop.placeholder "Password" ]
                             ]
                         ]
                     ]
@@ -59,7 +83,20 @@ let view model dispatch =
                         Html.div [
                             prop.className ""
                             prop.children [
-                                Daisy.button.button [ prop.text "Log In" ]
+                                Daisy.input [
+                                    input.bordered
+                                    prop.className ""
+                                    prop.placeholder "Password"
+                                    prop.onChange (SetPassword >> dispatch)
+                                ]
+                            ]
+                        ]
+                    ]
+                    Daisy.formControl [
+                        Html.div [
+                            prop.className ""
+                            prop.children [
+                                Daisy.button.button [ prop.text "Log In"; prop.onClick (fun _ -> dispatch Login)]
                             ]
                         ]
                     ]

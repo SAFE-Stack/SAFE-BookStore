@@ -96,9 +96,9 @@ let view model dispatch =
                         prop.children [
                             match model.Page with
                             | Home homeModel ->
-                                Home.view homeModel dispatch
+                                Home.view homeModel (HomePageMsg >> dispatch)
                             | Login loginModel ->
-                                Login.view loginModel dispatch
+                                Login.view loginModel (LoginPageMsg >> dispatch)
                             | NotFound -> Html.div [ prop.text "Not Found" ]
                         ]
                     ]
