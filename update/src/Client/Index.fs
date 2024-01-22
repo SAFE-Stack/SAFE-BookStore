@@ -67,11 +67,17 @@ let logo =
     ]
 
 let navigation model dispatch =
-    Daisy.tabs [
-        prop.className "justify-self-center"
+    Html.div [
+        prop.className "grid border-b-[1px] border-slate-200 pb-8"
         prop.children [
-            Daisy.tab "Home"
-            Daisy.tab "Login"
+            Daisy.tabs [
+                prop.className "justify-self-center"
+                prop.children [
+                    Daisy.tab [ prop.text "Home"; prop.onClick (fun _ -> Router.navigate "") ]
+                    Daisy.tab [ prop.text "Login"; prop.onClick (fun _ -> Router.navigate "login")]
+                ]
+            ]
+
         ]
     ]
 
@@ -85,12 +91,17 @@ let view model dispatch =
                 prop.children [
                     logo
                     navigation model dispatch
-                    match model.Page with
-                    | Home homeModel ->
-                        Home.view homeModel dispatch
-                    | Login loginModel ->
-                        Login.view loginModel dispatch
-                    | NotFound -> Html.div [ prop.text "Not Found" ]
+                    Html.div [
+                        prop.className "pt-8"
+                        prop.children [
+                            match model.Page with
+                            | Home homeModel ->
+                                Home.view homeModel dispatch
+                            | Login loginModel ->
+                                Login.view loginModel dispatch
+                            | NotFound -> Html.div [ prop.text "Not Found" ]
+                        ]
+                    ]
                 ]
             ]
         ]
