@@ -7,29 +7,29 @@ open Saturn
 open Shared
 
 module Storage =
-    let todos = ResizeArray()
-
-    let addTodo todo =
-        if Todo.isValid todo.Description then
-            todos.Add todo
-            Ok()
-        else
-            Error "Invalid todo"
-
-    do
-        addTodo (Todo.create "Create new SAFE project") |> ignore
-        addTodo (Todo.create "Write your app") |> ignore
-        addTodo (Todo.create "Ship it!!!") |> ignore
+    let mockBooks = seq {
+        {
+            Title = "Get Programming with F#"
+            Authors = "Isaac Abraham"
+            ImageLink = "/images/Isaac.png"
+            Link = "https://www.manning.com/books/get-programming-with-f-sharp"
+        }
+        {
+            Title = "Mastering F#"
+            Authors = "Alfonso Garcia-Caro Nunez"
+            ImageLink = "/images/Alfonso.jpg"
+            Link = "https://www.amazon.com/Mastering-F-Alfonso-Garcia-Caro-Nunez-ebook/dp/B01M112LR9"
+        }
+        {
+            Title = "Stylish F#"
+            Authors = "Kit Eason"
+            ImageLink = "/images/Kit.jpg"
+            Link = "https://www.apress.com/la/book/9781484239995"
+        }
+    }
 
 let todosApi = {
-    getTodos = fun () -> async { return Storage.todos |> List.ofSeq }
-    addTodo =
-        fun todo -> async {
-            return
-                match Storage.addTodo todo with
-                | Ok() -> todo
-                | Error e -> failwith e
-        }
+    getWishlist = fun () -> async { return Storage.mockBooks }
 }
 
 let webApp =

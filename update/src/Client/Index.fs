@@ -20,15 +20,15 @@ type Msg =
     | LoginPageMsg of Login.Msg
     | UrlChanged of string list
 
-// let todosApi =
-//     Remoting.createApi ()
-//     |> Remoting.withRouteBuilder Route.builder
-//     |> Remoting.buildProxy<ITodosApi>
+let booksApi =
+    Remoting.createApi ()
+    |> Remoting.withRouteBuilder Route.builder
+    |> Remoting.buildProxy<IBooksApi>
 
 let initFromUrl url =
     match url with
     | [] ->
-        let homeModel, homeMsg = Home.init ()
+        let homeModel, homeMsg = Home.init booksApi
         let model = { Page = Home homeModel }
         let cmd = homeMsg |> Cmd.map HomePageMsg
         model, cmd
