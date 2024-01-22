@@ -1,6 +1,7 @@
 module Page.Login
 
 open Elmish
+open Feliz.DaisyUI
 
 type Page =
     | Home
@@ -28,5 +29,42 @@ let update msg model =
 open Feliz
 
 let view model dispatch =
-    Html.div [ prop.text "Login" ]
+    Html.div [
+        prop.className "grid justify-center"
+        prop.children [
+            Daisy.card [
+                prop.className "grid justify-items-center gap-2 w-[32rem] p-10 border-2"
+                prop.children [
+                    Html.text "Log in with 'test' / 'test'."
+                    Daisy.formControl [
+                        prop.className ""
+                        prop.children [
+                            Html.div [
+                                prop.className "relative"
+                                prop.children [
+                                    Daisy.input [ input.bordered; prop.className ""; prop.placeholder "Username" ]
+                                ]
+                            ]
+                        ]
+                    ]
+                    Daisy.formControl [
+                        Html.div [
+                            prop.className "relative"
+                            prop.children [
+                                Daisy.input [ input.bordered; prop.className ""; prop.placeholder "Password" ]
+                            ]
+                        ]
+                    ]
+                    Daisy.formControl [
+                        Html.div [
+                            prop.className ""
+                            prop.children [
+                                Daisy.button.button [ prop.text "Log In" ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
 
