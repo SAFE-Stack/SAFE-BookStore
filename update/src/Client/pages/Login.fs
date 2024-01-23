@@ -60,7 +60,7 @@ let update (userApi: IUserApi) msg model =
             | Error errors -> { model with FormErrors = errors }, Cmd.none
         model, cmd
     | LoggedIn user ->
-        model, Cmd.OfFunc.either (LocalStorage.save "user") user StorageSuccess UnhandledError
+        model, Cmd.OfFunc.either Session.saveUser user StorageSuccess UnhandledError
     | StorageSuccess _ ->
         model, Cmd.navigate "wishlist"
     | UnhandledError exn ->

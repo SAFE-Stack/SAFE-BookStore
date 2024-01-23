@@ -10,6 +10,7 @@
         <None Include="index.html" />
         <None Include="paket.references" />
         <Compile Include="LocalStorage.fs" />
+        <Compile Include="Session.fs" />
         <Compile Include="SAFE.fs" />
         <Compile Include="pages\Home.fs" />
         <Compile Include="pages\Login.fs" />

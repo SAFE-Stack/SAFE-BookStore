@@ -18,7 +18,6 @@ let init (booksApi: IBooksApi) =
 let update msg model =
     match msg with
     | GotWishlist books ->
-        JS.console.log books
         { Wishlist = books }, Cmd.none
 
 open Feliz

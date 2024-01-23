@@ -1,7 +1,6 @@
 module Index
 
 open Elmish
-open Fable.Core
 open Fable.Remoting.Client
 open Feliz.DaisyUI
 open Feliz.Router
@@ -50,16 +49,24 @@ let initFromUrl model url =
         let cmd = loginMsg |> Cmd.map LoginPageMsg
         model, cmd
     | [ "wishlist" ] ->
-        let wishlistModel, wishlistMsg = Wishlist.init booksApi
-        let model = { Page = Wishlist wishlistModel; User = model.User }
-        let cmd = wishlistMsg |> Cmd.map WishlistMsg
-        model, cmd
+        match model.User with
+        | User _ ->
+            let wishlistModel, wishlistMsg = Wishlist.init booksApi
+            let model = { Page = Wishlist wishlistModel; User = model.User }
+            let cmd = wishlistMsg |> Cmd.map WishlistMsg
+            model, cmd
+        | Guest ->
+            model, Cmd.navigate "login"
     | _ -> { Page = NotFound; User = model.User }, Cmd.none
 
 let init () =
     let model, _ = Home.init booksApi
+    let user =
+        Session.loadUser ()
+        |> Option.map User
+        |> Option.defaultValue Guest
     Router.currentUrl ()
-    |> initFromUrl { Page = Home model; User = Guest }
+    |> initFromUrl { Page = Home model; User = user }
 
 let update msg model =
     match model.Page, msg with
@@ -79,7 +86,9 @@ let update msg model =
     | NotFound, _ ->
         { Page = NotFound; User = model.User }, Cmd.none
     | _, UrlChanged url -> initFromUrl model url
-    | _, Logout -> { model with User = Guest }, Cmd.ofMsg (UrlChanged [])
+    | _, Logout ->
+        Session.deleteUser()
+        { model with User = Guest }, Cmd.navigate ""
     | _, _ ->
         model, Cmd.none
 

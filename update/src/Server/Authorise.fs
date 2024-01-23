@@ -3,11 +3,8 @@ module Authorise
 open System
 open System.IO
 open System.Security.Claims
-open Microsoft.AspNetCore.Http
 open Microsoft.IdentityModel.JsonWebTokens
 open Shared
-open Giraffe
-open Saturn.ControllerHelpers
 
 let private algorithm = Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256
 
