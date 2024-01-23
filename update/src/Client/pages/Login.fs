@@ -3,7 +3,10 @@ module Page.Login
 open System
 open Elmish
 open Feliz.DaisyUI
+open Feliz.Router
 open FsToolkit.ErrorHandling
+open Shared
+open SAFE
 
 type Model = {
     Username: string
@@ -15,6 +18,9 @@ type Msg =
     | SetUsername of string
     | SetPassword of string
     | Login
+    | LoggedIn of UserData
+    | StorageSuccess of unit
+    | UnhandledError of exn
 
 let validateUsername name =
     if String.IsNullOrWhiteSpace name |> not then
@@ -31,7 +37,7 @@ let validatePassword password =
 let validateForm name password = validation {
     let! name = validateUsername name
     and! password = validatePassword password
-    return {| Username = name; Password = password |}
+    return { UserName = name; Password = password }
 }
 
 let init () =
@@ -42,7 +48,7 @@ let init () =
     }
     model, Cmd.none
 
-let update msg model =
+let update (userApi: IUserApi) msg model =
     match msg with
     | SetUsername input -> { model with Username = input }, Cmd.none
     | SetPassword input -> { model with Password = input }, Cmd.none
@@ -50,9 +56,15 @@ let update msg model =
         let form = validateForm model.Username model.Password
         let model, cmd =
             match form with
-            | Ok _ -> { model with FormErrors = [] }, Cmd.none
+            | Ok form -> { model with FormErrors = [] }, Cmd.OfAsync.either userApi.login form LoggedIn UnhandledError
             | Error errors -> { model with FormErrors = errors }, Cmd.none
         model, cmd
+    | LoggedIn user ->
+        model, Cmd.OfFunc.either (LocalStorage.save "user") user StorageSuccess UnhandledError
+    | StorageSuccess _ ->
+        model, Cmd.navigate "wishlist"
+    | UnhandledError exn ->
+        model, exn.AsAlert()
 
 open Feliz
 

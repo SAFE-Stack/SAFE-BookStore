@@ -25,6 +25,11 @@ let booksApi =
     |> Remoting.withRouteBuilder Route.builder
     |> Remoting.buildProxy<IBooksApi>
 
+let userApi =
+    Remoting.createApi ()
+    |> Remoting.withRouteBuilder Route.builder
+    |> Remoting.buildProxy<IUserApi>
+
 let initFromUrl url =
     match url with
     | [] ->
@@ -49,8 +54,8 @@ let update msg model =
         let newModel, cmd = Home.update homeMsg homeModel
         { Page = Home newModel }, cmd
     | Login loginModel, LoginPageMsg loginMsg ->
-        let newModel, cmd = Login.update loginMsg loginModel
-        { Page = Login newModel }, cmd
+        let newModel, cmd = Login.update userApi loginMsg loginModel
+        { Page = Login newModel }, cmd |> Cmd.map LoginPageMsg
     | NotFound, _ ->
         { Page = NotFound }, Cmd.none
     | _, UrlChanged url -> initFromUrl url

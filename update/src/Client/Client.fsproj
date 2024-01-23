@@ -9,6 +9,8 @@
         <None Include="tailwind.config.js" />
         <None Include="index.html" />
         <None Include="paket.references" />
+        <Compile Include="LocalStorage.fs" />
+        <Compile Include="SAFE.fs" />
         <Compile Include="pages\Home.fs" />
         <Compile Include="pages\Login.fs" />
         <Compile Include="Index.fs" />

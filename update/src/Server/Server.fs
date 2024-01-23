@@ -2,9 +2,10 @@ module Server
 
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
+open Giraffe
 open Saturn
-
 open Shared
+open SAFE
 
 module Storage =
     let mockBooks = seq {
@@ -28,15 +29,32 @@ module Storage =
         }
     }
 
-let todosApi = {
+let booksApi = {
     getWishlist = fun () -> async { return Storage.mockBooks }
 }
 
-let webApp =
+let userApi = {
+    login = fun user -> async { return Authorise.login user }
+}
+
+let auth =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.fromValue todosApi
+    |> Remoting.fromValue userApi
+    |> Remoting.withErrorHandler ErrorHandling.errorHandler
     |> Remoting.buildHttpHandler
+
+let books =
+    Remoting.createApi ()
+    |> Remoting.withRouteBuilder Route.builder
+    |> Remoting.fromValue booksApi
+    |> Remoting.withErrorHandler ErrorHandling.errorHandler
+    |> Remoting.buildHttpHandler
+
+let webApp = choose [
+    auth
+    books
+]
 
 let app = application {
     use_router webApp

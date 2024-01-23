@@ -9,3 +9,5 @@ FSharp.Core
 Feliz.DaisyUI
 Feliz.Router
 FSToolkit.ErrorHandling
+Elmish.SweetAlert
+Fable.SimpleJson
