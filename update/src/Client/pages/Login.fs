@@ -45,11 +45,14 @@ let init () =
 let update msg model =
     match msg with
     | SetUsername input -> { model with Username = input }, Cmd.none
-    | SetPassword input -> { model with Username = input }, Cmd.none
+    | SetPassword input -> { model with Password = input }, Cmd.none
     | Login ->
         let form = validateForm model.Username model.Password
-
-        model, Cmd.none
+        let model, cmd =
+            match form with
+            | Ok _ -> { model with FormErrors = [] }, Cmd.none
+            | Error errors -> { model with FormErrors = errors }, Cmd.none
+        model, cmd
 
 open Feliz
 
@@ -61,8 +64,10 @@ let view model dispatch =
                 prop.className "shadow-lg grid justify-items-center gap-2 w-[32rem] p-10"
                 prop.children [
                     Html.h2 [ prop.text "Log in with 'test' / 'test'." ]
-                    for error in model.FormErrors do
-                        Html.text error
+                    model.FormErrors
+                    |> List.tryHead
+                    |> Option.map (fun error -> Html.div [ color.textError; prop.text error ])
+                    |> Option.defaultValue (React.fragment [])
                     Daisy.formControl [
                         prop.className ""
                         prop.children [
@@ -73,6 +78,7 @@ let view model dispatch =
                                         input.bordered
                                         prop.className ""
                                         prop.placeholder "Username"
+                                        prop.value model.Username
                                         prop.onChange (SetUsername >> dispatch)
                                     ]
                                 ]
@@ -87,6 +93,7 @@ let view model dispatch =
                                     input.bordered
                                     prop.className ""
                                     prop.placeholder "Password"
+                                    prop.value model.Password
                                     prop.onChange (SetPassword >> dispatch)
                                 ]
                             ]
