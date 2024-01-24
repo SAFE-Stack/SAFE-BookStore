@@ -84,8 +84,9 @@ let view model dispatch =
                         prop.className ""
                         prop.children [
                             Html.div [
-                                prop.className ""
+                                prop.className "relative"
                                 prop.children [
+                                    Html.i [ prop.className "fa fa-search absolute inset-y-0 end-0 grid items-center mr-2 text-teal-300" ]
                                     Daisy.input [
                                         input.bordered
                                         prop.className ""
@@ -99,8 +100,9 @@ let view model dispatch =
                     ]
                     Daisy.formControl [
                         Html.div [
-                            prop.className ""
+                            prop.className "relative"
                             prop.children [
+                                Html.i [ prop.className "fa fa-lock absolute inset-y-0 end-0 grid items-center mr-2 text-yellow-400" ]
                                 Daisy.input [
                                     input.bordered
                                     prop.className ""
@@ -115,7 +117,7 @@ let view model dispatch =
                         Html.div [
                             prop.className ""
                             prop.children [
-                                Daisy.button.button [ prop.text "Log In"; prop.onClick (fun _ -> dispatch Login)]
+                                Daisy.button.button [ prop.className "bg-teal-300"; prop.text "Log In"; prop.onClick (fun _ -> dispatch Login)]
                             ]
                         ]
                     ]
