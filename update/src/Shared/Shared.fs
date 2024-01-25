@@ -12,9 +12,15 @@ type Login =
     member this.IsValid() =
         not ((this.UserName <> "test"  || this.Password <> "test") &&
              (this.UserName <> "test2" || this.Password <> "test2"))
+type UserName =
+    | UserName of string
+
+    member this.Value =
+        match this with
+        | UserName v -> v
 
 type UserData =
-  { UserName : string
+  { UserName : UserName
     Token : JWT }
 
 type Book = {
@@ -24,12 +30,18 @@ type Book = {
   ImageLink : string
 }
 
+type WishList =
+    { UserName : UserName
+      Books : Book list }
+
 module Route =
     let builder typeName methodName =
         $"/api/%s{typeName}/%s{methodName}"
 
 type IBooksApi = {
-    getWishlist: unit -> Async<Book seq>
+    getBooks: unit -> Async<Book seq>
+    getWishlist: UserName -> Async<WishList>
+    removeBook: UserName * string -> Async<string>
 }
 
 type IUserApi = {

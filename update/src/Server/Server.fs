@@ -1,36 +1,55 @@
 module Server
 
+open System
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 open Giraffe
 open Saturn
 open Shared
 open SAFE
+open Storage
+open Microsoft.Extensions.Hosting
+open Azure.Identity
 
-module Storage =
-    let mockBooks = seq {
-        {
-            Title = "Get Programming with F#"
-            Authors = "Isaac Abraham"
-            ImageLink = "/images/Isaac.png"
-            Link = "https://www.manning.com/books/get-programming-with-f-sharp"
-        }
-        {
-            Title = "Mastering F#"
-            Authors = "Alfonso Garcia-Caro Nunez"
-            ImageLink = "/images/Alfonso.jpg"
-            Link = "https://www.amazon.com/Mastering-F-Alfonso-Garcia-Caro-Nunez-ebook/dp/B01M112LR9"
-        }
-        {
-            Title = "Stylish F#"
-            Authors = "Kit Eason"
-            ImageLink = "/images/Kit.jpg"
-            Link = "https://www.apress.com/la/book/9781484239995"
-        }
+let mockBooks = seq {
+    {
+        Title = "Get Programming with F#"
+        Authors = "Isaac Abraham"
+        ImageLink = "/images/Isaac.png"
+        Link = "https://www.manning.com/books/get-programming-with-f-sharp"
     }
+    {
+        Title = "Mastering F#"
+        Authors = "Alfonso Garcia-Caro Nunez"
+        ImageLink = "/images/Alfonso.jpg"
+        Link = "https://www.amazon.com/Mastering-F-Alfonso-Garcia-Caro-Nunez-ebook/dp/B01M112LR9"
+    }
+    {
+        Title = "Stylish F#"
+        Authors = "Kit Eason"
+        ImageLink = "/images/Kit.jpg"
+        Link = "https://www.apress.com/la/book/9781484239995"
+    }
+}
+
+let connection =
+    let accountName = ""
+    if Environment.GetEnvironmentVariable "ASPNETCORE_ENVIRONMENT" = Environments.Development then
+        Dev "UseDevelopmentStorage=true"
+    else
+        Deployed (Uri accountName, DefaultAzureCredential())
 
 let booksApi = {
-    getWishlist = fun () -> async { return Storage.mockBooks }
+    getBooks = fun () -> async { return mockBooks }
+    getWishlist = fun user ->
+        async {
+            return! getWishListFromDB connection user |> Async.AwaitTask
+        }
+    removeBook = fun (user, title) ->
+        async {
+            do! removeBook connection user title |> Async.AwaitTask
+            return title
+        }
 }
 
 let userApi = {

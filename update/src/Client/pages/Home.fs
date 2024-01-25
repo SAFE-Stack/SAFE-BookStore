@@ -11,7 +11,7 @@ type Msg =
 
 let init (booksApi: IBooksApi) =
     let model = { Wishlist = Seq.empty }
-    let cmd = Cmd.OfAsync.perform booksApi.getWishlist () GotWishlist
+    let cmd = Cmd.OfAsync.perform booksApi.getBooks () GotWishlist
     model, cmd
 
 let update msg model =
@@ -23,7 +23,7 @@ open Feliz
 let bookRow book =
     let link = Daisy.link [ link.hover; link.primary; prop.target "_blank"; prop.text book.Title; prop.href book.Link ]
     let image = Html.img [ prop.src book.ImageLink ]
-    Html.tr [ prop.className "hover:bg-accent"; prop.children [ Html.td link; Html.td book.Authors; Html.td image ] ]
+    Html.tr [ prop.className "hover:bg-teal-300"; prop.children [ Html.td link; Html.td book.Authors; Html.td image ] ]
 
 let view model dispatch =
     Html.div [

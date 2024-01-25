@@ -33,7 +33,7 @@ let generateToken username =
 
 let createUserData (login : Login) : UserData =
     {
-        UserName = login.UserName
+        UserName = UserName login.UserName
         Token    = generateToken login.UserName
     }
 

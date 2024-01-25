@@ -1,6 +1,7 @@
 module Index
 
 open Elmish
+open Fable.Core
 open Fable.Remoting.Client
 open Feliz.DaisyUI
 open Feliz.Router
@@ -50,8 +51,8 @@ let initFromUrl model url =
         model, cmd
     | [ "wishlist" ] ->
         match model.User with
-        | User _ ->
-            let wishlistModel, wishlistMsg = Wishlist.init booksApi
+        | User user ->
+            let wishlistModel, wishlistMsg = Wishlist.init booksApi user.UserName
             let model = { Page = Wishlist wishlistModel; User = model.User }
             let cmd = wishlistMsg |> Cmd.map WishlistMsg
             model, cmd
@@ -65,6 +66,7 @@ let init () =
         Session.loadUser ()
         |> Option.map User
         |> Option.defaultValue Guest
+
     Router.currentUrl ()
     |> initFromUrl { Page = Home model; User = user }
 
@@ -81,11 +83,12 @@ let update msg model =
         let newModel, cmd = Login.update userApi loginMsg loginModel
         { Page = Login newModel; User = user }, cmd |> Cmd.map LoginPageMsg
     | Wishlist wishlistModel, WishlistMsg wishlistMsg ->
-        let newModel, cmd = Wishlist.update wishlistMsg wishlistModel
-        { Page = Wishlist newModel; User = model.User }, cmd
+        let newModel, cmd = Wishlist.update booksApi wishlistMsg wishlistModel
+        { Page = Wishlist newModel; User = model.User }, cmd |> Cmd.map WishlistMsg
     | NotFound, _ ->
         { Page = NotFound; User = model.User }, Cmd.none
-    | _, UrlChanged url -> initFromUrl model url
+    | _, UrlChanged url ->
+        initFromUrl model url
     | _, Logout ->
         Session.deleteUser()
         { model with User = Guest }, Cmd.navigate ""
@@ -115,7 +118,7 @@ let navigation model dispatch =
                     | User user ->
                         Daisy.tab [ prop.text "Wishlist"; prop.onClick (fun _ -> Router.navigate "wishlist")]
                         Daisy.tab [ prop.text "Logout"; prop.onClick (fun _ -> dispatch Logout)]
-                        Daisy.tab [ prop.text $"Logged in as {user.UserName}" ]
+                        Daisy.tab [ prop.text $"Logged in as {user.UserName.Value}" ]
                 ]
             ]
         ]

@@ -22,6 +22,11 @@ Target.create "Clean" (fun _ ->
 
 Target.create "InstallClient" (fun _ -> run npm [ "install" ] ".")
 
+Target.create "StartServices" (fun _ ->
+    Environment.setEnvironVar "COMPOSE_PROJECT_NAME" "bookstore"
+    async { runParallel [ "Docker Services", docker [ "compose"; "up" ] "."  ] }
+    |> Async.Start)
+
 Target.create "Bundle" (fun _ ->
     [
         "server", dotnet [ "publish"; "-c"; "Release"; "-o"; deployPath ] serverPath
@@ -69,7 +74,7 @@ open Fake.Core.TargetOperators
 let dependencies = [
     "Clean" ==> "InstallClient" ==> "Bundle" ==> "Azure"
 
-    "Clean" ==> "InstallClient" ==> "Run"
+    "Clean" ==> "InstallClient" ==> "StartServices" ==> "Run"
 
     "InstallClient" ==> "RunTests"
 ]

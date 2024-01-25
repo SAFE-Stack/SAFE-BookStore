@@ -9,6 +9,7 @@
     <None Include="paket.references" />
     <Compile Include="SAFE.fs" />
     <Compile Include="Authorise.fs" />
+    <Compile Include="Storage.fs" />
     <Compile Include="Server.fs" />
   </ItemGroup>
   <ItemGroup>

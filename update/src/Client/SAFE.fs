@@ -11,7 +11,6 @@ module Extensions =
         member this.GetPropagatedError() =
             match this with
             | :? ProxyRequestException as exn ->
-                JS.console.log exn.ResponseText
                 let response =
                     exn.ResponseText
                     |> Json.parseAs<{|

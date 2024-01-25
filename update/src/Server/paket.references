@@ -2,3 +2,5 @@ Saturn
 Fable.Remoting.Giraffe
 FSharp.Core
 Giraffe
+Azure.Data.Tables
+Azure.Identity
