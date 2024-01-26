@@ -41,8 +41,7 @@ let getStorageConnection (context: HttpContext) =
         Dev "UseDevelopmentStorage=true"
     else
         let storageAccountName = context.GetService<IConfiguration>().["StorageAccountName"]
-        let accountName = $"https://{storageAccountName}.table.core.windows.net"
-        Deployed(Uri accountName, DefaultAzureCredential())
+        Deployed(StorageAccountName storageAccountName, DefaultAzureCredential())
 
 let booksApi (context: HttpContext) =
     let connection = getStorageConnection context

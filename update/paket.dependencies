@@ -4,6 +4,7 @@ storage: none
 
 nuget Azure.Data.Tables
 nuget Azure.Identity
+nuget Azure.Storage.Blobs
 nuget Elmish.SweetAlert
 nuget Feliz.DaisyUI
 nuget Feliz.Router

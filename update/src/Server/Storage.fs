@@ -3,21 +3,32 @@ module Storage
 open System
 open Azure
 open Azure.Data.Tables
-open Azure.Identity
+open Azure.Storage.Blobs
 open Shared
 open System.Threading.Tasks
 
 module BookTitle =
     let isAllowed = string >> @"/\#?".Contains >> not
 
+type StorageAccountName = StorageAccountName of string
+
 type AzureConnection =
     | Dev of string
-    | Deployed of Uri * DefaultAzureCredential
+    | Deployed of StorageAccountName * Azure.Core.TokenCredential
 
     member this.TableServiceClient =
         match this with
         | Dev connectionString -> TableServiceClient(connectionString)
-        | Deployed(storageAccount, credentials) -> TableServiceClient(storageAccount, credentials)
+        | Deployed(StorageAccountName storageAccountName, credentials) ->
+            let uri = Uri $"https://{storageAccountName}.table.core.windows.net"
+            TableServiceClient(uri, credentials)
+
+    member this.BlobServiceClient =
+        match this with
+        | Dev connectionString -> BlobServiceClient(connectionString)
+        | Deployed (StorageAccountName storageAccountName, credentials) ->
+            let uri = Uri $"https://{storageAccountName}.blob.core.windows.net"
+            BlobServiceClient(uri, credentials)
 
 type BookEntity() =
     member val Title = "" with get, set
@@ -40,8 +51,8 @@ module BookEntity =
         entity.RowKey <- book.Title.ToCharArray() |> Array.filter BookTitle.isAllowed |> String
         entity
 
-let getBooksTable (connectionString: AzureConnection) = task {
-    let client = connectionString.TableServiceClient
+let getBooksTable (connection: AzureConnection) = task {
+    let client = connection.TableServiceClient
     let table = client.GetTableClient "book"
 
     // Azure will temporarily lock table names after deleting and can take some time before the table name is made available again.
@@ -59,8 +70,8 @@ let getBooksTable (connectionString: AzureConnection) = task {
 }
 
 /// Load from the database
-let getWishListFromDB connectionString (userName: UserName) = task {
-    let! table = getBooksTable connectionString
+let getWishListFromDB connection (userName: UserName) = task {
+    let! table = getBooksTable connection
     let results = table.Query<BookEntity>($"PartitionKey eq '{userName.Value}'")
 
     return {
@@ -78,8 +89,8 @@ let getWishListFromDB connectionString (userName: UserName) = task {
 }
 
 /// Save to the database
-let saveWishListToDB connectionString wishList = task {
-    let! booksTable = getBooksTable connectionString
+let saveWishListToDB connection wishList = task {
+    let! booksTable = getBooksTable connection
 
     let buildAction book =
         let book = BookEntity.buildEntity wishList.UserName.Value book
@@ -91,8 +102,8 @@ let saveWishListToDB connectionString wishList = task {
     ()
 }
 
-let addBook connectionString (userName: UserName) book = task {
-    let! client = getBooksTable connectionString
+let addBook connection (userName: UserName) book = task {
+    let! client = getBooksTable connection
     let entity = BookEntity.buildEntity userName.Value book
 
     let! _ = client.AddEntityAsync entity
@@ -105,29 +116,33 @@ let addBook connectionString (userName: UserName) book = task {
     }
 }
 
-let removeBook connectionString (userName: UserName) (title: string) = task {
-    let! client = getBooksTable connectionString
+let removeBook connection (userName: UserName) (title: string) = task {
+    let! client = getBooksTable connection
     let partitionKey = userName.Value
     let rowKey = title.ToCharArray() |> Array.filter BookTitle.isAllowed |> String
-    let! response = client.DeleteEntityAsync(partitionKey, rowKey)
+    let! _ = client.DeleteEntityAsync(partitionKey, rowKey)
     ()
 }
 
-// module StateManagement =
-//     let getStateBlob (AzureConnection connectionString) name = task {
-//         let client = (CloudStorageAccount.Parse connectionString).CreateCloudBlobClient()
-//         let state = client.GetContainerReference "state"
-//         let! _ = state.CreateIfNotExistsAsync()
-//         return state.GetBlockBlobReference name }
-//
-//     let resetTimeBlob connectionString = getStateBlob connectionString "resetTime"
-//
-//     let storeResetTime connectionString = task {
-//         let! blob = resetTimeBlob connectionString
-//         return! blob.UploadTextAsync "" }
-//
-// let getLastResetTime connection = task {
-//     let! blob = StateManagement.resetTimeBlob connection
-//     do! blob.FetchAttributesAsync()
-//     return blob.Properties.LastModified |> Option.ofNullable |> Option.map (fun d -> d.UtcDateTime)
-// }
+module StateManagement =
+    let getStateBlob (connection:AzureConnection) name = task {
+        let client = connection.BlobServiceClient
+        let state = client.GetBlobContainerClient "state"
+        let! _ = state.CreateIfNotExistsAsync()
+        return state.GetBlobClient name }
+
+    let resetTimeBlob connection = getStateBlob connection "resetTime"
+
+    let storeResetTime connection = task {
+        let! blob = resetTimeBlob connection
+        return! blob.UploadAsync "" }
+
+let getLastResetTime connection = task {
+    let! blob = StateManagement.resetTimeBlob connection
+    let! response = blob.GetPropertiesAsync()
+    return
+        if response.HasValue then
+            Some response.Value.LastModified.Date
+        else
+            None
+}
