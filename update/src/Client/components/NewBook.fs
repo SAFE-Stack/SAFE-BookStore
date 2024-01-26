@@ -23,7 +23,7 @@ type Msg =
     | SetAuthors of string
     | SetLink of string
     | SetImageLink of string
-    | ClearForm
+    | Cancel
 
 
 let init () =
@@ -94,9 +94,9 @@ let update msg model =
         else
             Cmd.none
 
-    | AddBook _ -> model, Cmd.none
 
-    | ClearForm -> init ()
+    | Cancel
+    | AddBook _ -> model, Cmd.none
 
 let errorLabel text =
     Daisy.label [ prop.className "text-error"; prop.text (text |> Option.defaultValue "") ]
@@ -126,16 +126,8 @@ let inputField (value: string) (key: string) (onChange: string -> unit) error pl
 
 let view model dispatch =
     Html.div [
-        prop.className "px-5"
-        prop.children [
-            Daisy.button.label [
-                button.primary
-                prop.htmlFor "add-book"
-                prop.text "Add"
-
-            ]
-            Daisy.modalToggle [ prop.id "add-book" ]
             Daisy.modal.div [
+                modal.open'
                 prop.children [
                     Daisy.modalBox.div [
                         prop.children [
@@ -176,7 +168,7 @@ let view model dispatch =
                                     prop.htmlFor "add-book"
                                     button.error
                                     prop.text "Cancel"
-                                    prop.onClick (fun _ -> dispatch ClearForm)
+                                    prop.onClick (fun _ -> dispatch Cancel)
                                 ]
                             ]
                         ]
@@ -184,4 +176,4 @@ let view model dispatch =
                 ]
             ]
         ]
-    ]
+    
