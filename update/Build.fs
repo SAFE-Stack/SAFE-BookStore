@@ -15,6 +15,9 @@ let sharedTestsPath = Path.getFullName "tests/Shared"
 let serverTestsPath = Path.getFullName "tests/Server"
 let clientTestsPath = Path.getFullName "tests/Client"
 
+let appName = "safebookstoret"
+let storageAccountName = $"{appName}storage"
+
 Target.create "Clean" (fun _ ->
     Shell.cleanDir deployPath
     run dotnet [ "fable"; "clean"; "--yes" ] clientPath // Delete *.fs.js files created by Fable
@@ -37,18 +40,25 @@ Target.create "Bundle" (fun _ ->
 
 Target.create "Azure" (fun _ ->
     let web = webApp {
-        name "SAFE-App"
+        name appName
+        system_identity
+        setting "StorageAccountName" storageAccountName
         operating_system OS.Linux
         runtime_stack (DotNet "8.0")
         zip_deploy "deploy"
     }
 
-    let deployment = arm {
-        location Location.WestEurope
-        add_resource web
+    let storage = storageAccount {
+        name storageAccountName
+        grant_access web.SystemIdentity Roles.StorageTableDataContributor
     }
 
-    deployment |> Deploy.execute "SAFE-App" Deploy.NoParameters |> ignore)
+    let deployment = arm {
+        location Location.WestEurope
+        add_resources [ web; storage ]
+    }
+
+    deployment |> Deploy.execute appName Deploy.NoParameters |> ignore)
 
 Target.create "Run" (fun _ ->
     run dotnet [ "build" ] sharedPath

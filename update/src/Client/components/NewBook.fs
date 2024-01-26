@@ -109,8 +109,7 @@ let inputField (value: string) (key: string) (onChange: string -> unit) error pl
                 prop.className "relative"
                 prop.children [
                     Html.i [
-                        prop.className
-                            "fa fa-pencil-alt absolute inset-y-0 end-0 grid items-center mr-2 text-primary"
+                        prop.className "fa fa-pencil-alt absolute inset-y-0 end-0 grid items-center mr-2 text-primary"
                     ]
                     Daisy.input [
                         input.bordered
@@ -140,10 +139,30 @@ let view model dispatch =
                 prop.children [
                     Daisy.modalBox.div [
                         prop.children [
-                            inputField model.NewBook.Title "title" (SetTitle >> dispatch) model.TitleErrorText "Please insert title"
-                            inputField model.NewBook.Authors "author" (SetAuthors >> dispatch) model.AuthorsErrorText "Please insert authors"
-                            inputField model.NewBook.Link "link" (SetLink >> dispatch) model.LinkErrorText "Please insert link"
-                            inputField model.NewBook.ImageLink "image-link" (SetImageLink >> dispatch) model.ImageLinkErrorText "Please insert image link"
+                            inputField
+                                model.NewBook.Title
+                                "title"
+                                (SetTitle >> dispatch)
+                                model.TitleErrorText
+                                "Please insert title"
+                            inputField
+                                model.NewBook.Authors
+                                "author"
+                                (SetAuthors >> dispatch)
+                                model.AuthorsErrorText
+                                "Please insert authors"
+                            inputField
+                                model.NewBook.Link
+                                "link"
+                                (SetLink >> dispatch)
+                                model.LinkErrorText
+                                "Please insert link"
+                            inputField
+                                model.NewBook.ImageLink
+                                "image-link"
+                                (SetImageLink >> dispatch)
+                                model.ImageLinkErrorText
+                                "Please insert image link"
                             Daisy.modalAction [
                                 Daisy.button.label [
                                     button.primary

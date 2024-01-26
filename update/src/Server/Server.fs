@@ -4,6 +4,8 @@ open System
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 open Giraffe
+open Microsoft.AspNetCore.Http
+open Microsoft.Extensions.Configuration
 open Saturn
 open Shared
 open SAFE
@@ -34,36 +36,31 @@ let mockBooks = seq {
     }
 }
 
-let connection =
-    let accountName = ""
-
+let getStorageConnection (context: HttpContext) =
     if Environment.GetEnvironmentVariable "ASPNETCORE_ENVIRONMENT" = Environments.Development then
         Dev "UseDevelopmentStorage=true"
     else
+        let storageAccountName = context.GetService<IConfiguration>().["StorageAccountName"]
+        let accountName = $"https://{storageAccountName}.table.core.windows.net"
         Deployed(Uri accountName, DefaultAzureCredential())
 
-let booksApi = {
-    getBooks =
-        fun () -> async {
-            return
-                seq {
-                    mockBooks
-                    mockBooks
-                }
-                |> Seq.concat
-        }
-    getWishlist = fun user -> async { return! getWishListFromDB connection user |> Async.AwaitTask }
-    addBook =
-        fun (user, book) -> async {
-            let! _ = addBook connection user book |> Async.AwaitTask
-            return book
-        }
-    removeBook =
-        fun (user, title) -> async {
-            do! removeBook connection user title |> Async.AwaitTask
-            return title
-        }
-}
+let booksApi (context: HttpContext) =
+    let connection = getStorageConnection context
+
+    {
+        getBooks = fun () -> async { return seq { mockBooks } |> Seq.concat }
+        getWishlist = fun user -> async { return! getWishListFromDB connection user |> Async.AwaitTask }
+        addBook =
+            fun (user, book) -> async {
+                let! _ = addBook connection user book |> Async.AwaitTask
+                return book
+            }
+        removeBook =
+            fun (user, title) -> async {
+                do! removeBook connection user title |> Async.AwaitTask
+                return title
+            }
+    }
 
 let userApi = {
     login = fun user -> async { return Authorise.login user }
@@ -79,7 +76,7 @@ let auth =
 let books =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.fromValue booksApi
+    |> Remoting.fromContext booksApi
     |> Remoting.withErrorHandler ErrorHandling.errorHandler
     |> Remoting.buildHttpHandler
 
