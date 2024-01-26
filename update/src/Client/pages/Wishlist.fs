@@ -77,7 +77,7 @@ let update booksApi msg model =
         let wishList = {
             model.Wishlist with
                 Books = book :: model.Wishlist.Books |> List.sortBy (fun book -> book.Title)
-            
+
         }
 
         {
@@ -127,26 +127,40 @@ let newBookButton dispatch =
         prop.onClick ( fun _ -> OpenNewBookModal |> dispatch)
 
     ]
- 
+
+
+let table model dispatch =
+    Daisy.table [
+        prop.children [
+            Html.tbody [
+                for book in model.Wishlist.Books do
+                    bookRow book dispatch
+            ]
+            Html.thead [ Html.tr [ Html.th "Title"; Html.th "Authors"; Html.th "Image" ] ]
+        ]
+    ]
+
+
+
 
 let view model dispatch =
     Html.div [
-        prop.className ""
-        prop.children [
-            Daisy.table [
-                prop.children [
-                    Html.tbody [
-                        for book in model.Wishlist.Books do
-                            bookRow book dispatch
+            prop.className "grid h-full gap-4"
+            prop.children [
+                Html.div [
+                    prop.className "row-auto flex justify-end gap-4 mx-4"
+                    prop.children [
+                        newBookButton dispatch
                     ]
-                    Html.thead [ Html.tr [ Html.th "Title"; Html.th "Authors"; Html.th "Image" ] ]
                 ]
+                Html.div [
+                    prop.className "overflow-y-auto"
+                    prop.children [ table model dispatch ]
+                ]
+
+                match model.NewBook with
+                | Some book ->
+                    NewBook.view book (NewBookMsg >> dispatch)
+                | None -> ()
             ]
-            Daisy.divider ""
-            newBookButton dispatch
-            match model.NewBook with
-            | Some book ->
-                NewBook.view book (NewBookMsg >> dispatch)
-            | None -> ()
-        ]
     ]
