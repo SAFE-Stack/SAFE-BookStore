@@ -145,10 +145,10 @@ let table model dispatch =
 
 let view model dispatch =
     Html.div [
-            prop.className "grid h-full gap-4"
+            prop.className "grid h-full gap-4 content-start"
             prop.children [
                 Html.div [
-                    prop.className "row-auto flex justify-end gap-4 mx-4"
+                    prop.className "row-min flex justify-end gap-4 mx-4"
                     prop.children [
                         newBookButton dispatch
                     ]
