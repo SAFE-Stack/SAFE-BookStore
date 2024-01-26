@@ -10,5 +10,4 @@ module ErrorHandling =
         | :? AggregateException as ex -> getRealException ex.InnerException
         | _ -> ex
 
-    let errorHandler<'a> (ex: exn) (routeInfo: RouteInfo<HttpContext>) =
-        Propagate(getRealException ex)
+    let errorHandler<'a> (ex: exn) (routeInfo: RouteInfo<HttpContext>) = Propagate(getRealException ex)

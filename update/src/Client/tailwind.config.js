@@ -1,3 +1,5 @@
+const colors = require('tailwindcss/colors')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     mode: "jit",
@@ -6,10 +8,22 @@ module.exports = {
         "./**/*.{fs,js,ts,jsx,tsx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            gridTemplateRows: {
+                "index": "min-content min-content min-content auto"
+            },
+
+        },
     },
     plugins: [require("daisyui")],
     daisyui: {
-        themes: ["winter"]
+        themes: [
+            {
+                winter: {
+                    ...require("daisyui/src/theming/themes")["winter"],
+                    primary: colors.teal["300"],
+                },
+            },
+        ]
     }
 }

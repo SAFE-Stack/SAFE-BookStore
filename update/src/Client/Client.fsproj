@@ -12,6 +12,7 @@
         <Compile Include="LocalStorage.fs" />
         <Compile Include="Session.fs" />
         <Compile Include="SAFE.fs" />
+        <Compile Include="components\NewBook.fs" />
         <Compile Include="pages\Home.fs" />
         <Compile Include="pages\Login.fs" />
         <Compile Include="pages\Wishlist.fs" />

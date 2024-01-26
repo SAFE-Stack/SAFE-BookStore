@@ -41,83 +41,100 @@ let initFromUrl model url =
     match url with
     | [] ->
         let homeModel, homeMsg = Home.init booksApi
-        let model = { Page = Home homeModel; User = model.User }
+
+        let model = {
+            Page = Home homeModel
+            User = model.User
+        }
+
         let cmd = homeMsg |> Cmd.map HomePageMsg
         model, cmd
     | [ "login" ] ->
         let loginModel, loginMsg = Login.init ()
-        let model = { Page = Login loginModel; User = model.User }
+
+        let model = {
+            Page = Login loginModel
+            User = model.User
+        }
+
         let cmd = loginMsg |> Cmd.map LoginPageMsg
         model, cmd
     | [ "wishlist" ] ->
         match model.User with
         | User user ->
             let wishlistModel, wishlistMsg = Wishlist.init booksApi user.UserName
-            let model = { Page = Wishlist wishlistModel; User = model.User }
+
+            let model = {
+                Page = Wishlist wishlistModel
+                User = model.User
+            }
+
             let cmd = wishlistMsg |> Cmd.map WishlistMsg
             model, cmd
-        | Guest ->
-            model, Cmd.navigate "login"
+        | Guest -> model, Cmd.navigate "login"
     | _ -> { Page = NotFound; User = model.User }, Cmd.none
 
 let init () =
     let model, _ = Home.init booksApi
-    let user =
-        Session.loadUser ()
-        |> Option.map User
-        |> Option.defaultValue Guest
+    let user = Session.loadUser () |> Option.map User |> Option.defaultValue Guest
 
-    Router.currentUrl ()
-    |> initFromUrl { Page = Home model; User = user }
+    Router.currentUrl () |> initFromUrl { Page = Home model; User = user }
 
 let update msg model =
     match model.Page, msg with
     | Home homeModel, HomePageMsg homeMsg ->
         let newModel, cmd = Home.update homeMsg homeModel
-        { Page = Home newModel; User = model.User }, cmd
+
+        {
+            Page = Home newModel
+            User = model.User
+        },
+        cmd
     | Login loginModel, LoginPageMsg loginMsg ->
         let user =
             match loginMsg with
             | Login.LoggedIn user -> User user
             | _ -> model.User
+
         let newModel, cmd = Login.update userApi loginMsg loginModel
         { Page = Login newModel; User = user }, cmd |> Cmd.map LoginPageMsg
     | Wishlist wishlistModel, WishlistMsg wishlistMsg ->
         let newModel, cmd = Wishlist.update booksApi wishlistMsg wishlistModel
-        { Page = Wishlist newModel; User = model.User }, cmd |> Cmd.map WishlistMsg
-    | NotFound, _ ->
-        { Page = NotFound; User = model.User }, Cmd.none
-    | _, UrlChanged url ->
-        initFromUrl model url
+
+        {
+            Page = Wishlist newModel
+            User = model.User
+        },
+        cmd |> Cmd.map WishlistMsg
+    | NotFound, _ -> { Page = NotFound; User = model.User }, Cmd.none
+    | _, UrlChanged url -> initFromUrl model url
     | _, Logout ->
-        Session.deleteUser()
+        Session.deleteUser ()
         { model with User = Guest }, Cmd.navigate ""
-    | _, _ ->
-        model, Cmd.none
+    | _, _ -> model, Cmd.none
 
 open Feliz
 
 let logo =
     Html.a [
         prop.href "https://safe-stack.github.io/"
-        prop.className "ml-12 h-12 w-12 bg-teal-300 hover:cursor-pointer hover:bg-teal-400"
+        prop.className "ml-12 h-12 w-12 bg-primary hover:cursor-pointer hover:bg-teal-400"
         prop.children [ Html.img [ prop.src "/favicon.png"; prop.alt "Logo" ] ]
     ]
 
 let navigation model dispatch =
     Html.div [
-        prop.className "grid border-b-[1px] border-slate-200 pb-8"
+        prop.className "grid"
         prop.children [
             Daisy.tabs [
                 prop.className "justify-self-center"
                 prop.children [
                     Daisy.tab [ prop.text "Home"; prop.onClick (fun _ -> Router.navigate "") ]
                     match model.User with
-                    | Guest ->
-                        Daisy.tab [ prop.text "Login"; prop.onClick (fun _ -> Router.navigate "login")]
+                    | Guest -> Daisy.tab [ prop.text "Login"; prop.onClick (fun _ -> Router.navigate "login") ]
                     | User user ->
-                        Daisy.tab [ prop.text "Wishlist"; prop.onClick (fun _ -> Router.navigate "wishlist")]
-                        Daisy.tab [ prop.text "Logout"; prop.onClick (fun _ -> dispatch Logout)]
+                        Daisy.tab [ prop.text "Wishlist"; prop.onClick (fun _ -> Router.navigate "wishlist") ]
+                        Daisy.tab [ prop.text "Logout"; prop.onClick (fun _ -> dispatch Logout) ]
                         Daisy.tab [ prop.text $"Logged in as {user.UserName.Value}" ]
                 ]
             ]
@@ -130,20 +147,18 @@ let view model dispatch =
         router.children [
             Html.section [
                 theme.winter
-                prop.className "grid grid-rows-[min-content_min-content_auto] gap-5 h-screen"
+                prop.className "grid grid-rows-index gap-5 h-screen"
                 prop.children [
                     logo
                     navigation model dispatch
+                    Daisy.divider ""
                     Html.div [
-                        prop.className "pt-8"
+                        prop.className "overflow-y-auto"
                         prop.children [
                             match model.Page with
-                            | Home homeModel ->
-                                Home.view homeModel (HomePageMsg >> dispatch)
-                            | Login loginModel ->
-                                Login.view loginModel (LoginPageMsg >> dispatch)
-                            | Wishlist wishlistModel ->
-                                Wishlist.view wishlistModel (WishlistMsg >> dispatch)
+                            | Home homeModel -> Home.view homeModel (HomePageMsg >> dispatch)
+                            | Login loginModel -> Login.view loginModel (LoginPageMsg >> dispatch)
+                            | Wishlist wishlistModel -> Wishlist.view wishlistModel (WishlistMsg >> dispatch)
                             | NotFound -> Html.div [ prop.text "Not Found" ]
                         ]
                     ]

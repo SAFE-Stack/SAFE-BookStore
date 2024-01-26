@@ -18,12 +18,14 @@ let mockBooks = seq {
         ImageLink = "/images/Isaac.png"
         Link = "https://www.manning.com/books/get-programming-with-f-sharp"
     }
+
     {
         Title = "Mastering F#"
         Authors = "Alfonso Garcia-Caro Nunez"
         ImageLink = "/images/Alfonso.jpg"
         Link = "https://www.amazon.com/Mastering-F-Alfonso-Garcia-Caro-Nunez-ebook/dp/B01M112LR9"
     }
+
     {
         Title = "Stylish F#"
         Authors = "Kit Eason"
@@ -34,19 +36,30 @@ let mockBooks = seq {
 
 let connection =
     let accountName = ""
+
     if Environment.GetEnvironmentVariable "ASPNETCORE_ENVIRONMENT" = Environments.Development then
         Dev "UseDevelopmentStorage=true"
     else
-        Deployed (Uri accountName, DefaultAzureCredential())
+        Deployed(Uri accountName, DefaultAzureCredential())
 
 let booksApi = {
-    getBooks = fun () -> async { return mockBooks }
-    getWishlist = fun user ->
-        async {
-            return! getWishListFromDB connection user |> Async.AwaitTask
+    getBooks =
+        fun () -> async {
+            return
+                seq {
+                    mockBooks
+                    mockBooks
+                }
+                |> Seq.concat
         }
-    removeBook = fun (user, title) ->
-        async {
+    getWishlist = fun user -> async { return! getWishListFromDB connection user |> Async.AwaitTask }
+    addBook =
+        fun (user, book) -> async {
+            let! _ = addBook connection user book |> Async.AwaitTask
+            return book
+        }
+    removeBook =
+        fun (user, title) -> async {
             do! removeBook connection user title |> Async.AwaitTask
             return title
         }
@@ -70,10 +83,7 @@ let books =
     |> Remoting.withErrorHandler ErrorHandling.errorHandler
     |> Remoting.buildHttpHandler
 
-let webApp = choose [
-    auth
-    books
-]
+let webApp = choose [ auth; books ]
 
 let app = application {
     use_router webApp

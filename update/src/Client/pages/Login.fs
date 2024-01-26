@@ -46,6 +46,7 @@ let init () =
         Password = ""
         FormErrors = []
     }
+
     model, Cmd.none
 
 let update (userApi: IUserApi) msg model =
@@ -54,17 +55,16 @@ let update (userApi: IUserApi) msg model =
     | SetPassword input -> { model with Password = input }, Cmd.none
     | Login ->
         let form = validateForm model.Username model.Password
+
         let model, cmd =
             match form with
             | Ok form -> { model with FormErrors = [] }, Cmd.OfAsync.either userApi.login form LoggedIn UnhandledError
             | Error errors -> { model with FormErrors = errors }, Cmd.none
+
         model, cmd
-    | LoggedIn user ->
-        model, Cmd.OfFunc.either Session.saveUser user StorageSuccess UnhandledError
-    | StorageSuccess _ ->
-        model, Cmd.navigate "wishlist"
-    | UnhandledError exn ->
-        model, exn.AsAlert()
+    | LoggedIn user -> model, Cmd.OfFunc.either Session.saveUser user StorageSuccess UnhandledError
+    | StorageSuccess _ -> model, Cmd.navigate "wishlist"
+    | UnhandledError exn -> model, exn.AsAlert()
 
 open Feliz
 
@@ -86,7 +86,10 @@ let view model dispatch =
                             Html.div [
                                 prop.className "relative"
                                 prop.children [
-                                    Html.i [ prop.className "fa fa-search absolute inset-y-0 end-0 grid items-center mr-2 text-teal-300" ]
+                                    Html.i [
+                                        prop.className
+                                            "fa fa-search absolute inset-y-0 end-0 grid items-center mr-2 text-primary"
+                                    ]
                                     Daisy.input [
                                         input.bordered
                                         prop.className ""
@@ -102,7 +105,10 @@ let view model dispatch =
                         Html.div [
                             prop.className "relative"
                             prop.children [
-                                Html.i [ prop.className "fa fa-lock absolute inset-y-0 end-0 grid items-center mr-2 text-yellow-400" ]
+                                Html.i [
+                                    prop.className
+                                        "fa fa-lock absolute inset-y-0 end-0 grid items-center mr-2 text-yellow-400"
+                                ]
                                 Daisy.input [
                                     input.bordered
                                     prop.className ""
@@ -117,7 +123,11 @@ let view model dispatch =
                         Html.div [
                             prop.className ""
                             prop.children [
-                                Daisy.button.button [ prop.className "bg-teal-300"; prop.text "Log In"; prop.onClick (fun _ -> dispatch Login)]
+                                Daisy.button.button [
+                                    button.primary
+                                    prop.text "Log In"
+                                    prop.onClick (fun _ -> dispatch Login)
+                                ]
                             ]
                         ]
                     ]
@@ -125,4 +135,3 @@ let view model dispatch =
             ]
         ]
     ]
-

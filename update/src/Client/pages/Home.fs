@@ -6,8 +6,7 @@ open Shared
 
 type Model = { Wishlist: Book seq }
 
-type Msg =
-    | GotWishlist of Book seq
+type Msg = GotWishlist of Book seq
 
 let init (booksApi: IBooksApi) =
     let model = { Wishlist = Seq.empty }
@@ -21,9 +20,21 @@ let update msg model =
 open Feliz
 
 let bookRow book =
-    let link = Daisy.link [ link.hover; link.primary; prop.target "_blank"; prop.text book.Title; prop.href book.Link ]
+    let link =
+        Daisy.link [
+            link.hover
+            link.primary
+            prop.target "_blank"
+            prop.text book.Title
+            prop.href book.Link
+        ]
+
     let image = Html.img [ prop.src book.ImageLink ]
-    Html.tr [ prop.className "hover:bg-teal-300"; prop.children [ Html.td link; Html.td book.Authors; Html.td image ] ]
+
+    Html.tr [
+        prop.className "hover:primary"
+        prop.children [ Html.td link; Html.td book.Authors; Html.td image ]
+    ]
 
 let view model dispatch =
     Html.div [
@@ -40,4 +51,3 @@ let view model dispatch =
             ]
         ]
     ]
-
