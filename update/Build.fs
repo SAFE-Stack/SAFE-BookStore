@@ -17,6 +17,7 @@ let clientTestsPath = Path.getFullName "tests/Client"
 
 let appName = "safebookstoret"
 let storageAccountName = $"{appName}storage"
+let functionAppName = $"{appName}function"
 
 Target.create "Clean" (fun _ ->
     Shell.cleanDir deployPath
@@ -44,13 +45,22 @@ Target.create "Azure" (fun _ ->
         system_identity
         setting "StorageAccountName" storageAccountName
         operating_system OS.Linux
-        runtime_stack (DotNet "8.0")
+        runtime_stack Runtime.DotNet80
         zip_deploy "deploy"
+    }
+
+    let functionApp = functions {
+        name functionAppName
+        system_identity
+        setting "StorageAccountName" storageAccountName
+        operating_system OS.Linux
+        use_runtime FunctionsRuntime.DotNet80Isolated
     }
 
     let storage = storageAccount {
         name storageAccountName
-        grant_access web.SystemIdentity Roles.StorageTableDataContributor
+        grant_access web.SystemIdentity Roles.StorageAccountContributor
+        grant_access functionApp.SystemIdentity Roles.StorageAccountContributor
     }
 
     let deployment = arm {
