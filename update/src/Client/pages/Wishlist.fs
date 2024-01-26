@@ -9,7 +9,7 @@ open SAFE
 
 type Model = {
     Wishlist: WishList
-    NewBook: NewBook.Model
+    NewBook: NewBook.Model option
 }
 
 type Msg =
@@ -18,27 +18,22 @@ type Msg =
     | RemovedBook of string
     | NewBookMsg of NewBook.Msg
     | AddedBook of Book
+    | OpenNewBookModal
     | UnhandledError of exn
 
 let alert message alertType =
     SimpleAlert(message).Type(alertType) |> SweetAlert.Run
 
 let init (booksApi: IBooksApi) (userName: UserName) =
-    let newBookModel, newBookCmd = NewBook.init ()
-
     let model = {
         Wishlist = {
             UserName = userName
             Books = List.empty
         }
-        NewBook = newBookModel
+        NewBook = None
     }
 
-    let cmd =
-        Cmd.batch [
-            Cmd.OfAsync.perform booksApi.getWishlist userName GotWishlist
-            newBookCmd |> Cmd.map NewBookMsg
-        ]
+    let cmd = Cmd.OfAsync.perform booksApi.getWishlist userName GotWishlist
 
     model, cmd
 
@@ -63,30 +58,37 @@ let update booksApi msg model =
 
         model, alert $"{title} removed" AlertType.Info
     | NewBookMsg newBookMsg ->
-        match newBookMsg with
-        | NewBook.AddBook book ->
+        match newBookMsg, model.NewBook with
+        | NewBook.AddBook book, _ ->
             match model.Wishlist.VerifyNewBookIsNotADuplicate book with
             | Ok _ ->
                 let userName = model.Wishlist.UserName
                 model, Cmd.OfAsync.either booksApi.addBook (userName, book) AddedBook UnhandledError
             | Error error -> model, Exception(error) |> UnhandledError |> Cmd.ofMsg
-        | _ ->
-            let newBookModel, cmd = NewBook.update newBookMsg model.NewBook
-            let model = { model with NewBook = newBookModel }
+        | NewBook.Cancel, _ ->
+            {model with NewBook = None}, Cmd.none
+        | _, Some newBook ->
+            let newBookModel, cmd = NewBook.update newBookMsg newBook
+            let model = { model with NewBook = Some newBookModel }
             model, cmd |> Cmd.map NewBookMsg
+        | _, _ ->
+            model, Cmd.none
     | AddedBook book ->
         let wishList = {
             model.Wishlist with
                 Books = book :: model.Wishlist.Books |> List.sortBy (fun book -> book.Title)
+            
         }
-
-        let newBookModel, _ = NewBook.init ()
 
         {
             Wishlist = wishList
-            NewBook = newBookModel
+            NewBook = None
         },
         alert $"{book.Title} added" AlertType.Success
+
+    | OpenNewBookModal ->
+        let newBook, newBookmsg = NewBook.init()
+        {model with NewBook = Some newBook}, (newBookmsg |> Cmd.map NewBookMsg)
     | UnhandledError exn -> model, exn.AsAlert()
 
 open Feliz
@@ -117,6 +119,16 @@ let bookRow book dispatch =
         prop.children [ Html.td titleLink; Html.td book.Authors; Html.td image; Html.td remove ]
     ]
 
+
+let newBookButton dispatch =
+    Daisy.button.label [
+        button.primary
+        prop.text "Add"
+        prop.onClick ( fun _ -> OpenNewBookModal |> dispatch)
+
+    ]
+ 
+
 let view model dispatch =
     Html.div [
         prop.className ""
@@ -131,6 +143,10 @@ let view model dispatch =
                 ]
             ]
             Daisy.divider ""
-            NewBook.view model.NewBook (NewBookMsg >> dispatch)
+            newBookButton dispatch
+            match model.NewBook with
+            | Some book ->
+                NewBook.view book (NewBookMsg >> dispatch)
+            | None -> ()
         ]
     ]
