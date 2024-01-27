@@ -13,20 +13,20 @@ module BookTitle =
 type StorageAccountName = StorageAccountName of string
 
 type AzureConnection =
-    | Dev of string
-    | Deployed of StorageAccountName * Azure.Core.TokenCredential
+    | ConnectionString of string
+    | OAuth of StorageAccountName * Azure.Core.TokenCredential
 
     member this.TableServiceClient =
         match this with
-        | Dev connectionString -> TableServiceClient(connectionString)
-        | Deployed(StorageAccountName storageAccountName, credentials) ->
+        | ConnectionString connectionString -> TableServiceClient(connectionString)
+        | OAuth(StorageAccountName storageAccountName, credentials) ->
             let uri = Uri $"https://{storageAccountName}.table.core.windows.net"
             TableServiceClient(uri, credentials)
 
     member this.BlobServiceClient =
         match this with
-        | Dev connectionString -> BlobServiceClient(connectionString)
-        | Deployed (StorageAccountName storageAccountName, credentials) ->
+        | ConnectionString connectionString -> BlobServiceClient(connectionString)
+        | OAuth(StorageAccountName storageAccountName, credentials) ->
             let uri = Uri $"https://{storageAccountName}.blob.core.windows.net"
             BlobServiceClient(uri, credentials)
 
@@ -125,21 +125,24 @@ let removeBook connection (userName: UserName) (title: string) = task {
 }
 
 module StateManagement =
-    let getStateBlob (connection:AzureConnection) name = task {
+    let getStateBlob (connection: AzureConnection) name = task {
         let client = connection.BlobServiceClient
         let state = client.GetBlobContainerClient "state"
         let! _ = state.CreateIfNotExistsAsync()
-        return state.GetBlobClient name }
+        return state.GetBlobClient name
+    }
 
     let resetTimeBlob connection = getStateBlob connection "resetTime"
 
     let storeResetTime connection = task {
         let! blob = resetTimeBlob connection
-        return! blob.UploadAsync "" }
+        return! blob.UploadAsync ""
+    }
 
 let getLastResetTime connection = task {
     let! blob = StateManagement.resetTimeBlob connection
     let! response = blob.GetPropertiesAsync()
+
     return
         if response.HasValue then
             Some response.Value.LastModified.Date

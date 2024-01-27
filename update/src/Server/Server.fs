@@ -37,11 +37,15 @@ let mockBooks = seq {
 }
 
 let getStorageConnection (context: HttpContext) =
-    if Environment.GetEnvironmentVariable "ASPNETCORE_ENVIRONMENT" = Environments.Development then
-        Dev "UseDevelopmentStorage=true"
+    let storageAccountName = context.GetService<IConfiguration>().["StorageAccountName"]
+
+    if String.IsNullOrWhiteSpace storageAccountName then
+        let connection =
+            context.GetService<IConfiguration>().GetConnectionString "StorageAccount"
+
+        ConnectionString connection
     else
-        let storageAccountName = context.GetService<IConfiguration>().["StorageAccountName"]
-        Deployed(StorageAccountName storageAccountName, DefaultAzureCredential())
+        OAuth(StorageAccountName storageAccountName, DefaultAzureCredential())
 
 let booksApi (context: HttpContext) =
     let connection = getStorageConnection context
