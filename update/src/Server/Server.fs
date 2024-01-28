@@ -1,16 +1,20 @@
 module Server
 
 open System
+open Azure.Data.Tables
+open Azure.Storage.Blobs
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 open Giraffe
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Configuration
+open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Hosting
 open Saturn
 open Shared
 open SAFE
 open Storage
-open Microsoft.Extensions.Hosting
+open Microsoft.Extensions.Azure
 open Azure.Identity
 
 let mockBooks = seq {
@@ -36,33 +40,24 @@ let mockBooks = seq {
     }
 }
 
-let getStorageConnection (context: HttpContext) =
-    let storageAccountName = context.GetService<IConfiguration>().["StorageAccountName"]
-
-    if String.IsNullOrWhiteSpace storageAccountName then
-        let connection =
-            context.GetService<IConfiguration>().GetConnectionString "StorageAccount"
-
-        ConnectionString connection
-    else
-        OAuth(StorageAccountName storageAccountName, DefaultAzureCredential())
-
 let booksApi (context: HttpContext) =
-    let connection = getStorageConnection context
+    let tableStorage = context.GetService<TableServiceClient>()
+    let blobStorage = context.GetService<BlobServiceClient>()
 
     {
         getBooks = fun () -> async { return seq { mockBooks } |> Seq.concat }
-        getWishlist = fun user -> async { return! getWishListFromDB connection user |> Async.AwaitTask }
+        getWishlist = fun user -> async { return! getWishListFromDB tableStorage user |> Async.AwaitTask }
         addBook =
             fun (user, book) -> async {
-                let! _ = addBook connection user book |> Async.AwaitTask
+                let! _ = addBook tableStorage user book |> Async.AwaitTask
                 return book
             }
         removeBook =
             fun (user, title) -> async {
-                do! removeBook connection user title |> Async.AwaitTask
+                do! removeBook tableStorage user title |> Async.AwaitTask
                 return title
             }
+        getLastResetTime = fun () -> async { return! getLastResetTime blobStorage |> Async.AwaitTask }
     }
 
 let userApi = {
@@ -85,8 +80,39 @@ let books =
 
 let webApp = choose [ auth; books ]
 
+let configureServices (services: IServiceCollection) =
+    let provider = services.BuildServiceProvider()
+    let config = provider.GetService<IConfiguration>()
+
+    services.AddAzureClients(fun builder ->
+        if Environment.GetEnvironmentVariable "ASPNETCORE_ENVIRONMENT" = Environments.Development then
+            let connectionString = config.GetConnectionString "StorageAccount"
+
+            match String.IsNullOrWhiteSpace connectionString with
+            | true -> failwith "Storage account connection string not in app settings"
+            | false ->
+                builder.AddBlobServiceClient connectionString |> ignore
+                builder.AddTableServiceClient connectionString |> ignore
+        else
+            let storageAccountName = config["StorageAccountName"]
+
+            match String.IsNullOrWhiteSpace storageAccountName with
+            | true -> failwith "Storage account name has not been set in the app deployment settings"
+            | false ->
+                let storageUri service =
+                    Uri $"https://{storageAccountName}.{service}.core.windows.net"
+
+                let blobStorage = storageUri "blob"
+                let tableStorage = storageUri "table"
+                builder.AddBlobServiceClient(blobStorage) |> ignore
+                builder.AddTableServiceClient(tableStorage) |> ignore
+                builder.UseCredential(DefaultAzureCredential()) |> ignore)
+
+    services
+
 let app = application {
     use_router webApp
+    service_config configureServices
     memory_cache
     use_static "public"
     use_gzip

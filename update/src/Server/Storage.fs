@@ -12,24 +12,6 @@ module BookTitle =
 
 type StorageAccountName = StorageAccountName of string
 
-type AzureConnection =
-    | ConnectionString of string
-    | OAuth of StorageAccountName * Azure.Core.TokenCredential
-
-    member this.TableServiceClient =
-        match this with
-        | ConnectionString connectionString -> TableServiceClient(connectionString)
-        | OAuth(StorageAccountName storageAccountName, credentials) ->
-            let uri = Uri $"https://{storageAccountName}.table.core.windows.net"
-            TableServiceClient(uri, credentials)
-
-    member this.BlobServiceClient =
-        match this with
-        | ConnectionString connectionString -> BlobServiceClient(connectionString)
-        | OAuth(StorageAccountName storageAccountName, credentials) ->
-            let uri = Uri $"https://{storageAccountName}.blob.core.windows.net"
-            BlobServiceClient(uri, credentials)
-
 type BookEntity() =
     member val Title = "" with get, set
     member val Authors = "" with get, set
@@ -51,8 +33,7 @@ module BookEntity =
         entity.RowKey <- book.Title.ToCharArray() |> Array.filter BookTitle.isAllowed |> String
         entity
 
-let getBooksTable (connection: AzureConnection) = task {
-    let client = connection.TableServiceClient
+let getBooksTable (client: TableServiceClient) = task {
     let table = client.GetTableClient "book"
 
     // Azure will temporarily lock table names after deleting and can take some time before the table name is made available again.
@@ -70,8 +51,8 @@ let getBooksTable (connection: AzureConnection) = task {
 }
 
 /// Load from the database
-let getWishListFromDB connection (userName: UserName) = task {
-    let! table = getBooksTable connection
+let getWishListFromDB (client: TableServiceClient) (userName: UserName) = task {
+    let! table = getBooksTable client
     let results = table.Query<BookEntity>($"PartitionKey eq '{userName.Value}'")
 
     return {
@@ -98,7 +79,7 @@ let saveWishListToDB connection wishList = task {
 
     let batch = wishList.Books |> Seq.map buildAction
 
-    let! thing = booksTable.SubmitTransactionAsync batch
+    let! _ = booksTable.SubmitTransactionAsync batch
     ()
 }
 
@@ -125,8 +106,7 @@ let removeBook connection (userName: UserName) (title: string) = task {
 }
 
 module StateManagement =
-    let getStateBlob (connection: AzureConnection) name = task {
-        let client = connection.BlobServiceClient
+    let getStateBlob (client: BlobServiceClient) name = task {
         let state = client.GetBlobContainerClient "state"
         let! _ = state.CreateIfNotExistsAsync()
         return state.GetBlobClient name
@@ -136,7 +116,9 @@ module StateManagement =
 
     let storeResetTime connection = task {
         let! blob = resetTimeBlob connection
-        return! blob.UploadAsync ""
+        let data = BinaryData ""
+        let! _ = blob.UploadAsync data
+        ()
     }
 
 let getLastResetTime connection = task {

@@ -5,3 +5,4 @@ Giraffe
 Azure.Data.Tables
 Azure.Identity
 Azure.Storage.Blobs
+Microsoft.Extensions.Azure

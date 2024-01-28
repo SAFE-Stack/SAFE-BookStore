@@ -27,9 +27,11 @@ Target.create "Clean" (fun _ ->
 Target.create "InstallClient" (fun _ -> run npm [ "install" ] ".")
 
 Target.create "StartServices" (fun _ ->
-    Environment.setEnvironVar "COMPOSE_PROJECT_NAME" "bookstore"
-
-    async { runParallel [ "Docker Services", docker [ "compose"; "up" ] "." ] }
+    async {
+        runParallel [
+            "Docker Services", docker [ "compose"; "--project-name"; "bookstore"; "up" ] "."
+        ]
+    }
     |> Async.Start)
 
 Target.create "Bundle" (fun _ ->
