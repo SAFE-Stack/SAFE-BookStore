@@ -12,6 +12,8 @@ nuget FSharp.Core ~> 8
 nuget Fable.Remoting.Giraffe ~> 5
 nuget FSToolkit.ErrorHandling
 nuget Microsoft.Extensions.Azure
+nuget Quartz
+nuget Quartz.Extensions.Hosting
 nuget Saturn ~> 0
 nuget Expecto ~> 9
 

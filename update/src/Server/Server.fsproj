@@ -10,6 +10,7 @@
     <Compile Include="SAFE.fs" />
     <Compile Include="Authorise.fs" />
     <Compile Include="Storage.fs" />
+    <Compile Include="ResetStorage.fs" />
     <Compile Include="Server.fs" />
   </ItemGroup>
   <ItemGroup>

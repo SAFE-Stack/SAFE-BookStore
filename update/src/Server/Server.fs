@@ -10,35 +10,14 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
+open ResetStorage
 open Saturn
 open Shared
 open SAFE
 open Storage
 open Microsoft.Extensions.Azure
 open Azure.Identity
-
-let mockBooks = seq {
-    {
-        Title = "Get Programming with F#"
-        Authors = "Isaac Abraham"
-        ImageLink = "/images/Isaac.png"
-        Link = "https://www.manning.com/books/get-programming-with-f-sharp"
-    }
-
-    {
-        Title = "Mastering F#"
-        Authors = "Alfonso Garcia-Caro Nunez"
-        ImageLink = "/images/Alfonso.jpg"
-        Link = "https://www.amazon.com/Mastering-F-Alfonso-Garcia-Caro-Nunez-ebook/dp/B01M112LR9"
-    }
-
-    {
-        Title = "Stylish F#"
-        Authors = "Kit Eason"
-        ImageLink = "/images/Kit.jpg"
-        Link = "https://www.apress.com/la/book/9781484239995"
-    }
-}
+open Quartz
 
 module Option =
     let ofString input =
@@ -46,26 +25,26 @@ module Option =
         | true -> None
         | false -> Some input
 
-let startTime = DateTime.UtcNow
+let systemStartTime = DateTime.UtcNow
 
 let booksApi (context: HttpContext) =
     let tableStorage = context.GetService<TableServiceClient>()
     let blobStorage = context.GetService<BlobServiceClient>()
 
     {
-        getBooks = fun () -> async { return seq { mockBooks } |> Seq.concat }
-        getWishlist = fun user -> async { return! getWishListFromDB tableStorage user |> Async.AwaitTask }
+        getBooks = fun () -> async { return Defaults.mockBooks }
+        getWishlist = getWishListFromDB tableStorage
         addBook =
             fun (user, book) -> async {
-                let! _ = addBook tableStorage user book |> Async.AwaitTask
+                let! _ = addBook tableStorage user book
                 return book
             }
         removeBook =
             fun (user, title) -> async {
-                do! removeBook tableStorage user title |> Async.AwaitTask
+                do! removeBook tableStorage user title
                 return title
             }
-        getLastResetTime = fun () -> async { return! getLastResetTime blobStorage startTime |> Async.AwaitTask }
+        getLastResetTime = fun () -> getLastResetTime blobStorage systemStartTime
     }
 
 let userApi = {
@@ -113,6 +92,17 @@ let configureServices (services: IServiceCollection) =
                 builder.UseCredential(DefaultAzureCredential()) |> ignore)
             |> Option.defaultWith (fun () ->
                 failwith "Storage account name has not been set in the app deployment settings"))
+
+    services
+        .AddQuartz(fun config ->
+            let jobName = JobKey "reset-storage"
+
+            config
+                .AddJob<ResetStorageJob>(jobName)
+                .AddTrigger(fun trigger -> trigger.ForJob(jobName).WithCronSchedule("0 * 0/2 * * ?") |> ignore)
+            |> ignore)
+        .AddQuartzHostedService(fun options -> options.WaitForJobsToComplete <- true)
+    |> ignore
 
     services
 

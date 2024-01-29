@@ -9,10 +9,12 @@ open SAFE
 
 type Model = {
     Wishlist: WishList
+    LastResetTime: DateTime
     NewBook: NewBook.Model option
 }
 
 type Msg =
+    | GotLastRestTime of DateTime
     | GotWishlist of WishList
     | RemoveBook of string
     | RemovedBook of string
@@ -30,15 +32,21 @@ let init (booksApi: IBooksApi) (userName: UserName) =
             UserName = userName
             Books = List.empty
         }
+        LastResetTime = DateTime.MinValue
         NewBook = None
     }
 
-    let cmd = Cmd.OfAsync.perform booksApi.getWishlist userName GotWishlist
+    let cmd =
+        Cmd.batch [
+            Cmd.OfAsync.either booksApi.getWishlist userName GotWishlist UnhandledError
+            Cmd.OfAsync.either booksApi.getLastResetTime () GotLastRestTime UnhandledError
+        ]
 
     model, cmd
 
 let update booksApi msg model =
     match msg with
+    | GotLastRestTime time -> { model with LastResetTime = time }, Cmd.none
     | GotWishlist wishlist -> { model with Wishlist = wishlist }, Cmd.none
     | RemoveBook title ->
         let userName = model.Wishlist.UserName
@@ -65,30 +73,33 @@ let update booksApi msg model =
                 let userName = model.Wishlist.UserName
                 model, Cmd.OfAsync.either booksApi.addBook (userName, book) AddedBook UnhandledError
             | Error error -> model, Exception(error) |> UnhandledError |> Cmd.ofMsg
-        | NewBook.Cancel, _ ->
-            {model with NewBook = None}, Cmd.none
+        | NewBook.Cancel, _ -> { model with NewBook = None }, Cmd.none
         | _, Some newBook ->
             let newBookModel, cmd = NewBook.update newBookMsg newBook
-            let model = { model with NewBook = Some newBookModel }
+
+            let model = {
+                model with
+                    NewBook = Some newBookModel
+            }
+
             model, cmd |> Cmd.map NewBookMsg
-        | _, _ ->
-            model, Cmd.none
+        | _, _ -> model, Cmd.none
     | AddedBook book ->
         let wishList = {
             model.Wishlist with
                 Books = book :: model.Wishlist.Books |> List.sortBy (fun book -> book.Title)
-
         }
 
         {
-            Wishlist = wishList
-            NewBook = None
+            model with
+                Wishlist = wishList
+                NewBook = None
         },
         alert $"{book.Title} added" AlertType.Success
 
     | OpenNewBookModal ->
-        let newBook, newBookmsg = NewBook.init()
-        {model with NewBook = Some newBook}, (newBookmsg |> Cmd.map NewBookMsg)
+        let newBook, newBookMsg = NewBook.init ()
+        { model with NewBook = Some newBook }, (newBookMsg |> Cmd.map NewBookMsg)
     | UnhandledError exn -> model, exn.AsAlert()
 
 open Feliz
@@ -119,15 +130,13 @@ let bookRow book dispatch =
         prop.children [ Html.td titleLink; Html.td book.Authors; Html.td image; Html.td remove ]
     ]
 
-
 let newBookButton dispatch =
     Daisy.button.label [
         button.primary
         prop.text "Add"
-        prop.onClick ( fun _ -> OpenNewBookModal |> dispatch)
+        prop.onClick (fun _ -> OpenNewBookModal |> dispatch)
 
     ]
-
 
 let table model dispatch =
     Daisy.table [
@@ -140,27 +149,27 @@ let table model dispatch =
         ]
     ]
 
-
-
-
 let view model dispatch =
-    Html.div [
-            prop.className "grid h-full gap-4 content-start"
-            prop.children [
-                Html.div [
-                    prop.className "row-min flex justify-end gap-4 mx-4"
-                    prop.children [
-                        newBookButton dispatch
-                    ]
-                ]
-                Html.div [
-                    prop.className "overflow-y-auto"
-                    prop.children [ table model dispatch ]
-                ]
+    let user = model.Wishlist.UserName.Value
+    let lastReset = model.LastResetTime.ToString("yyyy-MM-dd HH:mm")
 
-                match model.NewBook with
-                | Some book ->
-                    NewBook.view book (NewBookMsg >> dispatch)
-                | None -> ()
+    Html.div [
+        prop.className "grid h-full gap-4 content-start"
+        prop.children [
+            Html.div [
+                prop.className "row-min flex justify-end gap-4 mx-4"
+                prop.children [ newBookButton dispatch ]
             ]
+            Html.div [
+                prop.className "overflow-y-auto"
+                prop.children [
+                    Html.text $"Wishlist for {user} - Last database reset at {lastReset}UTC"
+                    table model dispatch
+                ]
+            ]
+
+            match model.NewBook with
+            | Some book -> NewBook.view book (NewBookMsg >> dispatch)
+            | None -> ()
+        ]
     ]

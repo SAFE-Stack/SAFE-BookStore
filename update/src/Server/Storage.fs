@@ -39,16 +39,45 @@ module BookEntity =
         entity.RowKey <- book.Title.ToCharArray() |> Array.filter BookTitle.isAllowed |> String
         entity
 
-let getBooksTable (client: TableServiceClient) = task {
+module Defaults =
+    let mockBooks = [
+        {
+            Title = "Get Programming with F#"
+            Authors = "Isaac Abraham"
+            ImageLink = "/images/Isaac.png"
+            Link = "https://www.manning.com/books/get-programming-with-f-sharp"
+        }
+
+        {
+            Title = "Mastering F#"
+            Authors = "Alfonso Garcia-Caro Nunez"
+            ImageLink = "/images/Alfonso.jpg"
+            Link = "https://www.amazon.com/Mastering-F-Alfonso-Garcia-Caro-Nunez-ebook/dp/B01M112LR9"
+        }
+
+        {
+            Title = "Stylish F#"
+            Authors = "Kit Eason"
+            ImageLink = "/images/Kit.jpg"
+            Link = "https://www.apress.com/la/book/9781484239995"
+        }
+    ]
+
+    let wishList = {
+        UserName = UserName "test"
+        Books = mockBooks
+    }
+
+let getBooksTable (client: TableServiceClient) = async {
     let table = client.GetTableClient "book"
 
     // Azure will temporarily lock table names after deleting and can take some time before the table name is made available again.
-    let rec createTableSafe () = task {
+    let rec createTableSafe () = async {
         try
-            let! _ = table.CreateIfNotExistsAsync()
+            let! _ = table.CreateIfNotExistsAsync() |> Async.AwaitTask
             ()
         with _ ->
-            do! Task.Delay 5000
+            do! Async.Sleep 5000
             return! createTableSafe ()
     }
 
@@ -57,7 +86,7 @@ let getBooksTable (client: TableServiceClient) = task {
 }
 
 /// Load from the database
-let getWishListFromDB (client: TableServiceClient) (userName: UserName) = task {
+let getWishListFromDB (client: TableServiceClient) (userName: UserName) = async {
     let! table = getBooksTable client
     let results = table.Query<BookEntity>($"PartitionKey eq '{userName.Value}'")
 
@@ -75,25 +104,34 @@ let getWishListFromDB (client: TableServiceClient) (userName: UserName) = task {
     }
 }
 
-/// Save to the database
-let saveWishListToDB connection wishList = task {
-    let! booksTable = getBooksTable connection
+let saveWishListToDB client wishList = async {
+    let! table = getBooksTable client
 
-    let buildAction book =
+    let existingBooks =
+        table.Query<BookEntity>($"PartitionKey eq '{wishList.UserName.Value}'")
+
+    let deleteAction book =
+        TableTransactionAction(TableTransactionActionType.Delete, book)
+
+    let deleteBatch = existingBooks |> Seq.map deleteAction
+
+    let upsertAction book =
         let book = BookEntity.buildEntity wishList.UserName.Value book
         TableTransactionAction(TableTransactionActionType.UpsertReplace, book)
 
-    let batch = wishList.Books |> Seq.map buildAction
+    let upsertBatch = wishList.Books |> Seq.map upsertAction
 
-    let! _ = booksTable.SubmitTransactionAsync batch
+    let batch = [ deleteBatch; upsertBatch ] |> Seq.concat
+
+    let! _ = table.SubmitTransactionAsync batch |> Async.AwaitTask
     ()
 }
 
-let addBook connection (userName: UserName) book = task {
-    let! client = getBooksTable connection
+let addBook client (userName: UserName) book = async {
+    let! table = getBooksTable client
     let entity = BookEntity.buildEntity userName.Value book
 
-    let! _ = client.AddEntityAsync entity
+    let! _ = table.AddEntityAsync entity |> Async.AwaitTask
 
     return {
         Title = book.Title
@@ -103,33 +141,34 @@ let addBook connection (userName: UserName) book = task {
     }
 }
 
-let removeBook connection (userName: UserName) (title: string) = task {
-    let! client = getBooksTable connection
+let removeBook client (userName: UserName) (title: string) = async {
+    let! table = getBooksTable client
     let partitionKey = userName.Value
     let rowKey = title.ToCharArray() |> Array.filter BookTitle.isAllowed |> String
-    let! _ = client.DeleteEntityAsync(partitionKey, rowKey)
+    let! _ = table.DeleteEntityAsync(partitionKey, rowKey) |> Async.AwaitTask
     ()
 }
 
 module StateManagement =
-    let getStateBlob (client: BlobServiceClient) name = task {
+    let getStateBlob (client: BlobServiceClient) name = async {
         let state = client.GetBlobContainerClient "state"
-        let! _ = state.CreateIfNotExistsAsync()
+        let! _ = state.CreateIfNotExistsAsync() |> Async.AwaitTask
         return state.GetBlobClient name
     }
 
-    let resetTimeBlob connection = getStateBlob connection "resetTime"
+    let resetTimeBlob client = getStateBlob client "resetTime"
 
-    let storeResetTime connection = task {
-        let! blob = resetTimeBlob connection
+    let storeResetTime client = async {
+        let! blob = resetTimeBlob client
         let data = BinaryData ""
-        let! _ = blob.UploadAsync data
+        let _ = blob.DeleteIfExistsAsync() |> Async.AwaitTask
+        let! _ = blob.UploadAsync data |> Async.AwaitTask
         ()
     }
 
-let getLastResetTime connection systemStartTime = task {
-    let! blob = StateManagement.resetTimeBlob connection
-    let! response = blob.GetPropertiesAsync()
+let getLastResetTime client systemStartTime = async {
+    let! blob = StateManagement.resetTimeBlob client
+    let! response = blob.GetPropertiesAsync() |> Async.AwaitTask
 
     return
         response
