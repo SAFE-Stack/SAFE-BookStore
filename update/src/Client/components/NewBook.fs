@@ -126,54 +126,53 @@ let inputField (value: string) (key: string) (onChange: string -> unit) error pl
 
 let view model dispatch =
     Html.div [
-            Daisy.modal.div [
-                modal.open'
-                prop.children [
-                    Daisy.modalBox.div [
-                        prop.children [
-                            inputField
-                                model.NewBook.Title
-                                "title"
-                                (SetTitle >> dispatch)
-                                model.TitleErrorText
-                                "Please insert title"
-                            inputField
-                                model.NewBook.Authors
-                                "author"
-                                (SetAuthors >> dispatch)
-                                model.AuthorsErrorText
-                                "Please insert authors"
-                            inputField
-                                model.NewBook.Link
-                                "link"
-                                (SetLink >> dispatch)
-                                model.LinkErrorText
-                                "Please insert link"
-                            inputField
-                                model.NewBook.ImageLink
-                                "image-link"
-                                (SetImageLink >> dispatch)
-                                model.ImageLinkErrorText
-                                "Please insert image link"
-                            Daisy.modalAction [
-                                Daisy.button.label [
-                                    button.primary
-                                    prop.type'.submit
-                                    prop.text "Add Book"
-                                    prop.onClick (fun _ -> dispatch ValidateBook)
-                                    if model.NewBook.Validate() then
-                                        prop.htmlFor "add-book"
-                                ]
-                                Daisy.button.label [
+        Daisy.modal.div [
+            modal.open'
+            prop.children [
+                Daisy.modalBox.div [
+                    prop.children [
+                        inputField
+                            model.NewBook.Title
+                            "title"
+                            (SetTitle >> dispatch)
+                            model.TitleErrorText
+                            "Please insert title"
+                        inputField
+                            model.NewBook.Authors
+                            "author"
+                            (SetAuthors >> dispatch)
+                            model.AuthorsErrorText
+                            "Please insert authors"
+                        inputField
+                            model.NewBook.Link
+                            "link"
+                            (SetLink >> dispatch)
+                            model.LinkErrorText
+                            "Please insert link"
+                        inputField
+                            model.NewBook.ImageLink
+                            "image-link"
+                            (SetImageLink >> dispatch)
+                            model.ImageLinkErrorText
+                            "Please insert image link"
+                        Daisy.modalAction [
+                            Daisy.button.label [
+                                button.primary
+                                prop.type'.submit
+                                prop.text "Add Book"
+                                prop.onClick (fun _ -> dispatch ValidateBook)
+                                if model.NewBook.Validate() then
                                     prop.htmlFor "add-book"
-                                    button.error
-                                    prop.text "Cancel"
-                                    prop.onClick (fun _ -> dispatch Cancel)
-                                ]
+                            ]
+                            Daisy.button.label [
+                                prop.htmlFor "add-book"
+                                button.error
+                                prop.text "Cancel"
+                                prop.onClick (fun _ -> dispatch Cancel)
                             ]
                         ]
                     ]
                 ]
             ]
         ]
-    
+    ]
