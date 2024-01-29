@@ -51,18 +51,9 @@ Target.create "Azure" (fun _ ->
         zip_deploy "deploy"
     }
 
-    let functionApp = functions {
-        name functionAppName
-        system_identity
-        setting "StorageAccountName" storageAccountName
-        operating_system OS.Linux
-        use_runtime FunctionsRuntime.DotNet80Isolated
-    }
-
     let storage = storageAccount {
         name storageAccountName
         grant_access web.SystemIdentity Roles.StorageAccountContributor
-        grant_access functionApp.SystemIdentity Roles.StorageAccountContributor
     }
 
     let deployment = arm {
