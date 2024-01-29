@@ -168,11 +168,16 @@ module StateManagement =
 
 let getLastResetTime client systemStartTime = async {
     let! blob = StateManagement.resetTimeBlob client
-    let! response = blob.GetPropertiesAsync() |> Async.AwaitTask
 
-    return
-        response
-        |> Option.ofResponse
-        |> Option.map (_.LastModified.UtcDateTime)
-        |> Option.defaultValue systemStartTime
+    try
+        let! response = blob.GetPropertiesAsync() |> Async.AwaitTask
+
+        return
+            response
+            |> Option.ofResponse
+            |> Option.map (_.LastModified.UtcDateTime)
+            |> Option.defaultValue systemStartTime
+
+    with :? RequestFailedException ->
+        return systemStartTime
 }

@@ -53,7 +53,8 @@ Target.create "Azure" (fun _ ->
 
     let storage = storageAccount {
         name storageAccountName
-        grant_access web.SystemIdentity Roles.StorageAccountContributor
+        grant_access web.SystemIdentity Roles.StorageTableDataContributor
+        grant_access web.SystemIdentity Roles.StorageBlobDataContributor
     }
 
     let deployment = arm {

@@ -1,10 +1,8 @@
 module ResetStorage
 
-open System.Threading.Tasks
 open Azure.Data.Tables
 open Azure.Storage.Blobs
 open Quartz
-open Shared
 open Storage
 
 let resetStorage blobService tableService = task {
