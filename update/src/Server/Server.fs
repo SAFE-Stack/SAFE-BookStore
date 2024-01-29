@@ -40,6 +40,14 @@ let mockBooks = seq {
     }
 }
 
+module Option =
+    let ofString input =
+        match String.IsNullOrWhiteSpace input with
+        | true -> None
+        | false -> Some input
+
+let startTime = DateTime.UtcNow
+
 let booksApi (context: HttpContext) =
     let tableStorage = context.GetService<TableServiceClient>()
     let blobStorage = context.GetService<BlobServiceClient>()
@@ -57,7 +65,7 @@ let booksApi (context: HttpContext) =
                 do! removeBook tableStorage user title |> Async.AwaitTask
                 return title
             }
-        getLastResetTime = fun () -> async { return! getLastResetTime blobStorage |> Async.AwaitTask }
+        getLastResetTime = fun () -> async { return! getLastResetTime blobStorage startTime |> Async.AwaitTask }
     }
 
 let userApi = {
@@ -81,24 +89,20 @@ let books =
 let webApp = choose [ auth; books ]
 
 let configureServices (services: IServiceCollection) =
-    let provider = services.BuildServiceProvider()
-    let config = provider.GetService<IConfiguration>()
+    let config = services.BuildServiceProvider().GetService<IConfiguration>()
 
     services.AddAzureClients(fun builder ->
         if Environment.GetEnvironmentVariable "ASPNETCORE_ENVIRONMENT" = Environments.Development then
-            let connectionString = config.GetConnectionString "StorageAccount"
-
-            match String.IsNullOrWhiteSpace connectionString with
-            | true -> failwith "Storage account connection string not in app settings"
-            | false ->
+            config.GetConnectionString "StorageAccount"
+            |> Option.ofString
+            |> Option.map (fun connectionString ->
                 builder.AddBlobServiceClient connectionString |> ignore
-                builder.AddTableServiceClient connectionString |> ignore
+                builder.AddTableServiceClient connectionString |> ignore)
+            |> Option.defaultWith (fun () -> failwith "Storage account connection string not in app settings")
         else
-            let storageAccountName = config["StorageAccountName"]
-
-            match String.IsNullOrWhiteSpace storageAccountName with
-            | true -> failwith "Storage account name has not been set in the app deployment settings"
-            | false ->
+            config["StorageAccountName"]
+            |> Option.ofString
+            |> Option.map (fun storageAccountName ->
                 let storageUri service =
                     Uri $"https://{storageAccountName}.{service}.core.windows.net"
 
@@ -107,6 +111,8 @@ let configureServices (services: IServiceCollection) =
                 builder.AddBlobServiceClient(blobStorage) |> ignore
                 builder.AddTableServiceClient(tableStorage) |> ignore
                 builder.UseCredential(DefaultAzureCredential()) |> ignore)
+            |> Option.defaultWith (fun () ->
+                failwith "Storage account name has not been set in the app deployment settings"))
 
     services
 

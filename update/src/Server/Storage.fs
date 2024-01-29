@@ -7,6 +7,12 @@ open Azure.Storage.Blobs
 open Shared
 open System.Threading.Tasks
 
+module Option =
+    let ofResponse (response: Response<'t>) =
+        match response.HasValue with
+        | true -> Some response.Value
+        | false -> None
+
 module BookTitle =
     let isAllowed = string >> @"/\#?".Contains >> not
 
@@ -121,13 +127,13 @@ module StateManagement =
         ()
     }
 
-let getLastResetTime connection = task {
+let getLastResetTime connection systemStartTime = task {
     let! blob = StateManagement.resetTimeBlob connection
     let! response = blob.GetPropertiesAsync()
 
     return
-        if response.HasValue then
-            Some response.Value.LastModified.Date
-        else
-            None
+        response
+        |> Option.ofResponse
+        |> Option.map (_.LastModified.UtcDateTime)
+        |> Option.defaultValue systemStartTime
 }

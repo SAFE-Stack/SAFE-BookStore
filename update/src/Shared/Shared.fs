@@ -92,7 +92,7 @@ type IBooksApi = {
     getWishlist: UserName -> Async<WishList>
     addBook: UserName * Book -> Async<Book>
     removeBook: UserName * string -> Async<string>
-    getLastResetTime: unit -> Async<DateTime option>
+    getLastResetTime: unit -> Async<DateTime>
 }
 
 type IUserApi = { login: Login -> Async<UserData> }
