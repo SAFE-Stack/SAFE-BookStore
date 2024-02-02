@@ -16,8 +16,6 @@ module Option =
 module BookTitle =
     let isAllowed = string >> @"/\#?".Contains >> not
 
-type StorageAccountName = StorageAccountName of string
-
 type BookEntity() =
     member val Title = "" with get, set
     member val Authors = "" with get, set

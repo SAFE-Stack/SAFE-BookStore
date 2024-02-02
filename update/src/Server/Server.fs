@@ -67,7 +67,7 @@ let books =
 
 let webApp = choose [ auth; books ]
 
-let configureServices (services: IServiceCollection) =
+let addAzureStorage (services: IServiceCollection) =
     let config = services.BuildServiceProvider().GetService<IConfiguration>()
 
     services.AddAzureClients(fun builder ->
@@ -94,17 +94,22 @@ let configureServices (services: IServiceCollection) =
                 failwith "Storage account name has not been set in the app deployment settings"))
 
     services
+
+let addResetStorageJob (services: IServiceCollection) =
+    services
         .AddQuartz(fun config ->
             let jobName = JobKey "reset-storage"
 
             config
                 .AddJob<ResetStorageJob>(jobName)
-                .AddTrigger(fun trigger -> trigger.ForJob(jobName).WithCronSchedule("0 * 0/2 * * ?") |> ignore)
+                .AddTrigger(fun trigger -> trigger.ForJob(jobName).WithCronSchedule("0 0/2 * * * ?") |> ignore)
             |> ignore)
         .AddQuartzHostedService(fun options -> options.WaitForJobsToComplete <- true)
     |> ignore
 
     services
+
+let configureServices = (addAzureStorage >> addResetStorageJob)
 
 let app = application {
     use_router webApp

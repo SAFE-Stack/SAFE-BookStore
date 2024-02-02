@@ -2,6 +2,7 @@ open Fake.Core
 open Fake.IO
 open Farmer
 open Farmer.Builders
+open Farmer.WebApp
 
 open Helpers
 
@@ -48,7 +49,9 @@ Target.create "Azure" (fun _ ->
         setting "StorageAccountName" storageAccountName
         operating_system OS.Linux
         runtime_stack Runtime.DotNet80
+        sku (Basic "B1")
         zip_deploy "deploy"
+        always_on
     }
 
     let storage = storageAccount {
