@@ -124,10 +124,18 @@ let bookRow book dispatch =
             prop.onClick (fun _ -> book.Title |> RemoveBook |> dispatch)
         ]
 
+    let tableCell (key: string) (element: ReactElement) =
+        Html.td [ prop.key key; prop.children element ]
+
     Html.tr [
         prop.key book.Title
         prop.className "hover:bg-primary"
-        prop.children [ Html.td titleLink; Html.td book.Authors; Html.td image; Html.td remove ]
+        prop.children [
+            tableCell "title" titleLink
+            tableCell "author" (Html.text book.Authors)
+            tableCell "image" image
+            tableCell "remove" remove
+        ]
     ]
 
 let newBookButton dispatch =

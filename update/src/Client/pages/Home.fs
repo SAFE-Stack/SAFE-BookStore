@@ -31,9 +31,16 @@ let bookRow book =
 
     let image = Html.img [ prop.src book.ImageLink ]
 
+    let tableCell (key: string) (element: ReactElement) =
+        Html.td [ prop.key key; prop.children element ]
+
     Html.tr [
         prop.className "hover:primary"
-        prop.children [ Html.td link; Html.td book.Authors; Html.td image ]
+        prop.children [
+            tableCell "title" link
+            tableCell "authors" (Html.text book.Authors)
+            tableCell "image" image
+        ]
     ]
 
 let view model dispatch =
