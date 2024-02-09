@@ -26,7 +26,7 @@ type Msg =
 let alert message alertType =
     SimpleAlert(message).Type(alertType) |> SweetAlert.Run
 
-let init (booksApi: IBooksApi) (userName: UserName) =
+let init (wishListApi: IWishListApi) (userName: UserName) =
     let model = {
         Wishlist = {
             UserName = userName
@@ -38,8 +38,8 @@ let init (booksApi: IBooksApi) (userName: UserName) =
 
     let cmd =
         Cmd.batch [
-            Cmd.OfAsync.either booksApi.getWishlist userName GotWishlist UnhandledError
-            Cmd.OfAsync.either booksApi.getLastResetTime () GotLastRestTime UnhandledError
+            Cmd.OfAsync.either wishListApi.getWishlist userName GotWishlist UnhandledError
+            Cmd.OfAsync.either wishListApi.getLastResetTime () GotLastRestTime UnhandledError
         ]
 
     model, cmd

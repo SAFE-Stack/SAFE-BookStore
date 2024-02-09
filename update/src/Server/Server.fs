@@ -1,11 +1,13 @@
 module Server
 
 open System
+open System.Threading.Tasks
 open Azure.Data.Tables
 open Azure.Storage.Blobs
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 open Giraffe
+open Microsoft.AspNetCore.Authentication.JwtBearer
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
@@ -18,6 +20,8 @@ open Storage
 open Microsoft.Extensions.Azure
 open Azure.Identity
 open Quartz
+open Microsoft.AspNetCore.Authentication;
+open Microsoft.AspNetCore.Authentication.JwtBearer;
 
 module Option =
     let ofString input =
@@ -27,12 +31,11 @@ module Option =
 
 let systemStartTime = DateTime.UtcNow
 
-let booksApi (context: HttpContext) =
+let wishlistApi (context: HttpContext) =
     let tableStorage = context.GetService<TableServiceClient>()
     let blobStorage = context.GetService<BlobServiceClient>()
 
     {
-        getBooks = fun () -> async { return Defaults.mockBooks }
         getWishlist = getWishListFromDB tableStorage
         addBook =
             fun (user, book) -> async {
@@ -47,25 +50,32 @@ let booksApi (context: HttpContext) =
         getLastResetTime = fun () -> getLastResetTime blobStorage systemStartTime
     }
 
-let userApi = {
+let guestApi = {
+    getBooks = fun () -> async { return Defaults.mockBooks }
     login = fun user -> async { return Authorise.login user }
 }
 
-let auth =
+let guestRouter =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.fromValue userApi
+    |> Remoting.fromValue guestApi
     |> Remoting.withErrorHandler ErrorHandling.errorHandler
     |> Remoting.buildHttpHandler
 
-let books =
+let wishListRouter =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.fromContext booksApi
+    |> Remoting.fromContext wishlistApi
     |> Remoting.withErrorHandler ErrorHandling.errorHandler
     |> Remoting.buildHttpHandler
 
-let webApp = choose [ auth; books ]
+let withAuth =
+    requiresAuthentication (challenge JwtBearerDefaults.AuthenticationScheme)
+
+let wishListRouterWithAuth =
+    withAuth >=> wishListRouter
+
+let webApp = choose [ guestRouter; wishListRouterWithAuth ]
 
 let addAzureStorage (services: IServiceCollection) =
     let config = services.BuildServiceProvider().GetService<IConfiguration>()
@@ -114,6 +124,7 @@ let configureServices = (addAzureStorage >> addResetStorageJob)
 let app = application {
     use_router webApp
     service_config configureServices
+    use_jwt_authentication Authorise.secret Authorise.issuer
     memory_cache
     use_static "public"
     use_gzip

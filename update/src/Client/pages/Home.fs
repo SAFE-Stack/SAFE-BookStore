@@ -4,18 +4,18 @@ open Elmish
 open Feliz.DaisyUI
 open Shared
 
-type Model = { Wishlist: Book seq }
+type Model = { Books: Book seq }
 
-type Msg = GotWishlist of Book seq
+type Msg = GotBooks of Book seq
 
-let init (booksApi: IBooksApi) =
-    let model = { Wishlist = Seq.empty }
-    let cmd = Cmd.OfAsync.perform booksApi.getBooks () GotWishlist
+let init (guestApi: IGuestApi) =
+    let model = { Books = Seq.empty }
+    let cmd = Cmd.OfAsync.perform guestApi.getBooks () GotBooks
     model, cmd
 
 let update msg model =
     match msg with
-    | GotWishlist books -> { Wishlist = books }, Cmd.none
+    | GotBooks books -> { Books = books }, Cmd.none
 
 open Feliz
 
@@ -50,7 +50,7 @@ let view model dispatch =
             Daisy.table [
                 prop.children [
                     Html.tbody [
-                        for book in model.Wishlist do
+                        for book in model.Books do
                             bookRow book
                     ]
                     Html.thead [ Html.tr [ Html.th "Title"; Html.th "Authors"; Html.th "Image" ] ]

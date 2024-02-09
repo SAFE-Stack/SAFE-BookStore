@@ -49,7 +49,7 @@ let init () =
 
     model, Cmd.none
 
-let update (userApi: IUserApi) msg model =
+let update (guestApi: IGuestApi) msg model =
     match msg with
     | SetUsername input -> { model with Username = input }, Cmd.none
     | SetPassword input -> { model with Password = input }, Cmd.none
@@ -58,7 +58,7 @@ let update (userApi: IUserApi) msg model =
 
         let model, cmd =
             match form with
-            | Ok form -> { model with FormErrors = [] }, Cmd.OfAsync.either userApi.login form LoggedIn UnhandledError
+            | Ok form -> { model with FormErrors = [] }, Cmd.OfAsync.either guestApi.login form LoggedIn UnhandledError
             | Error errors -> { model with FormErrors = errors }, Cmd.none
 
         model, cmd

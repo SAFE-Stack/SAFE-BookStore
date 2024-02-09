@@ -27,20 +27,23 @@ type Msg =
     | UrlChanged of string list
     | Logout
 
-let booksApi =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IBooksApi>
+let wishListApi =
+    fun token ->
+        let bearer = $"Bearer {token}"
+        Remoting.createApi ()
+        |> Remoting.withAuthorizationHeader bearer
+        |> Remoting.withRouteBuilder Route.builder
+        |> Remoting.buildProxy<IWishListApi>
 
-let userApi =
+let guestApi =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IUserApi>
+    |> Remoting.buildProxy<IGuestApi>
 
 let initFromUrl model url =
     match url with
     | [] ->
-        let homeModel, homeMsg = Home.init booksApi
+        let homeModel, homeMsg = Home.init guestApi
 
         let model = {
             Page = Home homeModel
@@ -62,7 +65,7 @@ let initFromUrl model url =
     | [ "wishlist" ] ->
         match model.User with
         | User user ->
-            let wishlistModel, wishlistMsg = Wishlist.init booksApi user.UserName
+            let wishlistModel, wishlistMsg = Wishlist.init (wishListApi user.Token) user.UserName
 
             let model = {
                 Page = Wishlist wishlistModel
@@ -75,7 +78,7 @@ let initFromUrl model url =
     | _ -> { Page = NotFound; User = model.User }, Cmd.none
 
 let init () =
-    let model, _ = Home.init booksApi
+    let model, _ = Home.init guestApi
     let user = Session.loadUser () |> Option.map User |> Option.defaultValue Guest
 
     Router.currentUrl () |> initFromUrl { Page = Home model; User = user }
@@ -96,10 +99,14 @@ let update msg model =
             | Login.LoggedIn user -> User user
             | _ -> model.User
 
-        let newModel, cmd = Login.update userApi loginMsg loginModel
+        let newModel, cmd = Login.update guestApi loginMsg loginModel
         { Page = Login newModel; User = user }, cmd |> Cmd.map LoginPageMsg
     | Wishlist wishlistModel, WishlistMsg wishlistMsg ->
-        let newModel, cmd = Wishlist.update booksApi wishlistMsg wishlistModel
+        let token =
+            match model.User with
+            | User data -> data.Token
+            | Guest -> ""
+        let newModel, cmd = Wishlist.update (wishListApi token) wishlistMsg wishlistModel
 
         {
             Page = Wishlist newModel

@@ -87,12 +87,14 @@ type WishList = {
 module Route =
     let builder typeName methodName = $"/api/%s{typeName}/%s{methodName}"
 
-type IBooksApi = {
-    getBooks: unit -> Async<Book seq>
+type IWishListApi = {
     getWishlist: UserName -> Async<WishList>
     addBook: UserName * Book -> Async<Book>
     removeBook: UserName * string -> Async<string>
     getLastResetTime: unit -> Async<DateTime>
 }
 
-type IUserApi = { login: Login -> Async<UserData> }
+type IGuestApi = {
+    getBooks: unit -> Async<Book seq>
+    login: Login -> Async<UserData>
+}
