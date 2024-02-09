@@ -76,7 +76,7 @@ Target.create "Run" (fun _ ->
     ]
     |> runParallel)
 
-Target.create "RunTests" (fun _ ->
+Target.create "Tests" (fun _ ->
     run dotnet [ "build" ] sharedTestsPath
 
     [
@@ -94,7 +94,7 @@ let dependencies = [
 
     "Clean" ==> "InstallClient" ==> "StartServices" ==> "Run"
 
-    "InstallClient" ==> "RunTests"
+    "InstallClient" ==> "Tests"
 ]
 
 [<EntryPoint>]

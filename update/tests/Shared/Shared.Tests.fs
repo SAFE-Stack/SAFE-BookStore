@@ -10,9 +10,18 @@ open Shared
 
 let shared =
     testList "Shared" [
-        testCase "Empty string is not a valid description"
-        <| fun _ ->
-            let expected = false
-            let actual = Todo.isValid ""
-            Expect.equal actual expected "Should be false"
+        let cases = [
+            "test", "test", true
+            "test1", "test", false
+            "test", "test1", false
+        ]
+        for user, password, expected in cases do
+            testCase $"Login for user:{user} and password:{password}"
+            <| fun _ ->
+                let login = {
+                    UserName = user
+                    Password = password
+                }
+                let actual = login.IsValid()
+                Expect.equal actual expected ""
     ]
