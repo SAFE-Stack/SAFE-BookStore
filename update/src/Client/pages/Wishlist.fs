@@ -87,7 +87,7 @@ let update booksApi msg model =
     | AddedBook book ->
         let wishList = {
             model.Wishlist with
-                Books = book :: model.Wishlist.Books |> List.sortBy (fun book -> book.Title)
+                Books = book :: model.Wishlist.Books |> List.sortBy _.Title
         }
 
         {
@@ -100,7 +100,9 @@ let update booksApi msg model =
     | OpenNewBookModal ->
         let newBook, newBookMsg = NewBook.init ()
         { model with NewBook = Some newBook }, (newBookMsg |> Cmd.map NewBookMsg)
-    | UnhandledError exn -> model, exn.AsAlert()
+    | UnhandledError exn ->
+        exn.OnStatusRun 401 Session.deleteUser
+        model, Cmd.none
 
 open Feliz
 

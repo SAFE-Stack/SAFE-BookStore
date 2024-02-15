@@ -1,7 +1,8 @@
 module Index
 
+open System
+open Browser
 open Elmish
-open Fable.Core
 open Fable.Remoting.Client
 open Feliz.DaisyUI
 open Feliz.Router
@@ -25,15 +26,15 @@ type Msg =
     | LoginPageMsg of Login.Msg
     | WishlistMsg of Wishlist.Msg
     | UrlChanged of string list
+    | OnSessionChange
     | Logout
 
-let wishListApi =
-    fun token ->
-        let bearer = $"Bearer {token}"
-        Remoting.createApi ()
-        |> Remoting.withAuthorizationHeader bearer
-        |> Remoting.withRouteBuilder Route.builder
-        |> Remoting.buildProxy<IWishListApi>
+let wishListApi token =
+    let bearer = $"Bearer {token}"
+    Remoting.createApi ()
+    |> Remoting.withAuthorizationHeader bearer
+    |> Remoting.withRouteBuilder Route.builder
+    |> Remoting.buildProxy<IWishListApi>
 
 let guestApi =
     Remoting.createApi ()
@@ -118,6 +119,11 @@ let update msg model =
     | _, Logout ->
         Session.deleteUser ()
         { model with User = Guest }, Cmd.navigate ""
+    | _, OnSessionChange ->
+        let session = Session.loadUser ()
+        let user = session |> Option.map User |> Option.defaultValue Guest
+        let cmd = session |> Option.map (fun _ -> Cmd.none) |> Option.defaultValue (Cmd.navigate "login")
+        { model with User = user }, cmd
     | _, _ -> model, Cmd.none
 
 open Feliz
@@ -173,3 +179,16 @@ let view model dispatch =
             ]
         ]
     ]
+
+let resetStorage onResetStorageMsg =
+    let register dispatch =
+        let callback _ =
+            dispatch onResetStorageMsg
+        window.addEventListener("storage", callback)
+
+        { new IDisposable with
+            member _.Dispose() = window.removeEventListener("storage", callback) }
+    register
+
+let subscribe _ =
+    [ ["resetStorage"], resetStorage OnSessionChange ]

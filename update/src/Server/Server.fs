@@ -47,7 +47,8 @@ let wishlistApi (context: HttpContext) =
                 do! removeBook tableStorage user title
                 return title
             }
-        getLastResetTime = fun () -> getLastResetTime blobStorage systemStartTime
+        getLastResetTime = fun () ->
+            getLastResetTime blobStorage systemStartTime
     }
 
 let guestApi = {
@@ -72,8 +73,10 @@ let wishListRouter =
 let withAuth =
     requiresAuthentication (challenge JwtBearerDefaults.AuthenticationScheme)
 
+let lazyWithAuth = warbler (fun _ -> withAuth)
+
 let wishListRouterWithAuth =
-    withAuth >=> wishListRouter
+    lazyWithAuth >=> wishListRouter
 
 let webApp = choose [ guestRouter; wishListRouterWithAuth ]
 

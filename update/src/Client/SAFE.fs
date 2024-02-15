@@ -1,5 +1,6 @@
 namespace SAFE
 
+open Elmish
 open Elmish.SweetAlert
 open Fable.Core
 open Fable.Remoting.Client
@@ -31,3 +32,11 @@ module Extensions =
                 .Type(AlertType.Error)
                 .Title("Critical Error")
             |> SweetAlert.Run
+
+        member this.OnStatusRun status callback =
+            match this with
+            | :? ProxyRequestException as exn when exn.StatusCode = status ->
+                callback ()
+            | _ ->
+                ()
+
