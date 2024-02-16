@@ -1,8 +1,7 @@
 name: .NET
 
-on:
-  pull_request:
-    branches: [ "ci-test" ]
+on: [push]
+  
 
 jobs:
   build:
@@ -16,8 +15,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Run on update folder
-      run: cd update
+      run: cd $GITHUB_WORKSPACE/update
     - name: Restore tools
-      run: dotnet tool resore
+      run: dotnet tool restore
     - name: Test
       run: dotnet run bundle
