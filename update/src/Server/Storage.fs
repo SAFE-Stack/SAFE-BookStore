@@ -111,17 +111,22 @@ let saveWishListToDB client wishList = async {
     let deleteAction book =
         TableTransactionAction(TableTransactionActionType.Delete, book)
 
-    let deleteBatch = existingBooks |> Seq.map deleteAction
-
     let upsertAction book =
         let book = BookEntity.buildEntity wishList.UserName.Value book
         TableTransactionAction(TableTransactionActionType.UpsertReplace, book)
 
-    let upsertBatch = wishList.Books |> Seq.map upsertAction
+    let! _ =
+        existingBooks
+        |> Seq.map deleteAction
+        |> table.SubmitTransactionAsync
+        |> Async.AwaitTask
 
-    let batch = [ deleteBatch; upsertBatch ] |> Seq.concat
+    let! _ =
+        wishList.Books
+        |> Seq.map upsertAction
+        |> table.SubmitTransactionAsync
+        |> Async.AwaitTask
 
-    let! _ = table.SubmitTransactionAsync batch |> Async.AwaitTask
     ()
 }
 
