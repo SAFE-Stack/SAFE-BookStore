@@ -23,16 +23,10 @@ jobs:
       working-directory: ./update
       run: dotnet tool restore
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
     - name: Test
       working-directory: ./update
       run: dotnet run devopstests
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
     - name: Build
       working-directory: ./update
       run: dotnet run bundle
