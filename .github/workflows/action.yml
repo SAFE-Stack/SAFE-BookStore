@@ -2,7 +2,7 @@ name: .NET
 
 on:
   pull_request:
-    branches: [ "master" ]
+    branches: [ "ci-test" ]
 
 jobs:
   build:
