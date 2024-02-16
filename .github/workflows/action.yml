@@ -10,13 +10,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        ref: v5-update-build
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
-    - name: Run on update folder
-      run: cd update
     - name: Restore tools
-      run: dotnet tool resore
+      working-directory: ./update
+      run: dotnet tool restore
     - name: Test
-      run: dotnet run bundle
+      working-directory: ./update
+      run: dotnet run devopstests
