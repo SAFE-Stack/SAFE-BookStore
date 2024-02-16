@@ -80,6 +80,12 @@ let wishListRouterWithAuth =
 
 let webApp = choose [ guestRouter; wishListRouterWithAuth ]
 
+let addAppInsights (services: IServiceCollection) =
+    if Environment.GetEnvironmentVariable "ASPNETCORE_ENVIRONMENT" <> Environments.Development then
+        services.AddApplicationInsightsTelemetry() |> ignore
+
+    services
+
 let addAzureStorage (services: IServiceCollection) =
     let config = services.BuildServiceProvider().GetService<IConfiguration>()
 
@@ -122,7 +128,7 @@ let addResetStorageJob (services: IServiceCollection) =
 
     services
 
-let configureServices = (addAzureStorage >> addResetStorageJob)
+let configureServices = (addAppInsights >> addAzureStorage >> addResetStorageJob)
 
 let app = application {
     use_router webApp

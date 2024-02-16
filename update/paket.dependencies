@@ -11,6 +11,7 @@ nuget Feliz.Router
 nuget FSharp.Core ~> 8
 nuget Fable.Remoting.Giraffe ~> 5
 nuget FSToolkit.ErrorHandling
+nuget Microsoft.ApplicationInsights.AspNetCore
 nuget Microsoft.Extensions.Azure
 nuget Quartz
 nuget Quartz.Extensions.Hosting

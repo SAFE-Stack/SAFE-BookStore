@@ -18,7 +18,8 @@ let clientTestsPath = Path.getFullName "tests/Client"
 
 let appName = "safebookstoret"
 let storageAccountName = $"{appName}storage"
-let functionAppName = $"{appName}function"
+let logAnalyticsName = $"{appName}-la"
+let appInsightsName = $"{appName}-ai"
 
 Target.create "Clean" (fun _ ->
     Shell.cleanDir deployPath
@@ -43,6 +44,14 @@ Target.create "Bundle" (fun _ ->
     |> runParallel)
 
 Target.create "Azure" (fun _ ->
+    let analytics = logAnalytics {
+        name logAnalyticsName
+    }
+    let insights = appInsights {
+        name appInsightsName
+        log_analytics_workspace analytics
+    }
+
     let web = webApp {
         name appName
         system_identity
@@ -52,6 +61,7 @@ Target.create "Azure" (fun _ ->
         sku (Basic "B1")
         zip_deploy "deploy"
         always_on
+        link_to_app_insights insights
     }
 
     let storage = storageAccount {
@@ -62,7 +72,7 @@ Target.create "Azure" (fun _ ->
 
     let deployment = arm {
         location Location.WestEurope
-        add_resources [ web; storage ]
+        add_resources [ web; storage; analytics; insights ]
     }
 
     deployment |> Deploy.execute appName Deploy.NoParameters |> ignore)
