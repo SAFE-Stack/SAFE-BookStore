@@ -20,4 +20,5 @@ jobs:
       working-directory: ./update
       run: dotnet tool restore
     - name: Test
-      run: dotnet run bundle
+      working-directory: ./update
+      run: dotnet run tests
