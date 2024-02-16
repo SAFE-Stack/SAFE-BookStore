@@ -121,7 +121,7 @@ let addResetStorageJob (services: IServiceCollection) =
 
             config
                 .AddJob<ResetStorageJob>(jobName)
-                .AddTrigger(fun trigger -> trigger.ForJob(jobName).WithCronSchedule("0 0/2 * * * ?") |> ignore)
+                .AddTrigger(fun trigger -> trigger.ForJob(jobName).WithCronSchedule("0 0 */2 * * ?") |> ignore)
             |> ignore)
         .AddQuartzHostedService(fun options -> options.WaitForJobsToComplete <- true)
     |> ignore
