@@ -10,6 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v4
+        
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Restore tools
+      working-directory: ./update
+      run: dotnet tool restore
+
+    - name: Test
+      working-directory: ./update
+      run: dotnet run devopstests
+
+    - name: Build
+      working-directory: ./update
+      run: dotnet run bundle
+
     - name: Azure Login
       uses: azure/login@v1
       with:
