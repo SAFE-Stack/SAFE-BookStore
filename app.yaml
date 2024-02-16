@@ -1,7 +1,0 @@
-service: giraffe-fable
-runtime: custom
-env: flex
-health_check:
-  enable_health_check: False
-env_variables:
-  GIRAFFE_FABLE_PORT: '8085'
