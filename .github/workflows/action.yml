@@ -18,6 +18,8 @@ jobs:
         dotnet-version: 8.0.x
     - name: Run on update folder
       run: cd update
+    - name: Grrrrr
+      run: ls
     - name: Restore tools
       run: dotnet tool restore
     - name: Test
