@@ -16,11 +16,8 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
-    - name: Run on update folder
-      run: cd update
-    - name: Grrrrr
-      run: ls
     - name: Restore tools
+      working-directory: ./update
       run: dotnet tool restore
     - name: Test
       run: dotnet run bundle
