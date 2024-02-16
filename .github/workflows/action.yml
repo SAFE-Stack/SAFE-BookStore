@@ -17,7 +17,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Run on update folder
-      run: ls
+      run: cd update
     - name: Restore tools
       run: dotnet tool restore
     - name: Test
