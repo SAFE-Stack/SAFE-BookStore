@@ -1,0 +1,16 @@
+name: Safe Bookstore deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy
+      working-directory: ./update
+      run: dotnet run azure

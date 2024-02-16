@@ -1,4 +1,4 @@
-name: Safe Bookstore actions
+name: Safe Bookstore build and test
 
 on:
   pull_request:
@@ -33,19 +33,3 @@ jobs:
     - name: Build
       working-directory: ./update
       run: dotnet run bundle
-
-on:
-  push:
-    branches:
-      - master
-
-jobs:
-
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Deploy
-      working-directory: ./update
-      run: dotnet run azure
