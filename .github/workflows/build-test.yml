@@ -24,12 +24,13 @@ jobs:
       run: dotnet tool restore
 
   test:
+    steps:
     - name: Test
       working-directory: ./update
       run: dotnet run devopstests
-    - name: Bundle
 
   build:
+    steps:
     - name: Build
       working-directory: ./update
       run: dotnet run bundle
