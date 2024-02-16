@@ -37,4 +37,4 @@ jobs:
 
     - name: Deploy
       working-directory: ./update
-      run: dotnet run bundle
+      run: dotnet run azure
