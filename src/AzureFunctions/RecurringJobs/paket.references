@@ -1,8 +1,0 @@
-group AzureFunctions
-
-Microsoft.NET.Sdk.Functions
-FSharp.Core
-Newtonsoft.Json
-WindowsAzure.Storage
-TaskBuilder.fs
-Microsoft.AspNetCore.Mvc

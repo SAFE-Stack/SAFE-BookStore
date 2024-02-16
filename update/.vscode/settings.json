@@ -1,9 +1,0 @@
-{
-    "tailwindCSS.includeLanguages": {
-        "fsharp": "html"
-    },
-    "tailwindCSS.experimental.classRegex": [
-        "\\.className\\s+\"([^\"]*)\"",
-        ["\\.className\\s+\\[([^\\]]*)\\]", "\"([^\"]*)\""]
-    ]
-}
