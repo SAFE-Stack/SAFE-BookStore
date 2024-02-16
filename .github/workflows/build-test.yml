@@ -2,7 +2,8 @@ name: Safe Bookstore build and test
 
 on:
   pull_request:
-    types: [opened, edited] 
+    branches:
+      - master
 
 jobs:
   setup:
@@ -10,9 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: v5-update-build
+    - uses: actions/checkout@v4
         
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
