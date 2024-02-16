@@ -1,10 +1,11 @@
-name: .NET
+name: Safe Bookstore actions
 
-on: [push]
-  
+on:
+  pull_request:
+    types: [opened, edited] 
 
 jobs:
-  build:
+  setup:
 
     runs-on: ubuntu-latest
 
@@ -21,14 +22,24 @@ jobs:
     - name: Restore tools
       working-directory: ./update
       run: dotnet tool restore
-      
+
+  test:
     - name: Test
       working-directory: ./update
       run: dotnet run devopstests
     - name: Bundle
-    
+
+  build:
+    - name: Build
       working-directory: ./update
       run: dotnet run bundle
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
 
     - name: Azure Login
       uses: azure/login@v1
