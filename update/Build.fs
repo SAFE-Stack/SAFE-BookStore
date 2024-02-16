@@ -95,7 +95,7 @@ Target.create "Tests" (fun _ ->
     ]
     |> runParallel)
 
-Target.create "DevOpsTests" (fun _ -> run dotnet [ "test"; "-c"; "release"; "-l"; "trx" ] serverTestsPath)
+Target.create "DevOpsTests" (fun _ -> run dotnet [ "run"; "-c"; "release"; "-l"; "trx" ] serverTestsPath)
 
 Target.create "Format" (fun _ -> run dotnet [ "fantomas"; "." ] ".")
 
