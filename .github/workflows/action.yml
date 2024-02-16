@@ -21,4 +21,4 @@ jobs:
       run: dotnet tool restore
     - name: Test
       working-directory: ./update
-      run: dotnet run tests
+      run: dotnet run devopstests
