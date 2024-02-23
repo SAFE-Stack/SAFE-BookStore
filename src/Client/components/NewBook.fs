@@ -157,18 +157,18 @@ let view model dispatch =
                             "Please insert image link"
                         Daisy.modalAction [
                             Daisy.button.label [
+                                prop.htmlFor "add-book"
+                                button.error
+                                prop.text "Cancel"
+                                prop.onClick (fun _ -> dispatch Cancel)
+                            ]
+                            Daisy.button.label [
                                 button.primary
                                 prop.type'.submit
                                 prop.text "Add Book"
                                 prop.onClick (fun _ -> dispatch ValidateBook)
                                 if model.NewBook.Validate() then
                                     prop.htmlFor "add-book"
-                            ]
-                            Daisy.button.label [
-                                prop.htmlFor "add-book"
-                                button.error
-                                prop.text "Cancel"
-                                prop.onClick (fun _ -> dispatch Cancel)
                             ]
                         ]
                     ]

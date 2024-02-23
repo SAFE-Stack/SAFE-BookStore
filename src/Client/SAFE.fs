@@ -35,8 +35,5 @@ module Extensions =
 
         member this.OnStatusRun status callback =
             match this with
-            | :? ProxyRequestException as exn when exn.StatusCode = status ->
-                callback ()
-            | _ ->
-                ()
-
+            | :? ProxyRequestException as exn when exn.StatusCode = status -> callback ()
+            | _ -> ()

@@ -9,7 +9,7 @@ let all =
 #if FABLE_COMPILER // This preprocessor directive makes editor happy
         Shared.Tests.shared
 #endif
-        //add client tests here
+    //add client tests here
     ]
 
 [<EntryPoint>]

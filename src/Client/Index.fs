@@ -31,6 +31,7 @@ type Msg =
 
 let wishListApi token =
     let bearer = $"Bearer {token}"
+
     Remoting.createApi ()
     |> Remoting.withAuthorizationHeader bearer
     |> Remoting.withRouteBuilder Route.builder
@@ -66,7 +67,8 @@ let initFromUrl model url =
     | [ "wishlist" ] ->
         match model.User with
         | User user ->
-            let wishlistModel, wishlistMsg = Wishlist.init (wishListApi user.Token) user.UserName
+            let wishlistModel, wishlistMsg =
+                Wishlist.init (wishListApi user.Token) user.UserName
 
             let model = {
                 Page = Wishlist wishlistModel
@@ -107,6 +109,7 @@ let update msg model =
             match model.User with
             | User data -> data.Token
             | Guest -> ""
+
         let newModel, cmd = Wishlist.update (wishListApi token) wishlistMsg wishlistModel
 
         {
@@ -122,7 +125,12 @@ let update msg model =
     | _, OnSessionChange ->
         let session = Session.loadUser ()
         let user = session |> Option.map User |> Option.defaultValue Guest
-        let cmd = session |> Option.map (fun _ -> Cmd.none) |> Option.defaultValue (Cmd.navigate "login")
+
+        let cmd =
+            session
+            |> Option.map (fun _ -> Cmd.none)
+            |> Option.defaultValue (Cmd.navigate "login")
+
         { model with User = user }, cmd
     | _, _ -> model, Cmd.none
 
@@ -182,13 +190,14 @@ let view model dispatch =
 
 let resetStorage onResetStorageMsg =
     let register dispatch =
-        let callback _ =
-            dispatch onResetStorageMsg
-        window.addEventListener("storage", callback)
+        let callback _ = dispatch onResetStorageMsg
+        window.addEventListener ("storage", callback)
 
         { new IDisposable with
-            member _.Dispose() = window.removeEventListener("storage", callback) }
+            member _.Dispose() =
+                window.removeEventListener ("storage", callback)
+        }
+
     register
 
-let subscribe _ =
-    [ ["resetStorage"], resetStorage OnSessionChange ]
+let subscribe _ = [ [ "resetStorage" ], resetStorage OnSessionChange ]

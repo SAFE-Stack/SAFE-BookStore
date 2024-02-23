@@ -1,7 +1,6 @@
 module Server
 
 open System
-open System.Threading.Tasks
 open Azure.Data.Tables
 open Azure.Storage.Blobs
 open Fable.Remoting.Server
@@ -20,8 +19,6 @@ open Storage
 open Microsoft.Extensions.Azure
 open Azure.Identity
 open Quartz
-open Microsoft.AspNetCore.Authentication;
-open Microsoft.AspNetCore.Authentication.JwtBearer;
 
 module Option =
     let ofString input =
@@ -38,50 +35,58 @@ let wishlistApi (context: HttpContext) =
     {
         getWishlist = getWishListFromDB tableStorage
         addBook =
-            fun (user, book) -> async {
-                let! _ = addBook tableStorage user book
-                return book
+            fun (username, book) -> async {
+                let! table = getBooksTable tableStorage
+                let entity = BookEntity.buildEntity username.Value book
+                do! table.AddEntityAsync entity |> Async.AwaitTask |> Async.Ignore
+
+                return {
+                    Title = book.Title
+                    Authors = book.Authors
+                    ImageLink = book.ImageLink
+                    Link = book.Link
+                }
             }
         removeBook =
-            fun (user, title) -> async {
-                do! removeBook tableStorage user title
+            fun (username, title) -> async {
+                let! table = getBooksTable tableStorage
+                let partitionKey = username.Value
+                let rowKey = title.ToCharArray() |> Array.filter BookTitle.isAllowed |> String
+                do! table.DeleteEntityAsync(partitionKey, rowKey) |> Async.AwaitTask |> Async.Ignore
                 return title
             }
-        getLastResetTime = fun () ->
-            getLastResetTime blobStorage systemStartTime
+        getLastResetTime = fun () -> getLastResetTime blobStorage systemStartTime
     }
 
-let guestApi = {
+let guestApi ctx = {
     getBooks = fun () -> async { return Defaults.mockBooks }
     login = fun user -> async { return Authorise.login user }
 }
 
-let guestRouter =
+let createApi api =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.fromValue guestApi
+    |> Remoting.fromContext api
     |> Remoting.withErrorHandler ErrorHandling.errorHandler
     |> Remoting.buildHttpHandler
 
-let wishListRouter =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.fromContext wishlistApi
-    |> Remoting.withErrorHandler ErrorHandling.errorHandler
-    |> Remoting.buildHttpHandler
+let guestRouter = createApi guestApi
+let wishListRouter = createApi wishlistApi
 
 let withAuth =
     requiresAuthentication (challenge JwtBearerDefaults.AuthenticationScheme)
 
 let lazyWithAuth = warbler (fun _ -> withAuth)
 
-let wishListRouterWithAuth =
-    lazyWithAuth >=> wishListRouter
+let wishListRouterWithAuth = lazyWithAuth >=> wishListRouter
 
 let webApp = choose [ guestRouter; wishListRouterWithAuth ]
 
 let addAppInsights (services: IServiceCollection) =
-    if Environment.GetEnvironmentVariable "ASPNETCORE_ENVIRONMENT" <> Environments.Development then
+    if
+        Environment.GetEnvironmentVariable "ASPNETCORE_ENVIRONMENT"
+        <> Environments.Development
+    then
         services.AddApplicationInsightsTelemetry() |> ignore
 
     services
@@ -121,7 +126,7 @@ let addResetStorageJob (services: IServiceCollection) =
 
             config
                 .AddJob<ResetStorageJob>(jobName)
-                .AddTrigger(fun trigger -> trigger.ForJob(jobName).WithCronSchedule("0 0 */2 * * ?") |> ignore)
+                .AddTrigger(fun trigger -> trigger.ForJob(jobName).WithCronSchedule("30 * * * * ?") |> ignore)
             |> ignore)
         .AddQuartzHostedService(fun options -> options.WaitForJobsToComplete <- true)
     |> ignore

@@ -44,9 +44,8 @@ Target.create "Bundle" (fun _ ->
     |> runParallel)
 
 Target.create "Azure" (fun _ ->
-    let analytics = logAnalytics {
-        name logAnalyticsName
-    }
+    let analytics = logAnalytics { name logAnalyticsName }
+
     let insights = appInsights {
         name appInsightsName
         log_analytics_workspace analytics
