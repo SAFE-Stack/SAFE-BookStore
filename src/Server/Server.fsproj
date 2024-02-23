@@ -1,35 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <TargetFramework>net8.0</TargetFramework>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Shared/Domain.fs" />
-    <Compile Include="WishList.fs" />
-    <Compile Include="ServerTypes.fs" />
-    <Compile Include="JsonWebToken.fs" />
-    <Compile Include="Auth.fs" />
-    <Compile Include="Storage/Defaults.fs" />
-    <Compile Include="Storage/FileSystem.fs" />
-    <Compile Include="Storage/AzureTable.fs" />
-    <Compile Include="Database.fs" />
-    <Compile Include="../Client/ReleaseNotes.fs" />
-    <Compile Include="../Client/Pages.fs" />
-    <Compile Include="../Client/Styles.fs" />
-    <Compile Include="../Client/views/Utils.fs" />
-    <Compile Include="../Client/views/Menu.fs" />
-    <Compile Include="../Client/pages/Home.fs" />
-    <Compile Include="../Client/pages/NewBook.fs" />
-    <Compile Include="../Client/pages/WishList.fs" />
-    <Compile Include="../Client/pages/Login.fs" />
-    <Compile Include="../Client/Shared.fs" />
-    <Compile Include="Templates.fs" />
-    <Compile Include="Pages.fs" />
-    <Compile Include="WebServer.fs" />
-    <Compile Include="Program.fs" />
+    <None Include="paket.references" />
+    <Compile Include="SAFE.fs" />
+    <Compile Include="Authorise.fs" />
+    <Compile Include="Storage.fs" />
+    <Compile Include="Azure.fs" />
+    <Compile Include="Jobs.fs" />
+    <Compile Include="Api.fs" />
+    <Compile Include="Server.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

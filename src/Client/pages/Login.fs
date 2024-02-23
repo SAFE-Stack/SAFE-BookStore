@@ -1,134 +1,137 @@
-module Client.Login
+module Page.Login
 
-open Elmish
-open Fable.React
-open Fable.React.Props
-open ServerCode.Domain
 open System
-open Fable.Core.JsInterop
-open Fetch.Types
-open Client.Styles
-open Client.Utils
-#if FABLE_COMPILER
-open Thoth.Json
-#else
-open Thoth.Json.Net
-#endif
+open Elmish
+open Feliz.DaisyUI
+open Feliz.Router
+open FsToolkit.ErrorHandling
+open Shared
+open SAFE
 
 type Model = {
-    Login : Login
-    Running : bool
-    ErrorMsg : string option }
+    Username: string
+    Password: string
+    FormErrors: string list
+}
 
 type Msg =
-    | LoginSuccess of UserData
-    | SetUserName of string
+    | SetUsername of string
     | SetPassword of string
-    | AuthError of exn
-    | LogInClicked
+    | Login
+    | LoggedIn of UserData
+    | StorageSuccess of unit
+    | UnhandledError of exn
 
-let authUser (login:Login) = promise {
-    if String.IsNullOrEmpty login.UserName then return! failwithf "You need to fill in a username." else
-    if String.IsNullOrEmpty login.Password then return! failwithf "You need to fill in a password." else
+let validateUsername name =
+    if String.IsNullOrWhiteSpace name |> not then
+        Ok name
+    else
+        Error "You need to fill in a username."
 
-    let body = Encode.Auto.toString(0, login)
+let validatePassword password =
+    if String.IsNullOrWhiteSpace password |> not then
+        Ok password
+    else
+        Error "You need to fill in a password."
 
-    let props = [
-        Method HttpMethod.POST
-        Fetch.requestHeaders [ ContentType "application/json" ]
-        Body !^body
-    ]
-
-    try
-        let! res = Fetch.fetch "/api/users/login/" props
-        let! txt = res.text()
-        return Decode.Auto.unsafeFromString<UserData> txt
-    with _ ->
-        return! failwithf "Could not authenticate user."
+let validateForm name password = validation {
+    let! name = validateUsername name
+    and! password = validatePassword password
+    return { UserName = name; Password = password }
 }
 
+let init () =
+    let model = {
+        Username = ""
+        Password = ""
+        FormErrors = []
+    }
 
-let init (user:UserData option) =
-    let userName = user |> Option.map (fun u -> u.UserName) |> Option.defaultValue ""
+    model, Cmd.none
 
-    { Login = { UserName = userName; Password = ""; PasswordId = Guid.NewGuid() }
-      Running = false
-      ErrorMsg = None }, Cmd.none
-
-let update (msg:Msg) model : Model*Cmd<Msg> =
+let update (guestApi: IGuestApi) msg model =
     match msg with
-    | LoginSuccess _ ->
-        model, Cmd.none
+    | SetUsername input -> { model with Username = input }, Cmd.none
+    | SetPassword input -> { model with Password = input }, Cmd.none
+    | Login ->
+        let form = validateForm model.Username model.Password
 
-    | SetUserName name ->
-        { model with Login = { model.Login with UserName = name; Password = ""; PasswordId = Guid.NewGuid() } }, Cmd.none
+        let model, cmd =
+            match form with
+            | Ok form -> { model with FormErrors = [] }, Cmd.OfAsync.either guestApi.login form LoggedIn UnhandledError
+            | Error errors -> { model with FormErrors = errors }, Cmd.none
 
-    | SetPassword pw ->
-        { model with Login = { model.Login with Password = pw }}, Cmd.none
+        model, cmd
+    | LoggedIn user -> model, Cmd.OfFunc.either Session.saveUser user StorageSuccess UnhandledError
+    | StorageSuccess _ -> model, Cmd.navigate "wishlist"
+    | UnhandledError exn -> model, exn.AsAlert()
 
-    | LogInClicked ->
-        { model with Running = true },
-            Cmd.OfPromise.either authUser model.Login LoginSuccess AuthError
+open Feliz
 
-    | AuthError exn ->
-        { model with Running = false; ErrorMsg = Some exn.Message }, Cmd.none
-
-type Props = {
-    Model: Model
-    Dispatch: Msg -> unit
-}
-
-let view = elmishView "Login" <| fun { Model = model; Dispatch = dispatch } ->
-    let buttonActive =
-        if String.IsNullOrEmpty model.Login.UserName ||
-           String.IsNullOrEmpty model.Login.Password ||
-           model.Running
-        then
-            "btn-disabled"
-        else
-            "btn-primary"
-
-    div [ Key "SignIn"; ClassName "signInBox" ] [
-        h3 [ ClassName "text-center" ] [ str "Log in with 'test' / 'test'."]
-
-        Styles.errorBox model.ErrorMsg
-
-        div [ ClassName "input-group input-group-lg" ] [
-            span [ClassName "input-group-addon" ] [
-                span [ClassName "glyphicon glyphicon-user"] []
-            ]
-            input [
-                Id "username"
-                HTMLAttr.Type "text"
-                ClassName "form-control input-lg"
-                Placeholder "Username"
-                DefaultValue model.Login.UserName
-                OnChange (fun ev -> dispatch (SetUserName ev.Value))
-                AutoFocus true
-            ]
-        ]
-
-        div [ ClassName "input-group input-group-lg" ] [
-            span [ClassName "input-group-addon" ] [
-                span [ClassName "glyphicon glyphicon-asterisk"] []
-            ]
-            input [
-                Id "password"
-                Key ("password_" + model.Login.PasswordId.ToString())
-                HTMLAttr.Type "password"
-                ClassName "form-control input-lg"
-                Placeholder "Password"
-                DefaultValue model.Login.Password
-                OnChange (fun ev -> dispatch (SetPassword ev.Value))
-                onEnter LogInClicked dispatch
-            ]
-        ]
-
-        div [ ClassName "text-center" ] [
-            button [
-                ClassName ("btn " + buttonActive)
-                OnClick (fun _ -> dispatch LogInClicked) ] [
-                    str "Log In"
+let view model dispatch =
+    Html.div [
+        prop.className "grid justify-center"
+        prop.children [
+            Daisy.card [
+                prop.className "shadow-lg grid justify-items-center gap-2 w-[32rem] p-10"
+                prop.children [
+                    Html.h2 [ prop.text "Log in with 'test' / 'test'." ]
+                    model.FormErrors
+                    |> List.tryHead
+                    |> Option.map (fun error -> Html.div [ color.textError; prop.text error ])
+                    |> Option.defaultValue (React.fragment [])
+                    Daisy.formControl [
+                        prop.className ""
+                        prop.children [
+                            Html.div [
+                                prop.className "relative"
+                                prop.children [
+                                    Html.i [
+                                        prop.className
+                                            "fa fa-search absolute inset-y-0 end-0 grid items-center mr-2 text-primary"
+                                    ]
+                                    Daisy.input [
+                                        input.bordered
+                                        prop.className ""
+                                        prop.placeholder "Username"
+                                        prop.value model.Username
+                                        prop.onChange (SetUsername >> dispatch)
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                    Daisy.formControl [
+                        Html.div [
+                            prop.className "relative"
+                            prop.children [
+                                Html.i [
+                                    prop.className
+                                        "fa fa-lock absolute inset-y-0 end-0 grid items-center mr-2 text-yellow-400"
+                                ]
+                                Daisy.input [
+                                    input.bordered
+                                    prop.className ""
+                                    prop.placeholder "Password"
+                                    prop.value model.Password
+                                    prop.onChange (SetPassword >> dispatch)
+                                ]
+                            ]
+                        ]
+                    ]
+                    Daisy.formControl [
+                        Html.div [
+                            prop.className ""
+                            prop.children [
+                                Daisy.button.button [
+                                    button.primary
+                                    prop.text "Log In"
+                                    prop.onClick (fun _ -> dispatch Login)
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
             ]
         ]
     ]

@@ -1,49 +1,32 @@
-source https://nuget.org/api/v2
-storage:none
+source https://api.nuget.org/v3/index.json
+framework: net8.0
+storage: none
 
-nuget FSharp.Core redirects: force
-nuget Saturn
-nuget System.Net.NetworkInformation
-nuget Thoth.Json.Net
-nuget Thoth.Json.Giraffe
-nuget Fable.Core
-nuget Fable.Browser.Dom
-nuget Fable.Browser.WebStorage
-nuget Fable.Fetch
-nuget Fable.Promise
-nuget Fable.React
-nuget Fable.Elmish
-nuget Fable.Elmish.React
-nuget Fable.Elmish.Debugger
-nuget Fable.Elmish.HMR
-nuget Microsoft.Azure.WebJobs
-nuget Microsoft.Azure.WebJobs.Extensions
-nuget Thoth.Json
+nuget Azure.Data.Tables
+nuget Azure.Identity
+nuget Azure.Storage.Blobs
+nuget Elmish.SweetAlert
+nuget Feliz.DaisyUI
+nuget Feliz.Router
+nuget FSharp.Core ~> 8
+nuget Fable.Remoting.Giraffe ~> 5
+nuget FSToolkit.ErrorHandling
+nuget Microsoft.ApplicationInsights.AspNetCore
+nuget Microsoft.Extensions.Azure
+nuget Quartz
+nuget Quartz.Extensions.Hosting
+nuget Saturn ~> 0
+nuget Expecto ~> 9
 
-group AzureFunctions
-  source https://nuget.org/api/v2
-  storage:none
-  nuget FSharp.Core redirects: force
-  nuget Microsoft.NET.Sdk.Functions
-  nuget Newtonsoft.Json
-  nuget WindowsAzure.Storage
-  nuget TaskBuilder.fs
-  nuget Microsoft.AspNetCore.Mvc
+nuget Fable.Core ~> 4
+nuget Fable.Elmish ~> 4
+nuget Fable.Elmish.React ~> 4
+nuget Fable.Elmish.Debugger ~> 4
+nuget Fable.Elmish.HMR ~> 7
+nuget Fable.Mocha ~> 2
+nuget Fable.Remoting.Client ~> 7
+nuget Feliz ~> 2
 
-group ServerTests
-  source https://nuget.org/api/v2
-  storage:none
-  nuget FSharp.Core redirects: force
-  nuget Expecto
-
-group UITests
-  source https://nuget.org/api/v2
-  nuget FSharp.Core redirects: force
-  nuget Canopy
-  nuget Expecto
-  nuget Selenium.WebDriver.ChromeDriver = 2.36
-
-group Build
-  source https://nuget.org/api/v2
-  framework >= net461
-  nuget FAKE < 5
+nuget Fake.Core.Target ~> 5
+nuget Fake.IO.FileSystem ~> 5
+nuget Farmer ~> 1

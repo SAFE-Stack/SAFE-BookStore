@@ -1,188 +1,185 @@
-module Client.WishList
+module Page.Wishlist
 
-open Fable.React
-open Fable.React.Props
-open Fable.Core.JsInterop
-
-open Elmish
-open Fetch.Types
-open ServerCode
-open ServerCode.Domain
-open Client.Styles
-open Client.Utils
 open System
-#if FABLE_COMPILER
-open Thoth.Json
-#else
-open Thoth.Json.Net
-#endif
+open Elmish
+open Elmish.SweetAlert
+open Feliz.DaisyUI
+open Shared
+open SAFE
 
 type Model = {
-    // Domain data
-    WishList : WishList
-    // Subcomponent model
-    NewBookModel : NewBook.Model
-    // Additional view data
-    Token : string
-    ResetTime : DateTime option
-    ErrorMsg : string option
+    Wishlist: WishList
+    LastResetTime: DateTime
+    NewBook: NewBook.Model option
 }
 
-/// The different messages processed when interacting with the wish list
 type Msg =
-    | FetchedWishList of WishList
-    | FetchedResetTime of DateTime
-    | RemoveBook of Book
+    | GotLastRestTime of DateTime
+    | GotWishlist of WishList
+    | RemoveBook of string
+    | RemovedBook of string
     | NewBookMsg of NewBook.Msg
-    | FetchError of exn
+    | AddedBook of Book
+    | OpenNewBookModal
+    | UnhandledError of exn
 
-/// Get the wish list from the server, used to populate the model
-let getWishList userName =
-    promise {
-        let url = sprintf "/api/wishlist/%s" userName
-        let props = [ ]
+let alert message alertType =
+    SimpleAlert(message).Type(alertType) |> SweetAlert.Run
 
-        let! res = Fetch.fetch url props
-        let! txt = res.text()
-        return Decode.Auto.unsafeFromString<WishList> txt
+let init (wishListApi: IWishListApi) (userName: UserName) =
+    let model = {
+        Wishlist = {
+            UserName = userName
+            Books = List.empty
+        }
+        LastResetTime = DateTime.MinValue
+        NewBook = None
     }
 
-let getResetTime () =
-    promise {
-        let url = "/api/resetTime/"
-        let props = [ ]
-
-        let! res = Fetch.fetch url props
-        let! txt = res.text()
-        let details = Decode.Auto.unsafeFromString<Domain.WishListResetDetails> txt
-        return details.Time
-    }
-
-
-let postWishList (token,wishList:WishList) =
-    promise {
-        let url = "/api/wishlist/"
-        let body = Encode.Auto.toString(0, wishList)
-        let props =
-            [ Method HttpMethod.POST
-              Fetch.requestHeaders [
-                Authorization ("Bearer " + token)
-                ContentType "application/json" ]
-              Body !^body ]
-
-        let! res = Fetch.fetch url props
-        let! txt = res.text()
-        return Decode.Auto.unsafeFromString<WishList> txt
-    }
-
-
-let init (userName:string) (token:string) =
-    let submodel,cmd = NewBook.init()
-    { WishList = WishList.New userName
-      Token = token
-      NewBookModel = submodel
-      ResetTime = None
-      ErrorMsg = None },
+    let cmd =
         Cmd.batch [
-            Cmd.map NewBookMsg cmd
-            Cmd.OfPromise.either getWishList userName FetchedWishList FetchError
-            Cmd.OfPromise.either getResetTime () FetchedResetTime FetchError ]
+            Cmd.OfAsync.either wishListApi.getWishlist userName GotWishlist UnhandledError
+            Cmd.OfAsync.either wishListApi.getLastResetTime () GotLastRestTime UnhandledError
+        ]
 
-let update (msg:Msg) model : Model * Cmd<Msg> =
+    model, cmd
+
+let update booksApi msg model =
     match msg with
-    | FetchedWishList wishList ->
-        let wishList = { wishList with Books = wishList.Books |> List.sortBy (fun b -> b.Title) }
-        { model with WishList = wishList }, Cmd.none
+    | GotLastRestTime time -> { model with LastResetTime = time }, Cmd.none
+    | GotWishlist wishlist -> { model with Wishlist = wishlist }, Cmd.none
+    | RemoveBook title ->
+        let userName = model.Wishlist.UserName
 
-    | FetchedResetTime datetime ->
-        { model with ResetTime = Some datetime }, Cmd.none
+        let cmd =
+            Cmd.OfAsync.either booksApi.removeBook (userName, title) RemovedBook UnhandledError
 
-    | RemoveBook book ->
-        let wishList = { model.WishList with Books = model.WishList.Books |> List.filter ((<>) book) }
-        { model with
-            WishList = wishList }, Cmd.OfPromise.either postWishList (model.Token,wishList) FetchedWishList FetchError
+        model, cmd
+    | RemovedBook title ->
+        let model = {
+            model with
+                Wishlist = {
+                    UserName = model.Wishlist.UserName
+                    Books = model.Wishlist.Books |> List.filter (fun book -> book.Title <> title)
+                }
+        }
 
-    | NewBookMsg msg ->
-        match msg with
-        | NewBook.Msg.AddBook ->
-            match model.WishList.VerifyNewBookIsNotADuplicate model.NewBookModel.NewBook with
-            | Some err ->
-                { model with ErrorMsg = Some err }, Cmd.none
-            | None ->
-                let wishList =
-                    { model.WishList
-                        with
-                            Books =
-                                (model.NewBookModel.NewBook :: model.WishList.Books)
-                                |> List.sortBy (fun b -> b.Title) }
+        model, alert $"{title} removed" AlertType.Info
+    | NewBookMsg newBookMsg ->
+        match newBookMsg, model.NewBook with
+        | NewBook.AddBook book, _ ->
+            match model.Wishlist.VerifyNewBookIsNotADuplicate book with
+            | Ok _ ->
+                let userName = model.Wishlist.UserName
+                model, Cmd.OfAsync.either booksApi.addBook (userName, book) AddedBook UnhandledError
+            | Error error -> model, Exception(error) |> UnhandledError |> Cmd.ofMsg
+        | NewBook.Cancel, _ -> { model with NewBook = None }, Cmd.none
+        | _, Some newBook ->
+            let newBookModel, cmd = NewBook.update newBookMsg newBook
 
-                let submodel,cmd = NewBook.init()
-                { model with WishList = wishList; NewBookModel = submodel; ErrorMsg = None },
-                    Cmd.batch [
-                        Cmd.map NewBookMsg cmd
-                        Cmd.OfPromise.either postWishList (model.Token,wishList) FetchedWishList FetchError
-                    ]
-        | _ ->
-            let newSubModel,cmd = NewBook.update msg model.NewBookModel
-            { model with NewBookModel = newSubModel}, Cmd.map NewBookMsg cmd
-    | FetchError e ->
-        { model with ErrorMsg = Some e.Message }, Cmd.none
+            let model = {
+                model with
+                    NewBook = Some newBookModel
+            }
 
+            model, cmd |> Cmd.map NewBookMsg
+        | _, _ -> model, Cmd.none
+    | AddedBook book ->
+        let wishList = {
+            model.Wishlist with
+                Books = book :: model.Wishlist.Books |> List.sortBy _.Title
+        }
 
-type BookProps = { key: string; book: Book; removeBook: unit -> unit }
+        {
+            model with
+                Wishlist = wishList
+                NewBook = None
+        },
+        alert $"{book.Title} added" AlertType.Success
 
-let bookComponent { book = book; removeBook = removeBook } =
-    tr [ Key book.Link ] [
-        td [] [
-            if String.IsNullOrWhiteSpace book.Link then
-                yield str book.Title
-            else
-                yield a [ Href book.Link; Target "_blank" ] [str book.Title ] ]
-        td [] [ str book.Authors ]
-        td [] [ img [ Src book.ImageLink; Title book.Title ]]
-        td [] [ buttonLink "" removeBook [ str "Remove" ] ]
+    | OpenNewBookModal ->
+        let newBook, newBookMsg = NewBook.init ()
+        { model with NewBook = Some newBook }, (newBookMsg |> Cmd.map NewBookMsg)
+    | UnhandledError exn ->
+        exn.OnStatusRun 401 Session.deleteUser
+        model, Cmd.none
+
+open Feliz
+
+let bookRow book dispatch =
+    let titleLink =
+        Daisy.link [
+            link.hover
+            link.secondary
+            prop.target "_blank"
+            prop.text book.Title
+            prop.href book.Link
+        ]
+
+    let image = Html.img [ prop.src book.ImageLink ]
+
+    let remove =
+        Daisy.link [
+            link.hover
+            link.secondary
+            prop.text "Remove"
+            prop.onClick (fun _ -> book.Title |> RemoveBook |> dispatch)
+        ]
+
+    let tableCell (key: string) (element: ReactElement) =
+        Html.td [ prop.key key; prop.children element ]
+
+    Html.tr [
+        prop.key book.Title
+        prop.className "hover:bg-primary"
+        prop.children [
+            tableCell "title" titleLink
+            tableCell "author" (Html.text book.Authors)
+            tableCell "image" image
+            tableCell "remove" remove
+        ]
     ]
 
-let BookComponent = elmishView "Book" bookComponent
+let newBookButton dispatch =
+    Daisy.button.label [
+        button.primary
+        prop.text "Add"
+        prop.onClick (fun _ -> OpenNewBookModal |> dispatch)
 
-type BooksProps = {
-    WishList: WishList
-    Dispatch: Msg -> unit
-}
+    ]
 
-let booksView = elmishView "Books" <| fun { WishList = wishList; Dispatch = dispatch } ->
-    table [ClassName "table table-striped table-hover"] [
-        thead [] [
-            tr [] [
-                th [] [str "Title"]
-                th [] [str "Authors"]
-                th [] [str "Image"]
-                th [] []
+let table model dispatch =
+    Daisy.table [
+        prop.children [
+            Html.tbody [
+                for book in model.Wishlist.Books do
+                    bookRow book dispatch
             ]
-        ]
-        tbody [] [
-            wishList.Books
-                |> List.map (fun book ->
-                   BookComponent {
-                        key = book.Title + book.Authors
-                        book = book
-                        removeBook = (fun _ -> dispatch (RemoveBook book))
-                })
-                |> ofList
+            Html.thead [ Html.tr [ Html.th "Title"; Html.th "Authors"; Html.th "Image" ] ]
         ]
     ]
 
-type WishListProps = {
-    Model: Model
-    Dispatch: Msg -> unit
-}
+let view model dispatch =
+    let user = model.Wishlist.UserName.Value
+    let lastReset = model.LastResetTime.ToString("yyyy-MM-dd HH:mm")
 
-let view = elmishView "WishList" (fun { Model = model; Dispatch = dispatch } ->
-    let time = model.ResetTime |> Option.map (fun t -> " - Last database reset at " + t.ToString("yyyy-MM-dd HH:mm") + "UTC") |> Option.defaultValue ""
-    div [ Key "WishList" ] [
-        h4 [] [ str "Wishlist for " ; str model.WishList.UserName; str time ]
-        booksView { WishList = model.WishList; Dispatch = dispatch }
-        NewBook.view { Model = model.NewBookModel; Dispatch = (dispatch << NewBookMsg) }
-        errorBox model.ErrorMsg
+    Html.div [
+        prop.className "grid h-full gap-4 content-start"
+        prop.children [
+            Html.div [
+                prop.className "row-min flex justify-end gap-4 mx-4"
+                prop.children [ newBookButton dispatch ]
+            ]
+            Html.div [
+                prop.className "overflow-y-auto"
+                prop.children [
+                    Html.text $"Wishlist for {user} - Last database reset at {lastReset}UTC"
+                    table model dispatch
+                ]
+            ]
+
+            match model.NewBook with
+            | Some book -> NewBook.view book (NewBookMsg >> dispatch)
+            | None -> ()
+        ]
     ]
-)
