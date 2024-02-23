@@ -13,6 +13,7 @@ type ResetStorageJob(blobService: BlobServiceClient, tableService: TableServiceC
             do! saveWishListToDB tableService Defaults.wishList
             do! StateManagement.storeResetTime blobService
         }
+
 let addResetStorageJob (services: IServiceCollection) =
     services
         .AddQuartz(fun config ->
@@ -26,4 +27,3 @@ let addResetStorageJob (services: IServiceCollection) =
     |> ignore
 
     services
-
