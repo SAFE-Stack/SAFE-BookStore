@@ -10,7 +10,9 @@
     <Compile Include="SAFE.fs" />
     <Compile Include="Authorise.fs" />
     <Compile Include="Storage.fs" />
-    <Compile Include="ResetStorage.fs" />
+    <Compile Include="Azure.fs" />
+    <Compile Include="Jobs.fs" />
+    <Compile Include="Api.fs" />
     <Compile Include="Server.fs" />
   </ItemGroup>
   <ItemGroup>

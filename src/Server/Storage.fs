@@ -66,15 +66,15 @@ module Defaults =
         Books = mockBooks
     }
 
-let getBooksTable (client: TableServiceClient) = async {
+let getBooksTable (client: TableServiceClient) = task {
     let table = client.GetTableClient "book"
 
     // Azure will temporarily lock table names after deleting and can take some time before the table name is made available again.
-    let rec createTableSafe () = async {
+    let rec createTableSafe () = task {
         try
-            do! table.CreateIfNotExistsAsync() |> Async.AwaitTask |> Async.Ignore
+            do! table.CreateIfNotExistsAsync() :> Task
         with _ ->
-            do! Async.Sleep 5000
+            do! Task.Delay 5000
             return! createTableSafe ()
     }
 
@@ -83,7 +83,7 @@ let getBooksTable (client: TableServiceClient) = async {
 }
 
 /// Load from the database
-let getWishListFromDB (client: TableServiceClient) (userName: UserName) = async {
+let getWishListFromDB (client: TableServiceClient) (userName: UserName) = task {
     let! table = getBooksTable client
     let results = table.Query<BookEntity>($"PartitionKey eq '{userName.Value}'")
 
@@ -101,7 +101,7 @@ let getWishListFromDB (client: TableServiceClient) (userName: UserName) = async 
     }
 }
 
-let saveWishListToDB client wishList = async {
+let saveWishListToDB client wishList = task {
     let! table = getBooksTable client
 
     let existingBooks =
@@ -117,8 +117,7 @@ let saveWishListToDB client wishList = async {
             existingBooks
             |> Seq.map (fun book -> TableTransactionAction(TableTransactionActionType.Delete, book))
             |> table.SubmitTransactionAsync
-            |> Async.AwaitTask
-            |> Async.Ignore
+            :> Task
 
     printfn $"Inserting books {wishList.Books}"
 
@@ -128,32 +127,31 @@ let saveWishListToDB client wishList = async {
             let tableEntity = BookEntity.buildEntity wishList.UserName.Value book
             TableTransactionAction(TableTransactionActionType.UpsertReplace, tableEntity))
         |> table.SubmitTransactionAsync
-        |> Async.AwaitTask
-        |> Async.Ignore
+        :> Task
 
     ()
 }
 
 module StateManagement =
-    let getStateBlob (client: BlobServiceClient) name = async {
+    let getStateBlob (client: BlobServiceClient) name = task {
         let state = client.GetBlobContainerClient "state"
-        do! state.CreateIfNotExistsAsync() |> Async.AwaitTask |> Async.Ignore
+        do! state.CreateIfNotExistsAsync() :> Task
         return state.GetBlobClient name
     }
 
     let resetTimeBlob client = getStateBlob client "resetTime"
 
-    let storeResetTime client = async {
+    let storeResetTime client = task {
         let! blob = resetTimeBlob client
-        do! blob.DeleteIfExistsAsync() |> Async.AwaitTask |> Async.Ignore
-        do! BinaryData "" |> blob.UploadAsync |> Async.AwaitTask |> Async.Ignore
+        do! blob.DeleteIfExistsAsync() :> Task
+        do! BinaryData "" |> blob.UploadAsync :> Task
     }
 
-let getLastResetTime client systemStartTime = async {
+let getLastResetTime client systemStartTime = task {
     let! blob = StateManagement.resetTimeBlob client
 
     try
-        let! response = blob.GetPropertiesAsync() |> Async.AwaitTask
+        let! response = blob.GetPropertiesAsync()
 
         return
             response
