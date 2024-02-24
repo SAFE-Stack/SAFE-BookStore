@@ -18,11 +18,9 @@ jobs:
         dotnet-version: 8.0.x
         
     - name: Restore tools
-      working-directory: ./update
       run: dotnet tool restore
 
     - name: Test
-      working-directory: ./update
       run: dotnet run devopstests
 
     - name: Build
@@ -35,5 +33,4 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Deploy
-      working-directory: ./update
       run: dotnet run azure
