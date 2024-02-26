@@ -1,3 +1,9 @@
+# Introducing SAFE Bookstore
+
+[Blog post](https://www.compositional-it.com/news-blog/safe-bookstore-v5/)
+
+[Deployed Demo](https://safebookstore.azurewebsites.net/)
+
 ## Demo
 
 You'll need to install the following pre-requisites in order to build SAFE applications
