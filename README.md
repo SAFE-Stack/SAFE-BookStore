@@ -1,6 +1,6 @@
 ## Demo
 
-You can see it running on Microsoft Azure at https://safebookstore.azurewebsites.net/.
+You'll need to install the following pre-requisites in order to build SAFE applications
 
 ## Install pre-requisites
 

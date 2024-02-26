@@ -1,94 +1,60 @@
-module Client.Home
+module Page.Home
 
-open Fable.React
-open Fable.React.Props
-open System
-open Client.Utils
-open ServerCode.Domain
 open Elmish
-#if FABLE_COMPILER
-open Thoth.Json
-#else
-open Thoth.Json.Net
-#endif
+open Feliz.DaisyUI
+open Shared
 
-type Model = {
-    WishList : WishList option
-}
+type Model = { Books: Book seq }
 
-    with
-        static member Empty : Model = {
-            WishList = None
-        }
+type Msg = GotBooks of Book seq
 
-type Msg =
-| LoadWishList
-| WishListLoaded of WishList
-| Error of exn
+let init (guestApi: IGuestApi) =
+    let model = { Books = Seq.empty }
+    let cmd = Cmd.OfAsync.perform guestApi.getBooks () GotBooks
+    model, cmd
 
-
-
-let init () = Model.Empty, Cmd.ofMsg LoadWishList
-
-/// Get the wish list from the server, used to populate the model
-let getWishList userName =
-    promise {
-        let url = sprintf "/api/wishlist/%s" userName
-        let props = [ ]
-
-        let! res = Fetch.fetch url props
-        let! txt = res.text()
-        return Decode.Auto.unsafeFromString<WishList> txt
-    }
-
-let update (msg:Msg) model : Model*Cmd<Msg> =
+let update msg model =
     match msg with
-    | LoadWishList ->
-        model, Cmd.OfPromise.either getWishList "test" WishListLoaded Error
+    | GotBooks books -> { Books = books }, Cmd.none
 
-    | WishListLoaded wishList ->
-        { model with WishList = Some wishList }, Cmd.none
+open Feliz
 
-    | Error e ->
-        printfn "Error: %s" e.Message
-        model, Cmd.none
+let bookRow book =
+    let link =
+        Daisy.link [
+            link.hover
+            link.primary
+            prop.target "_blank"
+            prop.text book.Title
+            prop.href book.Link
+        ]
 
-type BookProps = { Key: string; Book: Book }
+    let image = Html.img [ prop.src book.ImageLink ]
 
-let bookComponent = elmishView "Book" (fun (props: BookProps) ->
-    let book = props.Book
-    tr [ Key props.Key ] [
-        td [] [
-            if String.IsNullOrWhiteSpace book.Link then
-                yield str book.Title
-            else
-                yield a [ Href book.Link; Target "_blank" ] [str book.Title ] ]
-        td [] [ str book.Authors ]
-        td [] [ img [ Src book.ImageLink; Title book.Title ]]
+    let tableCell (key: string) (element: ReactElement) =
+        Html.td [ prop.key key; prop.children element ]
+
+    Html.tr [
+        prop.className "hover:primary"
+        prop.children [
+            tableCell "title" link
+            tableCell "authors" (Html.text book.Authors)
+            tableCell "image" image
+        ]
     ]
-)
 
-let view = elmishView "Home" (fun (model:Model) ->
-    match model.WishList with
-    | Some wishList ->
-        table [Key "Books"; ClassName "table table-striped table-hover"] [
-            thead [] [
-                tr [] [
-                    th [] [str "Title"]
-                    th [] [str "Authors"]
-                    th [] [str "Image"]
+let view model dispatch =
+    Html.div [
+        prop.className "overflow-y-auto"
+        prop.children [
+            Daisy.table [
+                prop.children [
+                    Html.tbody [
+                        for book in model.Books do
+                            bookRow book
+                    ]
+                    Html.thead [ Html.tr [ Html.th "Title"; Html.th "Authors"; Html.th "Image" ] ]
                 ]
             ]
-            tbody [] [
-                wishList.Books
-                    |> List.map (fun book ->
-                        elmishView "Book" bookComponent {
-                            Key = book.Title + book.Authors
-                            Book = book
-                        })
-                    |> ofList
-            ]
         ]
-    | _ ->
-        div [] []
-)
+    ]
