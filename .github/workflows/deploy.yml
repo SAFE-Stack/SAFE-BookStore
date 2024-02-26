@@ -25,7 +25,7 @@ jobs:
     - name: Build
       run: dotnet run bundle
       env:
-        APP_VERSION: ${{ github.ref_name }}
+        VITE_APP_VERSION: ${{ github.ref_name }}
 
     - name: Azure Login
       uses: azure/login@v1
