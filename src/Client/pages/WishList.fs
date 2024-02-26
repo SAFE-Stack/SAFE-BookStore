@@ -1,4 +1,4 @@
-module Page.Wishlist
+module Page.WishList
 
 open System
 open Elmish

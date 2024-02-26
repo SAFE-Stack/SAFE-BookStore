@@ -15,7 +15,7 @@
         <Compile Include="components\NewBook.fs" />
         <Compile Include="pages\Home.fs" />
         <Compile Include="pages\Login.fs" />
-        <Compile Include="pages\Wishlist.fs" />
+        <Compile Include="pages\WishList.fs" />
         <Compile Include="Index.fs" />
         <Compile Include="App.fs" />
         <None Include="vite.config.mts" />
