@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 
 const proxyPort = process.env.SERVER_PROXY_PORT || "5000";
 const proxyTarget = "http://localhost:" + proxyPort;
+const appVersion = process.env.APP_VERSION || "dev"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -19,5 +20,8 @@ export default defineConfig({
                 changeOrigin: true,
             }
         }
+    },
+    define: {
+        APP_VERSION: JSON.stringify(appVersion),
     }
 });

@@ -14,5 +14,9 @@
         var global = global || window;
     </script>
     <script type="module" src="/output/App.js"></script>
+    <script type="module">
+        document.title = document.title.concat(` - v${window.APP_VERSION}`)
+    </script>
+
 </body>
 </html>
