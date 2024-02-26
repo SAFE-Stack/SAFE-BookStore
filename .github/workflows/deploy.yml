@@ -22,11 +22,10 @@ jobs:
     - name: Test
       run: dotnet run devopstests
 
-    - name: Set app version
-      run: export APP_VERSION=${{ github.ref_name }}
-
     - name: Build
       run: dotnet run bundle
+      env:
+        APP_VERSION: ${{ github.ref_name }}
 
     - name: Azure Login
       uses: azure/login@v1
