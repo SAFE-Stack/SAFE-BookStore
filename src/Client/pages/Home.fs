@@ -2,6 +2,7 @@ module Page.Home
 
 open Elmish
 open Feliz.DaisyUI
+open Feliz.UseElmish
 open Shared
 
 type Model = { Books: Book seq }
@@ -43,7 +44,10 @@ let bookRow book =
         ]
     ]
 
-let view model dispatch =
+[<ReactComponent>]
+let View api =
+    let model, dispatch = React.useElmish (init api, update, [||])
+
     Html.div [
         prop.className "overflow-y-auto"
         prop.children [

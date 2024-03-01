@@ -10,7 +10,7 @@ open Page
 open Shared
 
 type PageTab =
-    | Home of Home.Model
+    | Home
     | Login of Login.Model
     | Wishlist of WishList.Model
     | NotFound
@@ -22,7 +22,6 @@ type User =
 type Model = { Page: PageTab; User: User }
 
 type Msg =
-    | HomePageMsg of Home.Msg
     | LoginPageMsg of Login.Msg
     | WishlistMsg of WishList.Msg
     | UrlChanged of string list
@@ -45,15 +44,8 @@ let guestApi =
 let initFromUrl model url =
     match url with
     | [] ->
-        let homeModel, homeMsg = Home.init guestApi
-
-        let model = {
-            Page = Home homeModel
-            User = model.User
-        }
-
-        let cmd = homeMsg |> Cmd.map HomePageMsg
-        model, cmd
+        let model = { Page = Home; User = model.User }
+        model, Cmd.none
     | [ "login" ] ->
         let loginModel, loginMsg = Login.init ()
 
@@ -81,21 +73,12 @@ let initFromUrl model url =
     | _ -> { Page = NotFound; User = model.User }, Cmd.none
 
 let init () =
-    let model, _ = Home.init guestApi
     let user = Session.loadUser () |> Option.map User |> Option.defaultValue Guest
 
-    Router.currentUrl () |> initFromUrl { Page = Home model; User = user }
+    Router.currentUrl () |> initFromUrl { Page = Home; User = user }
 
 let update msg model =
     match model.Page, msg with
-    | Home homeModel, HomePageMsg homeMsg ->
-        let newModel, cmd = Home.update homeMsg homeModel
-
-        {
-            Page = Home newModel
-            User = model.User
-        },
-        cmd
     | Login loginModel, LoginPageMsg loginMsg ->
         let user =
             match loginMsg with
@@ -177,7 +160,7 @@ let view model dispatch =
                         prop.className "overflow-y-auto"
                         prop.children [
                             match model.Page with
-                            | Home homeModel -> Home.view homeModel (HomePageMsg >> dispatch)
+                            | Home -> Home.View guestApi
                             | Login loginModel -> Login.view loginModel (LoginPageMsg >> dispatch)
                             | Wishlist wishlistModel -> WishList.view wishlistModel (WishlistMsg >> dispatch)
                             | NotFound -> Html.div [ prop.text "Not Found" ]
