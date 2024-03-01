@@ -22,7 +22,6 @@ type User =
 type Model = { Page: PageTab; User: User }
 
 type Msg =
-    | WishlistMsg of WishList.Msg
     | UrlChanged of string list
     | OnSessionChange
     | Logout
@@ -59,13 +58,12 @@ let init () =
     Router.currentUrl () |> initFromUrl { Page = Home; User = user }
 
 let update msg model =
-    match model.Page, msg with
-    | NotFound, _ -> { Page = NotFound; User = model.User }, Cmd.none
-    | _, UrlChanged url -> initFromUrl model url
-    | _, Logout ->
+    match msg with
+    | UrlChanged url -> initFromUrl model url
+    | Logout ->
         Session.deleteUser ()
         { model with User = Guest }, Cmd.navigate ""
-    | _, OnSessionChange ->
+    | OnSessionChange ->
         let session = Session.loadUser ()
         let user = session |> Option.map User |> Option.defaultValue Guest
 
@@ -75,7 +73,6 @@ let update msg model =
             |> Option.defaultValue (Cmd.navigate "login")
 
         { model with User = user }, cmd
-    | _, _ -> model, Cmd.none
 
 open Feliz
 
