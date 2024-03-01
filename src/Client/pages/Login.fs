@@ -4,6 +4,7 @@ open System
 open Elmish
 open Feliz.DaisyUI
 open Feliz.Router
+open Feliz.UseElmish
 open FsToolkit.ErrorHandling
 open Shared
 open SAFE
@@ -68,7 +69,10 @@ let update (guestApi: IGuestApi) msg model =
 
 open Feliz
 
-let view model dispatch =
+[<ReactComponent>]
+let View guestApi =
+    let model, dispatch = React.useElmish (init, (update guestApi), [||])
+
     Html.div [
         prop.className "grid justify-center"
         prop.children [

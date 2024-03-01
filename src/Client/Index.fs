@@ -11,7 +11,7 @@ open Shared
 
 type PageTab =
     | Home
-    | Login of Login.Model
+    | Login
     | Wishlist of WishList.Model
     | NotFound
 
@@ -22,7 +22,6 @@ type User =
 type Model = { Page: PageTab; User: User }
 
 type Msg =
-    | LoginPageMsg of Login.Msg
     | WishlistMsg of WishList.Msg
     | UrlChanged of string list
     | OnSessionChange
@@ -47,15 +46,8 @@ let initFromUrl model url =
         let model = { Page = Home; User = model.User }
         model, Cmd.none
     | [ "login" ] ->
-        let loginModel, loginMsg = Login.init ()
-
-        let model = {
-            Page = Login loginModel
-            User = model.User
-        }
-
-        let cmd = loginMsg |> Cmd.map LoginPageMsg
-        model, cmd
+        let model = { Page = Login; User = model.User }
+        model, Cmd.none
     | [ "wishlist" ] ->
         match model.User with
         | User user ->
@@ -79,14 +71,6 @@ let init () =
 
 let update msg model =
     match model.Page, msg with
-    | Login loginModel, LoginPageMsg loginMsg ->
-        let user =
-            match loginMsg with
-            | Login.LoggedIn user -> User user
-            | _ -> model.User
-
-        let newModel, cmd = Login.update guestApi loginMsg loginModel
-        { Page = Login newModel; User = user }, cmd |> Cmd.map LoginPageMsg
     | Wishlist wishlistModel, WishlistMsg wishlistMsg ->
         let token =
             match model.User with
@@ -161,7 +145,7 @@ let view model dispatch =
                         prop.children [
                             match model.Page with
                             | Home -> Home.View guestApi
-                            | Login loginModel -> Login.view loginModel (LoginPageMsg >> dispatch)
+                            | Login -> Login.View guestApi
                             | Wishlist wishlistModel -> WishList.view wishlistModel (WishlistMsg >> dispatch)
                             | NotFound -> Html.div [ prop.text "Not Found" ]
                         ]
