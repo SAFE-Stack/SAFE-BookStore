@@ -12,7 +12,7 @@ open Shared
 type PageTab =
     | Home
     | Login
-    | Wishlist of WishList.Model
+    | Wishlist of UserData
     | NotFound
 
 type User =
@@ -27,13 +27,6 @@ type Msg =
     | OnSessionChange
     | Logout
 
-let wishListApi token =
-    let bearer = $"Bearer {token}"
-
-    Remoting.createApi ()
-    |> Remoting.withAuthorizationHeader bearer
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IWishListApi>
 
 let guestApi =
     Remoting.createApi ()
@@ -51,16 +44,12 @@ let initFromUrl model url =
     | [ "wishlist" ] ->
         match model.User with
         | User user ->
-            let wishlistModel, wishlistMsg =
-                WishList.init (wishListApi user.Token) user.UserName
-
             let model = {
-                Page = Wishlist wishlistModel
+                Page = Wishlist user
                 User = model.User
             }
 
-            let cmd = wishlistMsg |> Cmd.map WishlistMsg
-            model, cmd
+            model, Cmd.none
         | Guest -> model, Cmd.navigate "login"
     | _ -> { Page = NotFound; User = model.User }, Cmd.none
 
@@ -71,19 +60,6 @@ let init () =
 
 let update msg model =
     match model.Page, msg with
-    | Wishlist wishlistModel, WishlistMsg wishlistMsg ->
-        let token =
-            match model.User with
-            | User data -> data.Token
-            | Guest -> ""
-
-        let newModel, cmd = WishList.update (wishListApi token) wishlistMsg wishlistModel
-
-        {
-            Page = Wishlist newModel
-            User = model.User
-        },
-        cmd |> Cmd.map WishlistMsg
     | NotFound, _ -> { Page = NotFound; User = model.User }, Cmd.none
     | _, UrlChanged url -> initFromUrl model url
     | _, Logout ->
@@ -146,7 +122,7 @@ let view model dispatch =
                             match model.Page with
                             | Home -> Home.View guestApi
                             | Login -> Login.View guestApi
-                            | Wishlist wishlistModel -> WishList.view wishlistModel (WishlistMsg >> dispatch)
+                            | Wishlist user -> WishList.View user
                             | NotFound -> Html.div [ prop.text "Not Found" ]
                         ]
                     ]
