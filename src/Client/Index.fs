@@ -33,24 +33,27 @@ let guestApi =
     |> Remoting.buildProxy<IGuestApi>
 
 let initFromUrl model url =
+    let loggedInUser =
+        Session.loadUser () |> Option.map User |> Option.defaultValue Guest
+
     match url with
     | [] ->
-        let model = { Page = Home; User = model.User }
+        let model = { Page = Home; User = loggedInUser }
         model, Cmd.none
     | [ "login" ] ->
-        let model = { Page = Login; User = model.User }
+        let model = { Page = Login; User = loggedInUser }
         model, Cmd.none
     | [ "wishlist" ] ->
-        match model.User with
+        match loggedInUser with
         | User user ->
             let model = {
                 Page = Wishlist user
-                User = model.User
+                User = loggedInUser
             }
 
             model, Cmd.none
         | Guest -> model, Cmd.navigate "login"
-    | _ -> { Page = NotFound; User = model.User }, Cmd.none
+    | _ -> { Page = NotFound; User = loggedInUser }, Cmd.none
 
 let init () =
     let user = Session.loadUser () |> Option.map User |> Option.defaultValue Guest
