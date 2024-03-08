@@ -16,7 +16,7 @@ let sharedTestsPath = Path.getFullName "tests/Shared"
 let serverTestsPath = Path.getFullName "tests/Server"
 let clientTestsPath = Path.getFullName "tests/Client"
 
-let appName = "safebookstoret"
+let appName = "safebookstore"
 let storageAccountName = $"{appName}storage"
 let logAnalyticsName = $"{appName}-la"
 let appInsightsName = $"{appName}-ai"
