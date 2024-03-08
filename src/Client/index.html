@@ -14,5 +14,10 @@
         var global = global || window;
     </script>
     <script type="module" src="/output/App.js"></script>
+    <script type="module">
+        const appVersion = import.meta.env.VITE_APP_VERSION || "dev"
+        document.title = document.title.concat(` - v${appVersion}`)
+    </script>
+
 </body>
 </html>
