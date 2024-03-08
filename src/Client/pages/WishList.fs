@@ -54,7 +54,7 @@ let init api (user: UserData) =
 
     model, cmd
 
-let update booksApi msg model =
+let update api msg model =
     match msg with
     | GotLastRestTime time -> { model with LastResetTime = time }, Cmd.none
     | GotWishlist wishlist -> { model with Wishlist = wishlist }, Cmd.none
@@ -62,7 +62,7 @@ let update booksApi msg model =
         let userName = model.Wishlist.UserName
 
         let cmd =
-            Cmd.OfAsync.either booksApi.removeBook (userName, title) RemovedBook UnhandledError
+            Cmd.OfAsync.either api.removeBook (userName, title) RemovedBook UnhandledError
 
         model, cmd
     | RemovedBook title ->
@@ -81,7 +81,7 @@ let update booksApi msg model =
             match model.Wishlist.VerifyNewBookIsNotADuplicate book with
             | Ok _ ->
                 let userName = model.Wishlist.UserName
-                model, Cmd.OfAsync.either booksApi.addBook (userName, book) AddedBook UnhandledError
+                model, Cmd.OfAsync.either api.addBook (userName, book) AddedBook UnhandledError
             | Error error -> model, Exception(error) |> UnhandledError |> Cmd.ofMsg
         | NewBook.Cancel, _ -> { model with NewBook = None }, Cmd.none
         | _, Some newBook ->
