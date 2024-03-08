@@ -10,9 +10,9 @@ open Page
 open Shared
 
 type PageTab =
-    | Home of Home.Model
-    | Login of Login.Model
-    | Wishlist of WishList.Model
+    | Home
+    | Login
+    | Wishlist of UserData
     | NotFound
 
 type User =
@@ -22,20 +22,10 @@ type User =
 type Model = { Page: PageTab; User: User }
 
 type Msg =
-    | HomePageMsg of Home.Msg
-    | LoginPageMsg of Login.Msg
-    | WishlistMsg of WishList.Msg
     | UrlChanged of string list
     | OnSessionChange
     | Logout
 
-let wishListApi token =
-    let bearer = $"Bearer {token}"
-
-    Remoting.createApi ()
-    |> Remoting.withAuthorizationHeader bearer
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IWishListApi>
 
 let guestApi =
     Remoting.createApi ()
@@ -43,86 +33,40 @@ let guestApi =
     |> Remoting.buildProxy<IGuestApi>
 
 let initFromUrl model url =
+    let loggedInUser =
+        Session.loadUser () |> Option.map User |> Option.defaultValue Guest
+
     match url with
     | [] ->
-        let homeModel, homeMsg = Home.init guestApi
-
-        let model = {
-            Page = Home homeModel
-            User = model.User
-        }
-
-        let cmd = homeMsg |> Cmd.map HomePageMsg
-        model, cmd
+        let model = { Page = Home; User = loggedInUser }
+        model, Cmd.none
     | [ "login" ] ->
-        let loginModel, loginMsg = Login.init ()
-
-        let model = {
-            Page = Login loginModel
-            User = model.User
-        }
-
-        let cmd = loginMsg |> Cmd.map LoginPageMsg
-        model, cmd
+        let model = { Page = Login; User = loggedInUser }
+        model, Cmd.none
     | [ "wishlist" ] ->
-        match model.User with
+        match loggedInUser with
         | User user ->
-            let wishlistModel, wishlistMsg =
-                WishList.init (wishListApi user.Token) user.UserName
-
             let model = {
-                Page = Wishlist wishlistModel
-                User = model.User
+                Page = Wishlist user
+                User = loggedInUser
             }
 
-            let cmd = wishlistMsg |> Cmd.map WishlistMsg
-            model, cmd
+            model, Cmd.none
         | Guest -> model, Cmd.navigate "login"
-    | _ -> { Page = NotFound; User = model.User }, Cmd.none
+    | _ -> { Page = NotFound; User = loggedInUser }, Cmd.none
 
 let init () =
-    let model, _ = Home.init guestApi
     let user = Session.loadUser () |> Option.map User |> Option.defaultValue Guest
 
-    Router.currentUrl () |> initFromUrl { Page = Home model; User = user }
+    Router.currentUrl () |> initFromUrl { Page = Home; User = user }
 
 let update msg model =
-    match model.Page, msg with
-    | Home homeModel, HomePageMsg homeMsg ->
-        let newModel, cmd = Home.update homeMsg homeModel
-
-        {
-            Page = Home newModel
-            User = model.User
-        },
-        cmd
-    | Login loginModel, LoginPageMsg loginMsg ->
-        let user =
-            match loginMsg with
-            | Login.LoggedIn user -> User user
-            | _ -> model.User
-
-        let newModel, cmd = Login.update guestApi loginMsg loginModel
-        { Page = Login newModel; User = user }, cmd |> Cmd.map LoginPageMsg
-    | Wishlist wishlistModel, WishlistMsg wishlistMsg ->
-        let token =
-            match model.User with
-            | User data -> data.Token
-            | Guest -> ""
-
-        let newModel, cmd = WishList.update (wishListApi token) wishlistMsg wishlistModel
-
-        {
-            Page = Wishlist newModel
-            User = model.User
-        },
-        cmd |> Cmd.map WishlistMsg
-    | NotFound, _ -> { Page = NotFound; User = model.User }, Cmd.none
-    | _, UrlChanged url -> initFromUrl model url
-    | _, Logout ->
+    match msg with
+    | UrlChanged url -> initFromUrl model url
+    | Logout ->
         Session.deleteUser ()
         { model with User = Guest }, Cmd.navigate ""
-    | _, OnSessionChange ->
+    | OnSessionChange ->
         let session = Session.loadUser ()
         let user = session |> Option.map User |> Option.defaultValue Guest
 
@@ -132,7 +76,6 @@ let update msg model =
             |> Option.defaultValue (Cmd.navigate "login")
 
         { model with User = user }, cmd
-    | _, _ -> model, Cmd.none
 
 open Feliz
 
@@ -177,9 +120,9 @@ let view model dispatch =
                         prop.className "overflow-y-auto"
                         prop.children [
                             match model.Page with
-                            | Home homeModel -> Home.view homeModel (HomePageMsg >> dispatch)
-                            | Login loginModel -> Login.view loginModel (LoginPageMsg >> dispatch)
-                            | Wishlist wishlistModel -> WishList.view wishlistModel (WishlistMsg >> dispatch)
+                            | Home -> Home.View guestApi
+                            | Login -> Login.View guestApi
+                            | Wishlist user -> WishList.View user
                             | NotFound -> Html.div [ prop.text "Not Found" ]
                         ]
                     ]

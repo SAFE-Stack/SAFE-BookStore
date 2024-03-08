@@ -4,8 +4,18 @@ open System
 open Elmish
 open Elmish.SweetAlert
 open Feliz.DaisyUI
+open Feliz.UseElmish
 open Shared
 open SAFE
+open Fable.Remoting.Client
+
+let wishListApi token =
+    let bearer = $"Bearer {token}"
+
+    Remoting.createApi ()
+    |> Remoting.withAuthorizationHeader bearer
+    |> Remoting.withRouteBuilder Route.builder
+    |> Remoting.buildProxy<IWishListApi>
 
 type Model = {
     Wishlist: WishList
@@ -26,10 +36,10 @@ type Msg =
 let alert message alertType =
     SimpleAlert(message).Type(alertType) |> SweetAlert.Run
 
-let init (wishListApi: IWishListApi) (userName: UserName) =
+let init api (user: UserData) =
     let model = {
         Wishlist = {
-            UserName = userName
+            UserName = user.UserName
             Books = List.empty
         }
         LastResetTime = DateTime.MinValue
@@ -38,13 +48,13 @@ let init (wishListApi: IWishListApi) (userName: UserName) =
 
     let cmd =
         Cmd.batch [
-            Cmd.OfAsync.either wishListApi.getWishlist userName GotWishlist UnhandledError
-            Cmd.OfAsync.either wishListApi.getLastResetTime () GotLastRestTime UnhandledError
+            Cmd.OfAsync.either api.getWishlist user.UserName GotWishlist UnhandledError
+            Cmd.OfAsync.either api.getLastResetTime () GotLastRestTime UnhandledError
         ]
 
     model, cmd
 
-let update booksApi msg model =
+let update api msg model =
     match msg with
     | GotLastRestTime time -> { model with LastResetTime = time }, Cmd.none
     | GotWishlist wishlist -> { model with Wishlist = wishlist }, Cmd.none
@@ -52,7 +62,7 @@ let update booksApi msg model =
         let userName = model.Wishlist.UserName
 
         let cmd =
-            Cmd.OfAsync.either booksApi.removeBook (userName, title) RemovedBook UnhandledError
+            Cmd.OfAsync.either api.removeBook (userName, title) RemovedBook UnhandledError
 
         model, cmd
     | RemovedBook title ->
@@ -71,7 +81,7 @@ let update booksApi msg model =
             match model.Wishlist.VerifyNewBookIsNotADuplicate book with
             | Ok _ ->
                 let userName = model.Wishlist.UserName
-                model, Cmd.OfAsync.either booksApi.addBook (userName, book) AddedBook UnhandledError
+                model, Cmd.OfAsync.either api.addBook (userName, book) AddedBook UnhandledError
             | Error error -> model, Exception(error) |> UnhandledError |> Cmd.ofMsg
         | NewBook.Cancel, _ -> { model with NewBook = None }, Cmd.none
         | _, Some newBook ->
@@ -159,7 +169,11 @@ let table model dispatch =
         ]
     ]
 
-let view model dispatch =
+[<ReactComponent>]
+let View user =
+    let api: IWishListApi = wishListApi user.Token
+
+    let model, dispatch = React.useElmish ((fun () -> init api user), update api, [||])
     let user = model.Wishlist.UserName.Value
     let lastReset = model.LastResetTime.ToString("yyyy-MM-dd HH:mm")
 

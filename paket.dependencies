@@ -8,6 +8,7 @@ nuget Azure.Storage.Blobs
 nuget Elmish.SweetAlert
 nuget Feliz.DaisyUI
 nuget Feliz.Router
+nuget Feliz.UseElmish
 nuget FSharp.Core ~> 8
 nuget Fable.Remoting.Giraffe ~> 5
 nuget FSToolkit.ErrorHandling
