@@ -173,7 +173,7 @@ let table model dispatch =
 let View user =
     let api: IWishListApi = wishListApi user.Token
 
-    let model, dispatch = React.useElmish (init api user, update api, [||])
+    let model, dispatch = React.useElmish ((fun () -> init api user), update api, [||])
     let user = model.Wishlist.UserName.Value
     let lastReset = model.LastResetTime.ToString("yyyy-MM-dd HH:mm")
 

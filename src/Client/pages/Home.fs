@@ -46,7 +46,7 @@ let bookRow book =
 
 [<ReactComponent>]
 let View api =
-    let model, dispatch = React.useElmish (init api, update, [||])
+    let model, dispatch = React.useElmish ((fun () -> init api), update, [||])
 
     Html.div [
         prop.className "overflow-y-auto"
